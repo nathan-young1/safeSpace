@@ -63,6 +63,12 @@ authenticateVaultKeyBeforeReEncryption({@required BuildContext context}){
                    return 'Invaild Vault Key';
                    }
                  },
+                 onFieldSubmitted: (_){
+                   if(_authBeforeReEncryptionKey.currentState.validate()){
+                    //first remove the alert dialog before going to another page
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pushNamed('ChangeMasterPassword',arguments: enterVaultKey.text);}
+                 },
                  decoration: InputDecoration(
                    isDense: true,
                    filled: true,
