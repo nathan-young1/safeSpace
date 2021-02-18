@@ -5,7 +5,7 @@ import 'package:safeSpace/Core-Services/global.dart';
 import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
-import 'package:velocity_x/velocity_x.dart';
+//import 'package:velocity_x/velocity_x.dart';
 
 authenticateVaultKeyBeforeReEncryption({@required BuildContext context}){
   final _authBeforeReEncryptionKey = GlobalKey<FormState>();
