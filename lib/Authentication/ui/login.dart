@@ -44,7 +44,6 @@ class _LoginState extends State<Login> {
      switch (status) {
       case DataConnectionStatus.connected:
         print('Data connection is available.');
-        showFlushBar(context, 'Internet connection is available', Icons.wifi);
         Provider.of<InternetConnection>(context,listen: false).update(true);
         break;
       case DataConnectionStatus.disconnected:

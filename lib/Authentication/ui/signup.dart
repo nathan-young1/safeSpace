@@ -21,16 +21,14 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-  bool validatePassword(String value) {
-    String pattern =
-        r'^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[@#=+!\$%&?(){}~_\\-\\.,^;:|#*]).{8,}$';
+  bool _validateVaultKey(String value) {
+    String pattern =  r'^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[@#=+!\$%&?(){}~_\\-\\.,^;:|#*]).{8,}$';
     RegExp regExp = new RegExp(pattern, caseSensitive: false);
     return regExp.hasMatch(value);
   }
 
   TextEditingController password;
   TextEditingController retypePassword;
-  IconData passIcon = Icons.lock;
   bool hideText = true;
   FocusNode masterPasswordFocus = FocusNode();
   FocusNode retypePasswordFocus = FocusNode();
@@ -94,7 +92,7 @@ class _SignupState extends State<Signup> {
                                     } else if (strength <= 0.7 && strength > 0.4) {
                                       passwordStrengthColor = Colors.yellow;
                                       passwordStrength = 70.0;
-                                    } else if (strength <= 1 && strength > 0.7 && validatePassword(value)) {
+                                    } else if (strength <= 1 && strength > 0.7 && _validateVaultKey(value)) {
                                       passwordStrengthColor = Colors.teal;
                                       passwordStrength = 100.0;
                                     }
@@ -104,8 +102,12 @@ class _SignupState extends State<Signup> {
                                 decoration: (context.isMobileTypeHandset)
                                 ?textInputDecorationForSafe.copyWith(
                                   prefixIcon: IconButton(
-                                    icon: Icon(passIcon,color: mainColor),
-                                    onPressed: () =>  setState(() => togglePasswordIcon()),
+                                    icon: Icon(
+                                    (hideText)
+                                    ?Icons.lock
+                                    :Icons.lock_open,
+                                    color: mainColor),
+                                    onPressed: () =>  setState(() => hideText =! hideText),
                                   ),
                                   suffixIcon: PasswordStrengthIndicator(passwordStrength: passwordStrength, passwordStrengthColor: passwordStrengthColor),
                                   labelText: 'Create Vault Key',
@@ -116,7 +118,14 @@ class _SignupState extends State<Signup> {
                                 labelStyle:TextStyle(color: Colors.black, fontSize: 17.ssp),
                                   prefixIcon: Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: IconButton(icon: Icon(passIcon,color: mainColor,size: 18.w),onPressed: () =>  setState(() => togglePasswordIcon())),
+                                    child: IconButton(
+                                    icon: Icon(
+                                    (hideText)
+                                    ?Icons.lock
+                                    :Icons.lock_open,
+                                    color: mainColor),
+                                    onPressed: () =>  setState(() => hideText =! hideText),
+                                  ),
                                   ),
                                   suffixIcon: PasswordStrengthIndicator(passwordStrength: passwordStrength, passwordStrengthColor: passwordStrengthColor),
                                   labelText: 'Create Vault Key',
@@ -135,7 +144,7 @@ class _SignupState extends State<Signup> {
                                 ?textInputDecorationForSafe.copyWith(
                                 prefixIcon: IconButton(
                                   icon: Icon( MdiIcons.lockReset, color: mainColor,size: 28),
-                                  onPressed: () => setState(() => togglePasswordIcon()),
+                                  onPressed: () => setState(() => hideText =! hideText),
                                 ),
                                 labelText: 'Retype Vault Key')
                                 :InputDecoration(
@@ -146,7 +155,7 @@ class _SignupState extends State<Signup> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: IconButton(
                                     icon: Icon( MdiIcons.lockReset, color: mainColor,size: 18.w),
-                                    onPressed: () => setState(() => togglePasswordIcon()),
+                                    onPressed: () => setState(() => hideText =! hideText),
                                   ),
                                 ),
                                 labelText: 'Retype Vault Key')),
@@ -160,9 +169,9 @@ class _SignupState extends State<Signup> {
                               if(passwordStrength == 100 && password.text == retypePassword.text){
                               registerSafe();
                               }else if(passwordStrength != 100){
-                                showFlushBar(context,'Password is weak',MdiIcons.qualityLow);
+                                showFlushBar(context,'Vault key is weak',MdiIcons.qualityLow);
                               }else if(password.text != retypePassword.text){
-                                showFlushBar(context,'Passwords do not match',MdiIcons.notEqual);
+                                showFlushBar(context,'Vault keys do not match',MdiIcons.notEqual);
                               }
                               },
                               child: Text('Sign up',style: authTextStyle),
@@ -192,15 +201,6 @@ class _SignupState extends State<Signup> {
     );
   }
 
-  togglePasswordIcon() {
-    if (passIcon == Icons.lock) {
-      passIcon = Icons.lock_open;
-      hideText = false;
-    } else {
-      passIcon = Icons.lock;
-      hideText = true;
-    }
-  }
 
   registerSafe() async {
     progressDialog(buildContext: context,message: 'Setting Things Up',command: ProgressDialogVisiblity.show);
