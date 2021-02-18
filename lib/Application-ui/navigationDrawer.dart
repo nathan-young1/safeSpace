@@ -32,7 +32,7 @@ class _SafeDrawerState extends State<SafeDrawer> {
       super.initState();
       getStorageLeft();
       WidgetsBinding.instance.addPostFrameCallback((_){
-      //check if reEncryption has not been completed
+      //check if reencryption has not been completed
       if(Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email').existsSync()){
       continueUnfinishedReEncryption(context: context);
       }});
