@@ -14,6 +14,7 @@ import 'package:safeSpace/Passports/ui/passport.dart';
 import 'package:safeSpace/Passwords/ui/password.dart';
 import 'package:safeSpace/Payments/ui/payment.dart';
 import 'package:safeSpace/Settings/settings.dart';
+import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
 import 'package:safeSpace/Subscription/code/subscription.dart';
 import 'package:safeSpace/Subscription/ui/subscriptionStatus.dart';
@@ -59,8 +60,9 @@ class _SafeDrawerState extends State<SafeDrawer> {
                   if(context.isMobileTypeHandset)Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(email,style: TextStyle(color:color,fontSize: 16)),
-                      Text((!SafeSpaceSubscription.isPremiumUser || SafeSpaceSubscription.timeLeftToExpire() == null)?'Trial Version':'Time Left: ${SafeSpaceSubscription.timeLeftToExpire()} minutes',style: TextStyle(color:color,fontSize: 16))
+                      Text(email,style: TextStyle(color:color,fontSize: RFontSize.small)),
+                      SizedBox(height: 5.h),
+                      Text((!SafeSpaceSubscription.isPremiumUser)?'Trial Version':'Time Left: ${SafeSpaceSubscription.timeLeftToExpire()} minutes',style: TextStyle(color:color,fontSize: 16))
                     ],
                   ),
                 ],

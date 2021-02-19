@@ -139,37 +139,75 @@ class _ChangeMasterPasswordState extends State<ChangeMasterPassword> {
                       ),
                   ),
             ]),
-          ):Column(children: [
-            Container(
-              width: 250.w,
-              child: TextField(
-                style: authTextField,
-                controller: formerPassword,
-                decoration: textInputDecoration.copyWith(labelText: 'Former Vault Key')),
-            ),
-            SizedBox(height: 6),
-            Container(
-              width: 250.w,
-              child: TextField(
-                controller: newPassword,
-                style: authTextField,
-                decoration: textInputDecoration.copyWith(labelText: 'Current Vault Key')),
-            ),
-              RaisedButton.icon(onPressed: () =>
-                //make the masterkey the former password so it can decrypt the data to continue reEncryption
-                vaultReEncryption(masterKey: formerPassword.text,newPassword: newPassword.text,context: context,mode: VaultReEncryptionMode.Resume),
-                label: Text('Continue ReEncryption'),
-                icon: Icon(Icons.lock_clock),),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.info,size: 25,color: Colors.grey),
-                      SizedBox(width: 8),
-                      Flexible(child: Text("This is a sensitive operation do not interupt",style: TextStyle(fontSize: 15),))
-                    ],
-                  ),
-          ]),
+          ):ContinueReEncryption(formerPassword: formerPassword, newPassword: newPassword),
         ):NoInternetConnection(),
     );
   }
-  } 
+  }
+
+class ContinueReEncryption extends StatelessWidget {
+  const ContinueReEncryption({
+    Key key,
+    @required this.formerPassword,
+    @required this.newPassword,
+  }) : super(key: key);
+
+  final TextEditingController formerPassword;
+  final TextEditingController newPassword;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      Container(
+        width: 270.w,
+        child: TextField(
+          style: authTextField,
+          controller: formerPassword,
+          decoration: InputDecoration(
+              filled: true,
+              isDense: true,
+              errorStyle: TextStyle(fontSize: RFontSize.normal),
+              labelStyle: TextStyle(fontSize: RFontSize.normal,color: Colors.black),
+              labelText: 'Former Vault Key')),
+      ),
+      SizedBox(height: 10.h),
+      Container(
+        width: 270.w,
+        child: TextField(
+          controller: newPassword,
+          style: authTextField,
+          decoration: InputDecoration(
+              filled: true,
+              isDense: true,
+              errorStyle: TextStyle(fontSize: RFontSize.normal),
+              labelStyle: TextStyle(fontSize: RFontSize.normal,color: Colors.black),
+              labelText: 'Current Vault Key')),
+      ),
+        SizedBox(height: 25.h),
+        Container(
+          height: 40.h,
+          child: RaisedButton.icon(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+            color: secondaryColor,
+            onPressed: () =>
+            //make the masterkey the former password so it can decrypt the data to continue reEncryption
+            vaultReEncryption(masterKey: formerPassword.text,newPassword: newPassword.text,context: context,mode: VaultReEncryptionMode.Resume),
+            label: Text('Continue ReEncryption',
+            style: TextStyle(fontSize: RFontSize.normal,color: Colors.white)),
+            icon: Icon(Icons.lock_clock),),
+        ),
+          SizedBox(height: 10.h),
+            Padding(
+              padding: EdgeInsets.all(10.r),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.info,size: 28.r,color: secondaryColor),
+                    SizedBox(width: 8),
+                    Flexible(child: Text('This is a sensitive operation do not interupt.',style: TextStyle(fontSize: RFontSize.normal),))
+                  ],
+                ),
+            ),
+    ]);
+  }
+} 

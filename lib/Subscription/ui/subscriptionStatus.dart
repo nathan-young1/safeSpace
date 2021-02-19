@@ -79,7 +79,7 @@ class _SubscriptionState extends State<Subscription> {
               ],
             ),
             SizedBox(height: 5.h),
-            if(SafeSpaceSubscription.isPremiumUser || SafeSpaceSubscription.timeLeftToExpire() == null)
+            if(SafeSpaceSubscription.isPremiumUser)
             Row(
               children: [
                 Text('Time Left: ${SafeSpaceSubscription.timeLeftToExpire()} minutes',style: TextStyle(fontSize: RFontSize.normal)),

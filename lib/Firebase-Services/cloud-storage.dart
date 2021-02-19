@@ -139,6 +139,7 @@ class FirestoreFileStorage{
     }
 
     static downloadFilesFromFirestore({@required String dbName,@required BuildContext context,@required String collection,@required dynamic attachmentNames,@required String documentName}) async {
+    print(taskCanceled);
     taskCanceled = false;
     List<String> filenames = List<String>();
     DownloadTask download;
