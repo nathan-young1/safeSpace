@@ -6,27 +6,30 @@ import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
 
 class ReEncryptionPercent extends ChangeNotifier{
   int _numberOfTimesCalled;
-  int _totalNumberOfFiles;
-  int _numberOfFilesDownloaded;
+  //the total number of all the files bytes
+  int _totalNumberOfBytes;
+  //the number of bytes currently downloaded
+  int _numberOfBytesDownloaded;
   bool showProgressDialog;
-  double get percent => (showProgressDialog)?(_numberOfFilesDownloaded/_totalNumberOfFiles):0.0;
-  totalNumberOfFiles(int numberOfFilesInSection){
-    _totalNumberOfFiles +=numberOfFilesInSection;
+  double get percent => (showProgressDialog)?(_numberOfBytesDownloaded/_totalNumberOfBytes):0.0;
+  totalNumberOfBytes(int sizeOfFilesInSection){
+    _totalNumberOfBytes +=sizeOfFilesInSection;
     _numberOfTimesCalled++;
     print('$_numberOfTimesCalled timesCalled');
     if(_numberOfTimesCalled == 4){
       showProgressDialog = true;
     }
   }
-  updateNumberOfFilesDownloaded(){
-    _numberOfFilesDownloaded++;
+  //update with total number of bytes in section e.g password,payment e.t.c
+  updateNumberOfBytesDownloaded(int numberOfBytesDownloadedInSection){
+    _numberOfBytesDownloaded += numberOfBytesDownloadedInSection;
     notifyListeners();
   }
   intialize(){
-    _numberOfFilesDownloaded = 0;
+    _numberOfBytesDownloaded = 0;
     _numberOfTimesCalled = 0;
     showProgressDialog = false;
-    _totalNumberOfFiles = 0;
+    _totalNumberOfBytes = 0;
   }
 }
 //Todo check the tap to add text and make reencryption percent responsive

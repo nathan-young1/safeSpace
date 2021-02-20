@@ -10,26 +10,30 @@ import 'package:safeSpace/Core-Services/enum.dart';
 import 'package:safeSpace/Core-Services/filePicker.dart';
 import 'package:safeSpace/Custom-widgets/progressDialog.dart';
 import 'package:safeSpace/Firebase-Services/firebase-models.dart';
+import 'package:safeSpace/Vault-Recryption/listOfFilesInfo.dart';
 
 class FirestoreFileStorage{
     FirebaseStorage database = FirebaseStorage.instance;
-    static Future<List<String>> getAttachmentList({String collection, String dbName}) async {
-      List<String> fileNames = List<String>();
+    static Future<ListOfFileInfo> getAttachmentList({String collection, String dbName}) async {
+      List<String> fileNames = [];
+      int totalFileSizeInBytes = 0;
       await FirebaseStorage.instance
       .ref()    
       .child(auth.userUid).child(Collection.vault).child(collection).child(dbName)
       .listAll()
       .then((ref) async {
         for(var item in ref.items){
+        totalFileSizeInBytes += (await item.getMetadata()).size;
         String result = (item.fullPath.split('/').last);
         int len = result.length-1;
         var decrypted = await decrypt(String.fromCharCodes(result.substring(1,len).split(',').toList().map(int.parse).toList()));
         fileNames.add(decrypted);
         }
       });
-      return fileNames;
+      ListOfFileInfo attachments = ListOfFileInfo(listOfFiles: fileNames,totalSizeInBytes: totalFileSizeInBytes);
+      return attachments;
       }
-      //using this to test stream in attachments page let it work
+    //using this to test stream in attachments page let it work
     static Stream<List<String>> streamAttachmentList({String collection, String dbName}){
       List<String> fileNames;
       print('stream is called');

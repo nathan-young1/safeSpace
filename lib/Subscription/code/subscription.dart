@@ -82,7 +82,6 @@ class SafeSpaceSubscription{
     if(response.error != null){
       print('the errors are ${response.error}');
     }
-    print('all the pastPurchases are${response.pastPurchases}');
     _purchases = response.pastPurchases;
   }
   
@@ -94,7 +93,6 @@ class SafeSpaceSubscription{
     if(timeDifference.inMinutes.isNegative){
     _getPastPurchases().then((_){});
       var time = 33 - (timeDifference.inMinutes.abs() % 33);
-      print(time);
       return time;
     }else{
       return timeDifference.inMinutes;

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -28,15 +29,31 @@ class SafeDrawer extends StatefulWidget {
 }
 
 class _SafeDrawerState extends State<SafeDrawer> {
+  Timer refreshUserAuthenication;
+  Timer getStorageLeft;
   @override
     void initState() {
-      super.initState();
-      getStorageLeft();
       WidgetsBinding.instance.addPostFrameCallback((_){
       //check if reencryption has not been completed
       if(Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email').existsSync()){
       continueUnfinishedReEncryption(context: context);
       }});
+      //refresh the user authentication in case it is expired
+      refreshUserAuthenication = Timer.periodic(Duration(minutes: 2),(_) async => await user.reload());
+      getStorageLeft = Timer.periodic(Duration(seconds: 10),(_){
+        user.getIdTokenResult(true).then((token){
+        print(token.claims['storageLeft']);
+        VaultIdToken.setStorageLeft(token.claims['storageLeft']);
+      });
+      });
+      super.initState();
+    }
+  
+  @override
+    void dispose() {
+      refreshUserAuthenication.cancel();
+      getStorageLeft.cancel();
+      super.dispose();
     }
 
   @override
@@ -262,12 +279,4 @@ class SearchBar with ChangeNotifier{
   updateSearchBar(bool update){
     searching = update;
   }
-}
-getStorageLeft(){
-  auth.idTokenChanges().listen((User user){
-      (user!=null)?user.getIdTokenResult(true).then((token){
-        print(token.claims['storageLeft']);
-        VaultIdToken.setStorageLeft(token.claims['storageLeft']);
-      }):print(null);
-    }); 
 }
