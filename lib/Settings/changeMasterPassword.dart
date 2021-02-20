@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:password_strength/password_strength.dart';
 import 'package:provider/provider.dart';
 import 'package:safeSpace/Authentication/code/authentication.dart';
@@ -126,14 +127,14 @@ class _ChangeMasterPasswordState extends State<ChangeMasterPassword> {
                     label: Text('ReEncrypt Vault',style: TextStyle(fontSize: RFontSize.normal,color: Colors.white)),
                     icon: Icon(Icons.lock_clock),),
                 ),
-                SizedBox(height: 10.h),
+                SizedBox(height: 15.h),
                   Padding(
                     padding: EdgeInsets.all(10.r),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.info,size: 28.r,color: secondaryColor),
-                          SizedBox(width: 8),
+                          SizedBox(width: 8.w),
                           Flexible(child: Text('This is a sensitive operation do not interupt.',style: TextStyle(fontSize: RFontSize.normal),))
                         ],
                       ),
@@ -168,7 +169,11 @@ class ContinueReEncryption extends StatelessWidget {
               isDense: true,
               errorStyle: TextStyle(fontSize: RFontSize.normal),
               labelStyle: TextStyle(fontSize: RFontSize.normal,color: Colors.black),
-              labelText: 'Former Vault Key')),
+              labelText: 'Former Vault Key',
+              suffixIcon: Tooltip(
+                message: 'The Vault Key used to start encryption',
+                child: Icon(MdiIcons.information,size: 26.r),
+              ))),
       ),
       SizedBox(height: 10.h),
       Container(
@@ -181,7 +186,11 @@ class ContinueReEncryption extends StatelessWidget {
               isDense: true,
               errorStyle: TextStyle(fontSize: RFontSize.normal),
               labelStyle: TextStyle(fontSize: RFontSize.normal,color: Colors.black),
-              labelText: 'Current Vault Key')),
+              labelText: 'Current Vault Key',
+              suffixIcon: Tooltip(
+                message: 'The Current Vault Key',
+                child: Icon(MdiIcons.information,size: 26.r),
+              ))),
       ),
         SizedBox(height: 25.h),
         Container(
@@ -194,16 +203,16 @@ class ContinueReEncryption extends StatelessWidget {
             vaultReEncryption(masterKey: formerPassword.text,newPassword: newPassword.text,context: context,mode: VaultReEncryptionMode.Resume),
             label: Text('Continue ReEncryption',
             style: TextStyle(fontSize: RFontSize.normal,color: Colors.white)),
-            icon: Icon(Icons.lock_clock),),
+            icon: Icon(Icons.pause,size: 25.r),),
         ),
-          SizedBox(height: 10.h),
+          SizedBox(height: 15.h),
             Padding(
               padding: EdgeInsets.all(10.r),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.info,size: 28.r,color: secondaryColor),
-                    SizedBox(width: 8),
+                    SizedBox(width: 8.w),
                     Flexible(child: Text('This is a sensitive operation do not interupt.',style: TextStyle(fontSize: RFontSize.normal),))
                   ],
                 ),

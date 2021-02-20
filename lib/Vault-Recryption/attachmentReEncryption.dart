@@ -22,8 +22,11 @@ Future paymentAttachmentReEncrypt(List<Payments> payments,BuildContext context) 
   if(!pausedReEncryption){
   payments.forEach((payment) => File('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.payments}/${payment.dbName}.txt').createSync(recursive: true));
   }
-  //add to list of Files for easy access
-  List<File> allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.payments}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
+  //add to list of Files for easy access only if directory exists
+  List<File> allList = [];
+  if(pausedReEncryption){
+    allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.payments}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
+  }
   paymentCheckList = allList;
   if(!pausedReEncryption){
   for(File checkList in List<File>.from(paymentCheckList)){
@@ -39,6 +42,7 @@ Future paymentAttachmentReEncrypt(List<Payments> payments,BuildContext context) 
   }
   }
   }
+  print('length is ${paymentCheckList.length}');
   Provider.of<ReEncryptionPercent>(context,listen: false).totalNumberOfFiles(paymentCheckList.length);
    //the actual reEncryption process
    for(File list in paymentCheckList){
@@ -77,8 +81,10 @@ Future paymentAttachmentReEncrypt(List<Payments> payments,BuildContext context) 
      }
      Provider.of<ReEncryptionPercent>(context,listen: false).updateNumberOfFilesDownloaded();
    }
-    //delete the directories , so i can know if the reEncryption completed
+    // if exist delete the directories , so i can know if the reEncryption completed
+    if(Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.payments}').existsSync()){
      await Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.payments}').delete(recursive: true);
+    }
 }
 
 Future passportAttachmentReEncrypt(List<Passports> passports,BuildContext context) async {
@@ -87,7 +93,10 @@ Future passportAttachmentReEncrypt(List<Passports> passports,BuildContext contex
   if(!pausedReEncryption){
   passports.forEach((passport) => File('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.passports}/${passport.dbName}.txt').createSync(recursive: true));
   }
-  List<File> allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.passports}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
+  List<File> allList = [];
+  if(pausedReEncryption){
+    allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.passports}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
+  }
   passportsCheckList = allList;
   if(!pausedReEncryption){
   for(File checkList in List<File>.from(passportsCheckList)){
@@ -128,7 +137,10 @@ Future passportAttachmentReEncrypt(List<Passports> passports,BuildContext contex
      }
     Provider.of<ReEncryptionPercent>(context,listen: false).updateNumberOfFilesDownloaded();
    }
+
+   if(Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.passports}').existsSync()){
      await Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.passports}').delete(recursive: true);
+  }
 }
 
 Future documentAttachmentReEncrypt(List<Document> documents,BuildContext context) async {
@@ -137,7 +149,10 @@ Future documentAttachmentReEncrypt(List<Document> documents,BuildContext context
   if(!pausedReEncryption){
   documents.forEach((document) => File('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.documents}/${document.dbName}.txt').createSync(recursive: true));
   }
-  List<File> allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.documents}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
+  List<File> allList = [];
+  if(pausedReEncryption){
+    allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.documents}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
+  }
   documentsCheckList = allList;
   if(!pausedReEncryption){
   for(File checkList in List<File>.from(documentsCheckList)){
@@ -179,7 +194,10 @@ Future documentAttachmentReEncrypt(List<Document> documents,BuildContext context
      }
     Provider.of<ReEncryptionPercent>(context,listen: false).updateNumberOfFilesDownloaded();
    }
+
+   if(Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.documents}').existsSync()){
      await Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.documents}').delete(recursive: true);
+    }
 }
 
 Future certificateAttachmentReEncrypt(List<Certificates> certificates,BuildContext context) async {
@@ -188,7 +206,10 @@ Future certificateAttachmentReEncrypt(List<Certificates> certificates,BuildConte
   if(!pausedReEncryption){
   certificates.forEach((certificate) => File('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.certificates}/${certificate.dbName}.txt').createSync(recursive: true));
   }
-  List<File> allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.certificates}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
+  List<File> allList = [];
+  if(pausedReEncryption){
+    allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.certificates}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
+  }
   certificatesCheckList = allList;
   if(!pausedReEncryption){
   for(File checkList in List<File>.from(certificatesCheckList)){
@@ -228,7 +249,10 @@ Future certificateAttachmentReEncrypt(List<Certificates> certificates,BuildConte
      }
      Provider.of<ReEncryptionPercent>(context,listen: false).updateNumberOfFilesDownloaded();
    }
+
+   if(Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.certificates}').existsSync()){
      await Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.certificates}').delete(recursive: true);
+    }
 }
 
 _writeAttachmentListToCheckListFile({@required List<String> attachmentList,@required File checkList}) async {

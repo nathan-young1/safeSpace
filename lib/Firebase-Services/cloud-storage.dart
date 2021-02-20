@@ -32,6 +32,7 @@ class FirestoreFileStorage{
       //using this to test stream in attachments page let it work
     static Stream<List<String>> streamAttachmentList({String collection, String dbName}){
       List<String> fileNames;
+      print('stream is called');
        return Stream.periodic(Duration(seconds: 1),(_){
       FirebaseStorage.instance
       .ref()    

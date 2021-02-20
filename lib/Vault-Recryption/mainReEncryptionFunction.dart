@@ -44,6 +44,7 @@ vaultReEncryption({String masterKey,String newPassword,BuildContext context,Vaul
 
     await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: masterKey,emailAddress: email)).then((_) async {
     await auth.currentUser.updatePassword(await hashVaultKey(password: newPassword,emailAddress: email));
+    await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: newPassword,emailAddress: email));
     });
     }
     progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);

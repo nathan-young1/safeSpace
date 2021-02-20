@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:safeSpace/Styles/fontSize.dart';
+import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
 
 class ReEncryptionPercent extends ChangeNotifier{
   int _numberOfTimesCalled;
@@ -38,20 +39,21 @@ showReEncryptionPercent(BuildContext context) {
         content: StatefulBuilder(
           builder: (context,StateSetter setState) {
           double percentage = Provider.of<ReEncryptionPercent>(context).percent;
+          print('i am failing because of ${(percentage * 100).toInt()}');
           return Column(mainAxisSize: MainAxisSize.min, children: [
             Container(
               child: CircularPercentIndicator(
-              radius: 70.0,
-              lineWidth: 5.0,
+              radius: 70.r,
+              lineWidth: 5.r,
               percent: percentage,
               center: Text(
                 '${(percentage * 100).toInt()}%',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: RFontSize.small),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: RFontSize.normal),
               ),
               circularStrokeCap: CircularStrokeCap.round,
               progressColor: Colors.teal,
             )),
-            SizedBox(height: 6),
+            SizedBox(height: 6.h),
             Text('ReEncrypting Vault',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: RFontSize.medium))
           ]);}
