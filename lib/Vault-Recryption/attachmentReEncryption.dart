@@ -27,8 +27,8 @@ Future paymentAttachmentReEncrypt(List<Payments> payments,BuildContext context) 
   }
   //add to list of Files for easy access only if directory exists
   List<File> allList = [];
-  if(pausedReEncryption){
-    allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.payments}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
+  if(_doesDirectoryExist(collection: Collection.payments)){
+  allList = await _listAllFilesInDir(collection: Collection.payments);
   }
   paymentCheckList = allList;
   if(!pausedReEncryption){
@@ -60,8 +60,7 @@ Future paymentAttachmentReEncrypt(List<Payments> payments,BuildContext context) 
       List<int> newDbPath = (await reEncryptData(plainText: attachmentPath)).toString().codeUnits;
       File tempFile = await _downloadAndWriteToTemp(collection: Collection.payments,dbName: dbName,currentDbPath: '$currentDbPath');
       File fileToReEncrypt = await fileDecrypt(tempFile, attachmentPath, Collection.payments, dbName,mode: Cyptography.ReEncryption);
-      await _uploadReEncryptedFileToFirebase(collection: Collection.payments,dbName: dbName,currentDbPath: '$currentDbPath',fileToReEncrypt: fileToReEncrypt,newDbPath: '$newDbPath');
-      Provider.of<ReEncryptionPercent>(context,listen: false).updateNumberOfBytesDownloaded((await fileToReEncrypt.stat()).size);
+      await _uploadReEncryptedFileToFirebase(collection: Collection.payments,dbName: dbName,currentDbPath: '$currentDbPath',fileToReEncrypt: fileToReEncrypt,newDbPath: '$newDbPath',context: context);
       //delete the temporary file
       await tempFile.delete();
       //remove this file name from the checklist
@@ -93,9 +92,10 @@ Future passportAttachmentReEncrypt(List<Passports> passports,BuildContext contex
   if(!pausedReEncryption){
   passports.forEach((passport) => _createATextFile(collection: Collection.passports,dbName: passport.dbName));
   }
+
   List<File> allList = [];
-  if(pausedReEncryption){
-    allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.passports}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
+  if(_doesDirectoryExist(collection: Collection.passports)){
+  allList = await _listAllFilesInDir(collection: Collection.passports);
   }
   passportsCheckList = allList;
   if(!pausedReEncryption){
@@ -122,8 +122,7 @@ Future passportAttachmentReEncrypt(List<Passports> passports,BuildContext contex
       List<int> newDbPath = (await reEncryptData(plainText: attachmentPath)).toString().codeUnits;
       File tempFile = await _downloadAndWriteToTemp(collection: Collection.passports,dbName: dbName,currentDbPath: '$currentDbPath');
       File fileToReEncrypt = await fileDecrypt(tempFile, attachmentPath, Collection.passports, dbName,mode: Cyptography.ReEncryption);
-      await _uploadReEncryptedFileToFirebase(collection: Collection.passports,dbName: dbName,currentDbPath: '$currentDbPath',fileToReEncrypt: fileToReEncrypt,newDbPath: '$newDbPath');
-       Provider.of<ReEncryptionPercent>(context,listen: false).updateNumberOfBytesDownloaded((await fileToReEncrypt.stat()).size);
+      await _uploadReEncryptedFileToFirebase(collection: Collection.passports,dbName: dbName,currentDbPath: '$currentDbPath',fileToReEncrypt: fileToReEncrypt,newDbPath: '$newDbPath',context: context);
       await tempFile.delete();
       checkList.remove(attachmentPath);
       print('$checkList the checkList');
@@ -150,9 +149,10 @@ Future documentAttachmentReEncrypt(List<Document> documents,BuildContext context
   if(!pausedReEncryption){
   documents.forEach((document) => _createATextFile(collection: Collection.documents,dbName: document.dbName));
   }
+
   List<File> allList = [];
-  if(pausedReEncryption){
-    allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.documents}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
+  if(_doesDirectoryExist(collection: Collection.documents)){
+  allList = await _listAllFilesInDir(collection: Collection.documents);
   }
   documentsCheckList = allList;
   if(!pausedReEncryption){
@@ -180,8 +180,7 @@ Future documentAttachmentReEncrypt(List<Document> documents,BuildContext context
       print('$dbName $currentDbPath');
       File tempFile = await _downloadAndWriteToTemp(collection: Collection.documents,dbName: dbName,currentDbPath: '$currentDbPath');
       File fileToReEncrypt = await fileDecrypt(tempFile, attachmentPath, Collection.documents, dbName,mode: Cyptography.ReEncryption);
-      await _uploadReEncryptedFileToFirebase(collection: Collection.documents,dbName: dbName,currentDbPath: '$currentDbPath',fileToReEncrypt: fileToReEncrypt,newDbPath: '$newDbPath');
-       Provider.of<ReEncryptionPercent>(context,listen: false).updateNumberOfBytesDownloaded((await fileToReEncrypt.stat()).size);
+      await _uploadReEncryptedFileToFirebase(collection: Collection.documents,dbName: dbName,currentDbPath: '$currentDbPath',fileToReEncrypt: fileToReEncrypt,newDbPath: '$newDbPath',context: context);
       await tempFile.delete();
       checkList.remove(attachmentPath);
       print('$checkList the checkList');
@@ -208,9 +207,10 @@ Future certificateAttachmentReEncrypt(List<Certificates> certificates,BuildConte
   if(!pausedReEncryption){
   certificates.forEach((certificate) => _createATextFile(collection: Collection.certificates,dbName: certificate.dbName));
   }
+
   List<File> allList = [];
-  if(pausedReEncryption){
-    allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.certificates}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
+  if(_doesDirectoryExist(collection: Collection.certificates)){
+  allList = await _listAllFilesInDir(collection: Collection.certificates);
   }
   certificatesCheckList = allList;
   if(!pausedReEncryption){
@@ -219,7 +219,7 @@ Future certificateAttachmentReEncrypt(List<Certificates> certificates,BuildConte
   ListOfFileInfo attachmentInfo = await FirestoreFileStorage.getAttachmentList(collection: Collection.certificates,dbName: dbName);
   List<String> attachmentList = attachmentInfo.listOfFiles;
   totalNumberOfBytesHere += attachmentInfo.totalSizeInBytes;
-    if(attachmentList.length != 0){
+  if(attachmentList.length != 0){
   await _writeAttachmentListToCheckListFile(attachmentList: attachmentList,checkList: checkList);
   }else{
     await File('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.certificates}/$dbName.txt').delete(recursive: true);
@@ -227,6 +227,7 @@ Future certificateAttachmentReEncrypt(List<Certificates> certificates,BuildConte
   }
   }
   }
+  print('i am the total number of bytes $totalNumberOfBytesHere');
     Provider.of<ReEncryptionPercent>(context,listen: false).totalNumberOfBytes(totalNumberOfBytesHere);
    for(File list in certificatesCheckList){
      String dbName = _getDbNameFromFile(list);
@@ -237,8 +238,7 @@ Future certificateAttachmentReEncrypt(List<Certificates> certificates,BuildConte
       List<int> newDbPath = (await reEncryptData(plainText: attachmentPath)).toString().codeUnits;
       File tempFile = await _downloadAndWriteToTemp(collection: Collection.certificates,dbName: dbName,currentDbPath: '$currentDbPath');
       File fileToReEncrypt = await fileDecrypt(tempFile, attachmentPath, Collection.certificates, dbName,mode: Cyptography.ReEncryption);
-      await _uploadReEncryptedFileToFirebase(collection: Collection.certificates,dbName: dbName,currentDbPath: '$currentDbPath',fileToReEncrypt: fileToReEncrypt,newDbPath: '$newDbPath');
-       Provider.of<ReEncryptionPercent>(context,listen: false).updateNumberOfBytesDownloaded((await fileToReEncrypt.stat()).size);
+      await _uploadReEncryptedFileToFirebase(collection: Collection.certificates,dbName: dbName,currentDbPath: '$currentDbPath',fileToReEncrypt: fileToReEncrypt,newDbPath: '$newDbPath',context: context);
       await tempFile.delete();
       checkList.remove(attachmentPath);
       list.writeAsStringSync('',mode: FileMode.writeOnly);
@@ -265,7 +265,6 @@ _writeAttachmentListToCheckListFile({@required List<String> attachmentList,@requ
 }
 
 Future<File> _downloadAndWriteToTemp({@required String collection,@required String dbName,@required String currentDbPath}) async {
-  print('started cycle');
  Reference ref = FirebaseStorage.instance
             .ref()
             .child(userUid)
@@ -281,7 +280,8 @@ await ref.writeToFile(tempFile);
 return tempFile;
 }
 
-_uploadReEncryptedFileToFirebase({@required String collection,@required String dbName,@required String newDbPath,@required File fileToReEncrypt,@required String currentDbPath}) async {
+_uploadReEncryptedFileToFirebase({@required String collection,@required String dbName,@required String newDbPath,@required File fileToReEncrypt,@required String currentDbPath,@required BuildContext context}) async {
+  UploadTask uploadTask;
   Reference storageReference = FirebaseStorage.instance
           .ref()
           .child(userUid)
@@ -290,7 +290,18 @@ _uploadReEncryptedFileToFirebase({@required String collection,@required String d
           .child(dbName)
           .child(newDbPath);
   Map<FileEncrypt, dynamic> encrypted = await fileEncrypt(fileToReEncrypt,mode: Cyptography.ReEncryption);
-  await storageReference.putFile(encrypted[FileEncrypt.file]).then((_) async {
+  uploadTask = storageReference.putFile(encrypted[FileEncrypt.file]);
+  //Because bytesTransferred is joining all the total byte transferred so will show me the size of byte uploaded currently
+  int trackProgress = 0;
+  uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+  //The size of byte currently uploaded
+  int currentSizeUploaded = (snapshot.bytesTransferred - trackProgress);
+  Provider.of<ReEncryptionPercent>(context,listen: false).updateNumberOfBytesDownloaded((currentSizeUploaded));
+  trackProgress = snapshot.bytesTransferred;
+  },
+  onError: (Object e) => print(e));
+
+  await uploadTask.then((_) async {
       await FirebaseStorage.instance
           .ref()
           .child(userUid)
@@ -309,6 +320,7 @@ _getDbNameFromFile(File file){
 
 _createATextFile({@required String collection,@required String dbName}) => File('${GetDirectories.pathToVaultFolder}/CheckList/$email/$collection/$dbName.txt').createSync(recursive: true);
 _doesDirectoryExist({@required String collection}) => Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/$collection').existsSync();
+_listAllFilesInDir({@required String collection}) async => await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/$collection').list()).where((item)=>  item is File).map((item)=> item as File).toList();
 
 _deleteDirectory({@required String collection}){
   if(Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/$collection').existsSync()){

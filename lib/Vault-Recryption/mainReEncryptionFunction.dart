@@ -8,6 +8,7 @@ import 'package:safeSpace/Certificates/code/certificateDetails.dart';
 import 'package:safeSpace/Core-Services/attachment.dart';
 import 'package:safeSpace/Core-Services/enum.dart';
 import 'package:safeSpace/Core-Services/global.dart';
+import 'package:safeSpace/Custom-widgets/flushBars.dart';
 import 'package:safeSpace/Custom-widgets/progressDialog.dart';
 import 'package:safeSpace/Documents/code/documentDetails.dart';
 import 'package:safeSpace/Firebase-Services/firebase-models.dart';
@@ -40,24 +41,32 @@ vaultReEncryption({String masterKey,String newPassword,BuildContext context,Vaul
     }
   try{
     if(mode == VaultReEncryptionMode.Normal){
-    await Future.wait([reEncryptPassword(passwords),reEncryptPayment(payments),reEncryptPassport(passports),reEncryptDocument(documents),reEncryptCertificate(certificates)]);
 
     await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: masterKey,emailAddress: email)).then((_) async {
     await auth.currentUser.updatePassword(await hashVaultKey(password: newPassword,emailAddress: email));
-    await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: newPassword,emailAddress: email));
     });
+    await Future.wait([reEncryptPassword(passwords),reEncryptPayment(payments),reEncryptPassport(passports),reEncryptDocument(documents),reEncryptCertificate(certificates)]);
     }
+    await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: newPassword,emailAddress: email)).then((_) async {
+
     progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
     await Permission.storage.request();
     //show the percentage by the number of files downloaded
     showReEncryptionPercent(context);
     await Future.wait([paymentAttachmentReEncrypt(payments,context),passportAttachmentReEncrypt(passports,context),documentAttachmentReEncrypt(documents,context),certificateAttachmentReEncrypt(certificates,context)])
-    .then((_)=> Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email').deleteSync(recursive: true));
+    .then((_){ 
+    Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email').deleteSync(recursive: true);
     Navigator.pop(context);
-    await signOut(context);
+    signOut(context);
+    });
+
+    });
 
     }catch(e){
-      print(e);
+    print(e);
+    Navigator.pop(context);
+    signOut(context);
+    showFlushBar(context,'An Error Occured',Icons.dangerous);
     }
     }
 

@@ -135,7 +135,7 @@ class _ChangeMasterPasswordState extends State<ChangeMasterPassword> {
                         children: [
                           Icon(Icons.info,size: 28.r,color: secondaryColor),
                           SizedBox(width: 8.w),
-                          Flexible(child: Text('This is a sensitive operation do not interupt.',style: TextStyle(fontSize: RFontSize.normal),))
+                          Flexible(child: Text('This is a sensitive operation only proceed on a stable internet connection and do not interupt.',style: TextStyle(fontSize: RFontSize.normal),))
                         ],
                       ),
                   ),
@@ -213,7 +213,7 @@ class ContinueReEncryption extends StatelessWidget {
                   children: [
                     Icon(Icons.info,size: 28.r,color: secondaryColor),
                     SizedBox(width: 8.w),
-                    Flexible(child: Text('This is a sensitive operation do not interupt.',style: TextStyle(fontSize: RFontSize.normal),))
+                    Flexible(child: Text('This is a sensitive operation only proceed on a stable internet connection and do not interupt.',style: TextStyle(fontSize: RFontSize.normal),))
                   ],
                 ),
             ),

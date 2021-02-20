@@ -42,7 +42,7 @@ showReEncryptionPercent(BuildContext context) {
         content: StatefulBuilder(
           builder: (context,StateSetter setState) {
           double percentage = Provider.of<ReEncryptionPercent>(context).percent;
-          print('i am failing because of ${(percentage * 100).toInt()}');
+          print('i am failing because of $percentage');
           return Column(mainAxisSize: MainAxisSize.min, children: [
             Container(
               child: CircularPercentIndicator(

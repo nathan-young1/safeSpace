@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
@@ -27,10 +26,9 @@ class SafeDrawer extends StatefulWidget {
   @override
   _SafeDrawerState createState() => _SafeDrawerState();
 }
-
-class _SafeDrawerState extends State<SafeDrawer> {
-  Timer refreshUserAuthenication;
   Timer getStorageLeft;
+class _SafeDrawerState extends State<SafeDrawer> {
+
   @override
     void initState() {
       WidgetsBinding.instance.addPostFrameCallback((_){
@@ -38,22 +36,13 @@ class _SafeDrawerState extends State<SafeDrawer> {
       if(Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email').existsSync()){
       continueUnfinishedReEncryption(context: context);
       }});
-      //refresh the user authentication in case it is expired
-      refreshUserAuthenication = Timer.periodic(Duration(minutes: 2),(_) async => await user.reload());
       getStorageLeft = Timer.periodic(Duration(seconds: 10),(_){
+        print('called');
         user.getIdTokenResult(true).then((token){
-        print(token.claims['storageLeft']);
         VaultIdToken.setStorageLeft(token.claims['storageLeft']);
       });
       });
       super.initState();
-    }
-  
-  @override
-    void dispose() {
-      refreshUserAuthenication.cancel();
-      getStorageLeft.cancel();
-      super.dispose();
     }
 
   @override
