@@ -129,7 +129,7 @@ TextSpan(
 
 b. Automatic Renewal. SUBSCRIPTIONS WILL AUTOMATICALLY RENEW AT THE RATES THEN IN EFFECT, AND YOUR PAYMENT PROVIDER WILL BE CHARGED UPON RENEWAL UNLESS YOU CANCEL YOUR SUBSCRIPTION. By subscribing, you authorize us to charge your Payment Provider at the beginning of any Subscription period if you have not cancelled your Account by such time. 
 
-c. Cancellation. Subscriptions may be cancelled at any time through the subscription tab on Google play store. You will be able to use any Subscription you cancel until its scheduled expiration, but you will not be eligible for any refund of the current term. /*However, we will refund the full Subscription Fee if you request a refund within thirty (30) days of the Subscription Start Date or any Subscription renewal date*/. 
+c. Cancellation. Subscriptions may be cancelled at any time through the subscription tab on Google play store. You will be able to use any Subscription you cancel until its scheduled expiration, but you will not be eligible for any refund of the current term. 
 
 d. Payment Services. We use Google play store for payment services (e.g., card acceptance, merchant settlement, and related services). By paying for a Subscription, you agree to be bound by the applicable Payment Processor’s terms and policies, and authorize us and the Payment Processor to share any information and payment instructions you provide with your Payment Provider and any other Third-Party Service provider(s) solely as required to complete your transactions.
 ''',
