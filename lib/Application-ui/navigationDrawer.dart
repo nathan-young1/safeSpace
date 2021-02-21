@@ -67,7 +67,7 @@ class _SafeDrawerState extends State<SafeDrawer> {
                     children: [
                       Text(email,style: TextStyle(color:color,fontSize: RFontSize.small)),
                       SizedBox(height: 5.h),
-                      Text((!SafeSpaceSubscription.isPremiumUser)?'Trial Version':'Time Left: ${SafeSpaceSubscription.timeLeftToExpire()} minutes',style: TextStyle(color:color,fontSize: 16))
+                      Text((!SafeSpaceSubscription.isPremiumUser)?'Trial Version':'Time Left: ${SafeSpaceSubscription.timeLeftToExpire()} days',style: TextStyle(color:color,fontSize: 16))
                     ],
                   ),
                 ],

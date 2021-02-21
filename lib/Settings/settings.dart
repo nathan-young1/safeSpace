@@ -68,17 +68,15 @@ class MobileSettings extends StatelessWidget {
         },
         leading: Image.asset('assets/images/SafeSpace.png',color: mainColor,height: 40,),
         title: Text('Manage Account',style: TextStyle(color: Colors.black,
-                      fontSize: 25,
-                      fontFamily: 'styles',),),
+                      fontSize: RFontSize.medium),),
         subtitle: Text(email,style: TextStyle(color: Colors.black,
-                      fontSize: 14,
-                      fontFamily: 'styles',),),
+                      fontSize: RFontSize.small+2),),
         )
     ),
     Card(
       child: SafeArea(
       child: AboutListTile(
-        child: Text('About Safe Space',style: TextStyle(fontSize: 22)),
+        child: Text('About Safe Space',style: TextStyle(fontSize: RFontSize.medium)),
         dense: false,
         //applicationLegalese: '© Safe Space',
         icon: Icon(MdiIcons.progressQuestion,color: mainColor,size: 35.r),
@@ -100,15 +98,14 @@ class MobileSettings extends StatelessWidget {
       child: ListTile(
       onTap: ()=>Navigator.of(context).pushNamed('TermsOfService'),
       leading: Icon(Icons.rule,color: mainColor,size: 38.r),
-      title: Text('Terms Of Service',style: TextStyle(fontSize: RFontSize.normal)),),
+      title: Text('Terms Of Service',style: TextStyle(fontSize: RFontSize.medium)),),
     ),
     Card(
       child: ListTile(
       onTap: ()=>Navigator.of(context).pushNamed('PrivacyPolicy'),
       leading: Icon(MdiIcons.security,color: mainColor,size: 35.r),
       title: Text('Privacy Policy',style: TextStyle(color: Colors.black,
-                      fontSize: 25,
-                      fontFamily: 'styles',)),),
+                      fontSize: RFontSize.medium)),),
     ),
     // Todo: add help list tile
     ],);

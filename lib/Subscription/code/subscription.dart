@@ -88,14 +88,14 @@ class SafeSpaceSubscription{
   static timeLeftToExpire(){
     PurchaseDetails purchase = _hasPurchased();
     if(purchase != null){
-    var expirationTime = DateTime.fromMillisecondsSinceEpoch(int.parse(purchase.transactionDate)).add(Duration(minutes: 33));
+    var expirationTime = DateTime.fromMillisecondsSinceEpoch(int.parse(purchase.transactionDate)).add(Duration(days: 366));
     var timeDifference = expirationTime.difference(DateTime.now());
-    if(timeDifference.inMinutes.isNegative){
+    if(timeDifference.inDays.isNegative){
     _getPastPurchases().then((_){});
-      var time = 33 - (timeDifference.inMinutes.abs() % 33);
+      var time = 366 - (timeDifference.inDays.abs() % 366);
       return time;
     }else{
-      return timeDifference.inMinutes;
+      return timeDifference.inDays;
     }
     }
   }
