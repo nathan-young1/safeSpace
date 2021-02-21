@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
 
 class PrivacyPolicy extends StatelessWidget {
@@ -6,9 +7,9 @@ class PrivacyPolicy extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: RichText(text: TextSpan(
+        text: 'privacy',
         children: <TextSpan>[
-          TextSpan()
-        ],style: listTextStyle
+        ],style: TextStyle(fontSize: RFontSize.normal)
         ))
     );
   }

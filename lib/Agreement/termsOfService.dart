@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:safeSpace/Styles/textStyle.dart';
+import 'package:safeSpace/Styles/fontSize.dart';
 
 class TermsOfService extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        child: RichText(text: TextSpan(
-          children: <TextSpan>[]
-          )),
+        child: RichText(
+          text: TextSpan(
+          text: 'terms',
+          children: <TextSpan>[],
+          style: TextStyle(fontSize: RFontSize.normal))),
       )
     );
   }

@@ -1,9 +1,7 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:safeSpace/Core-Services/enum.dart';
 import 'package:safeSpace/Core-Services/global.dart';
 import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
-import 'package:safeSpace/Custom-widgets/progressDialog.dart';
 import 'package:safeSpace/Styles/fontSize.dart';
 
 showCopiedFlushBar(context) {
@@ -63,11 +61,6 @@ showAttachmentFlushBar(context, message) {
   )..show(context);
 }
 
-showFileAlreadyExistFlushBar(context,String fileName) async {
-  progressDialog(buildContext: context,message: '$fileName already exists ',command: ProgressDialogVisiblity.show,fileAlreadyExists: true);
-  await Future.delayed(Duration(seconds: 1),((){}));
-  progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
-}
 
 showFlushBar(context, message, icon) {
     Flushbar(

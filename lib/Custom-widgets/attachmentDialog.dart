@@ -5,7 +5,6 @@ import 'package:safeSpace/Core-Services/global.dart';
 import 'package:safeSpace/Custom-widgets/progressDialog.dart';
 import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
-import 'package:velocity_x/velocity_x.dart';
 import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
 
     attachmentPicker({@required BuildContext buildContext}) async {

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flushbar/flushbar_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safeSpace/Application-ui/navigationDrawer.dart';
@@ -11,7 +10,6 @@ import 'package:safeSpace/Core-Services/encrypt.dart';
 import 'package:safeSpace/Core-Services/enum.dart';
 import 'package:safeSpace/Core-Services/filePicker.dart';
 import 'package:safeSpace/Core-Services/global.dart';
-import 'package:safeSpace/Custom-widgets/flushBars.dart';
 import 'package:safeSpace/Custom-widgets/progressDialog.dart';
 import 'package:safeSpace/Firebase-Services/firebase-models.dart';
 import 'package:safeSpace/Vault-Recryption/listOfFilesInfo.dart';
@@ -98,7 +96,7 @@ class FirestoreFileStorage{
             await uploadTask.cancel();
             Navigator.of(context).pop();
             });
-          } on Exception catch (e) {
+          } on Exception catch (_) {
             Navigator.of(context).pop();
           }
 
@@ -128,9 +126,30 @@ class FirestoreFileStorage{
           });
           await uploadTask;
           await File(encryptedFile[FileEncrypt.filePath]).delete();
-           });}else{
-          await showFileAlreadyExistFlushBar(context,file.path.split('/').last);
-           continue;
+           });
+           }else{
+           //update already existing file
+        await encrypt(file.path.split('/').last).then((filePath) async {
+        List<int> fullPath = filePath.toString().codeUnits;
+        Reference storageReference = auth.storage 
+            .ref()
+            .child(auth.userUid)
+            .child(Collection.vault)
+            .child(collection)
+            .child(dbName)
+            .child('$fullPath');
+        //delete before update
+        await storageReference.delete();
+        Map<FileEncrypt, dynamic> encryptedFile = await fileEncrypt(file);
+        uploadTask = storageReference.putFile(encryptedFile[FileEncrypt.file]);
+        uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) =>
+        Provider.of<AttachmentDownload>(context,listen: false).update((snapshot.bytesTransferred) /(snapshot.totalBytes)), 
+        onError: (Object e) {
+          print(e); // FirebaseException
+        });
+        await uploadTask;
+        await File(encryptedFile[FileEncrypt.filePath]).delete();
+         });
            }
             currentIndex++;
           }
@@ -163,7 +182,7 @@ class FirestoreFileStorage{
           await download.cancel();
           Navigator.of(context).pop();
         });
-      } on Exception catch (e) {
+      } on Exception catch (_) {
         Navigator.of(context).pop();
       }
       

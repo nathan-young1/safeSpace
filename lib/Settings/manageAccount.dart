@@ -14,8 +14,7 @@ class ManageAccount extends StatefulWidget {
 }
 
 class _ManageAccountState extends State<ManageAccount> {
-  bool _biometric = false;
-  bool _screenShot = false;
+  //bool _biometric = false;
 
   @override
   Widget build(BuildContext context) {
