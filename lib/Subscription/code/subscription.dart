@@ -82,25 +82,21 @@ class SafeSpaceSubscription{
     if(response.error != null){
       print('the errors are ${response.error}');
     }
-    print('all the pastPurchases are${response.pastPurchases}');
     _purchases = response.pastPurchases;
   }
   
   static timeLeftToExpire(){
     PurchaseDetails purchase = _hasPurchased();
     if(purchase != null){
-    var expirationTime = DateTime.fromMillisecondsSinceEpoch(int.parse(purchase.transactionDate)).add(Duration(minutes: 30));
+    var expirationTime = DateTime.fromMillisecondsSinceEpoch(int.parse(purchase.transactionDate)).add(Duration(minutes: 33));
     var timeDifference = expirationTime.difference(DateTime.now());
     if(timeDifference.inMinutes.isNegative){
-      _getPastPurchases().then((_){
-      var time = 30 - (timeDifference.inMinutes.abs() % 30);
+    _getPastPurchases().then((_){});
+      var time = 33 - (timeDifference.inMinutes.abs() % 33);
       return time;
-      });
     }else{
       return timeDifference.inMinutes;
     }
-    }else{
-      return 'Expired';
     }
   }
   }

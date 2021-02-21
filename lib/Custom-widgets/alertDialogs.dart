@@ -53,6 +53,7 @@ authenticateVaultKeyBeforeReEncryption({@required BuildContext context}){
                child: TextFormField(
                  controller: enterVaultKey,
                  style: authTextField,
+                 autofocus: true,
                  obscureText: obscureText,
                  validator: (text){
                    if(text.isEmpty){

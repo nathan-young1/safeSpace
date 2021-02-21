@@ -178,6 +178,10 @@ class _SignupState extends State<Signup> {
                               color: mainColor,
                             ),
                           ),
+                          SizedBox(height: 10.h),
+                          Row(children:[
+                            
+                          ]),
                           SizedBox(height: 20.h),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,

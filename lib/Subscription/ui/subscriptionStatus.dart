@@ -79,7 +79,7 @@ class _SubscriptionState extends State<Subscription> {
               ],
             ),
             SizedBox(height: 5.h),
-            if(SafeSpaceSubscription.isPremiumUser || SafeSpaceSubscription.timeLeftToExpire() == null)
+            if(SafeSpaceSubscription.isPremiumUser)
             Row(
               children: [
                 Text('Time Left: ${SafeSpaceSubscription.timeLeftToExpire()} minutes',style: TextStyle(fontSize: RFontSize.normal)),
@@ -87,22 +87,6 @@ class _SubscriptionState extends State<Subscription> {
             ),
             ],),
           ),
-          SizedBox(height: 25.h),
-          Container(
-            height: 55.h,
-            child: Card(
-              elevation: 10,
-              child: Align(
-                child: ListTile(
-                  onTap: (){
-                    Navigator.of(context).pushNamed('UpgradePlan',arguments: ModalRoute.of(context).settings.arguments);
-                  },
-                  title: Text('Upgrade Plan',style: TextStyle(fontSize: RFontSize.normal,color: mainColor)),
-                  trailing: Icon(Icons.arrow_forward_ios,size: 25.r,color: secondaryColor),
-                  ),
-              ),
-            ),
-          )
         ],
       ):NoInternetConnection(),
     );

@@ -13,48 +13,56 @@ import 'package:safeSpace/Firebase-Services/firebase-models.dart';
 import 'package:safeSpace/Passports/code/passportDetails.dart';
 import 'package:safeSpace/Payments/code/paymentDetails.dart';
 import 'package:safeSpace/Vault-Recryption/aesReEncrypt.dart';
+import 'package:safeSpace/Vault-Recryption/listOfFilesInfo.dart';
 import 'reEncryptionPercent.dart';
 
     
 Future paymentAttachmentReEncrypt(List<Payments> payments,BuildContext context) async {
   List<File> paymentCheckList = [];
-  bool pausedReEncryption = Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.payments}').existsSync();
+  //the size of all the files 
+  int totalNumberOfBytesHere = 0;
+  bool pausedReEncryption = _doesDirectoryExist(collection: Collection.payments);
   if(!pausedReEncryption){
-  payments.forEach((payment) => File('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.payments}/${payment.dbName}.txt').createSync(recursive: true));
+  payments.forEach((payment) => _createATextFile(collection: Collection.payments,dbName: payment.dbName));
   }
-  //add to list of Files for easy access
-  List<File> allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.payments}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
-  paymentCheckList = allList;
+
+  //add to list of Files for easy access only if directory exists
+  if(_doesDirectoryExist(collection: Collection.payments)){
+  paymentCheckList = await _listAllFilesInDir(collection: Collection.payments);
+  }
+
   if(!pausedReEncryption){
+  //for each paymentCard in payments
   for(File checkList in List<File>.from(paymentCheckList)){
-  String dbName = _getDbNameFromFile(checkList);
+  String dbName = await _getDbNameFromFile(checkList);
   //get list of attachment for each payment
-  List<String> attachmentList = await FirestoreFileStorage.getAttachmentList(collection: Collection.payments,dbName: dbName);
+  ListOfFileInfo attachmentInfo = await FirestoreFileStorage.getAttachmentList(collection: Collection.payments,dbName: dbName);
+  List<String> attachmentList = attachmentInfo.listOfFiles;
+  totalNumberOfBytesHere += attachmentInfo.totalSizeInBytes;
   //call the function to write all attachment names to the list text file
-  if(attachmentList.length != 0){
-  await _writeAttachmentListToCheckListFile(attachmentList: attachmentList,checkList: checkList);
+  (attachmentList.length != 0)
+  ?await _writeAttachmentListToCheckListFile(attachmentList: attachmentList,checkList: checkList)
+  :await _deleteATextFile(collection: Collection.payments,dbName: dbName).then((_) => 
+  paymentCheckList.remove(checkList));
+  }
   }else{
-    await File('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.payments}/$dbName.txt').delete(recursive: true);
-    paymentCheckList.remove(checkList);
+    totalNumberOfBytesHere = await _getTotalFileSizesToResumeReEncryption(collectionCheckList: paymentCheckList,collection: Collection.payments);
   }
-  }
-  }
-  Provider.of<ReEncryptionPercent>(context,listen: false).totalNumberOfFiles(paymentCheckList.length);
+
+  Provider.of<ReEncryptionPercent>(context,listen: false).totalNumberOfBytes(totalNumberOfBytesHere);
    //the actual reEncryption process
    for(File list in paymentCheckList){
      //get database name from file path
-     String dbName = _getDbNameFromFile(list);
+     String dbName = await _getDbNameFromFile(list);
      List<String> checkList = list.readAsLinesSync();
      //for each attachment in that document reEncrypt it
     for(String attachmentPath in List<String>.from(checkList)){
       try{
-      List<int> currentDbPath = (await encrypt(attachmentPath,Cyptography.ReEncryption)).toString().codeUnits;
-      List<int> newDbPath = (await reEncryptData(plainText: attachmentPath)).toString().codeUnits;
-      print('$currentDbPath the current dbPath');
-      print('$newDbPath the new DbPath');
+      List<int> currentDbPath = await _getCurrentDbPath(attachmentPath: attachmentPath);
+      List<int> newDbPath = await _generateNewDbPath(attachmentPath: attachmentPath);
       File tempFile = await _downloadAndWriteToTemp(collection: Collection.payments,dbName: dbName,currentDbPath: '$currentDbPath');
-      File decryptedFile = await fileDecrypt(tempFile, attachmentPath, Collection.payments, dbName,mode: Cyptography.ReEncryption);
-      await _uploadReEncryptedFileToFirebase(collection: Collection.payments,dbName: dbName,currentDbPath: '$currentDbPath',decryptedFile: decryptedFile,newDbPath: '$newDbPath');
+      File fileToReEncrypt = await fileDecrypt(tempFile, attachmentPath, Collection.payments, dbName,mode: Cyptography.ReEncryption);
+      await _uploadReEncryptedFileToFirebase(collection: Collection.payments,dbName: dbName,currentDbPath: '$currentDbPath',fileToReEncrypt: fileToReEncrypt,newDbPath: '$newDbPath',context: context);
       //delete the temporary file
       await tempFile.delete();
       //remove this file name from the checklist
@@ -75,43 +83,48 @@ Future paymentAttachmentReEncrypt(List<Payments> payments,BuildContext context) 
         continue;
       }
      }
-     Provider.of<ReEncryptionPercent>(context,listen: false).updateNumberOfFilesDownloaded();
    }
-    //delete the directories , so i can know if the reEncryption completed
-     await Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.payments}').delete(recursive: true);
+    await _deleteDirectory(collection: Collection.payments);
 }
 
 Future passportAttachmentReEncrypt(List<Passports> passports,BuildContext context) async {
   List<File> passportsCheckList = [];
-  bool pausedReEncryption = Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.passports}').existsSync();
+  int totalNumberOfBytesHere = 0;
+  bool pausedReEncryption = _doesDirectoryExist(collection: Collection.passports);
   if(!pausedReEncryption){
-  passports.forEach((passport) => File('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.passports}/${passport.dbName}.txt').createSync(recursive: true));
+  passports.forEach((passport) => _createATextFile(collection: Collection.passports,dbName: passport.dbName));
   }
-  List<File> allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.passports}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
-  passportsCheckList = allList;
+
+  if(_doesDirectoryExist(collection: Collection.passports)){
+  passportsCheckList = await _listAllFilesInDir(collection: Collection.passports);
+  }
+
   if(!pausedReEncryption){
   for(File checkList in List<File>.from(passportsCheckList)){
-  String dbName = _getDbNameFromFile(checkList);
-  List<String> attachmentList = await FirestoreFileStorage.getAttachmentList(collection: Collection.passports,dbName: dbName);
-  if(attachmentList.length != 0){
-  await _writeAttachmentListToCheckListFile(attachmentList: attachmentList,checkList: checkList);
+  String dbName = await _getDbNameFromFile(checkList);
+  ListOfFileInfo attachmentInfo = await FirestoreFileStorage.getAttachmentList(collection: Collection.passports,dbName: dbName);
+  List<String> attachmentList = attachmentInfo.listOfFiles;
+  totalNumberOfBytesHere += attachmentInfo.totalSizeInBytes;
+
+  (attachmentList.length != 0)
+  ?await _writeAttachmentListToCheckListFile(attachmentList: attachmentList,checkList: checkList)
+  :await _deleteATextFile(collection: Collection.passports,dbName: dbName).then((_) => 
+  passportsCheckList.remove(checkList));
+  }
   }else{
-  await File('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.passports}/$dbName.txt').delete(recursive: true);
-  passportsCheckList.remove(checkList);
+    totalNumberOfBytesHere = await _getTotalFileSizesToResumeReEncryption(collectionCheckList: passportsCheckList,collection: Collection.passports);
   }
-  }
-  }
-    Provider.of<ReEncryptionPercent>(context,listen: false).totalNumberOfFiles(passportsCheckList.length);
+    Provider.of<ReEncryptionPercent>(context,listen: false).totalNumberOfBytes(totalNumberOfBytesHere);
    for(File list in passportsCheckList){
-     String dbName = _getDbNameFromFile(list);
+     String dbName = await _getDbNameFromFile(list);
      List<String> checkList = list.readAsLinesSync();
     for(String attachmentPath in List<String>.from(checkList)){
       try{
-      List<int> currentDbPath = (await encrypt(attachmentPath,Cyptography.ReEncryption)).toString().codeUnits;
-      List<int> newDbPath = (await reEncryptData(plainText: attachmentPath)).toString().codeUnits;
+      List<int> currentDbPath = await _getCurrentDbPath(attachmentPath: attachmentPath);
+      List<int> newDbPath = await _generateNewDbPath(attachmentPath: attachmentPath);
       File tempFile = await _downloadAndWriteToTemp(collection: Collection.passports,dbName: dbName,currentDbPath: '$currentDbPath');
-      File decryptedFile = await fileDecrypt(tempFile, attachmentPath, Collection.passports, dbName,mode: Cyptography.ReEncryption);
-      await _uploadReEncryptedFileToFirebase(collection: Collection.passports,dbName: dbName,currentDbPath: '$currentDbPath',decryptedFile: decryptedFile,newDbPath: '$newDbPath');
+      File fileToReEncrypt = await fileDecrypt(tempFile, attachmentPath, Collection.passports, dbName,mode: Cyptography.ReEncryption);
+      await _uploadReEncryptedFileToFirebase(collection: Collection.passports,dbName: dbName,currentDbPath: '$currentDbPath',fileToReEncrypt: fileToReEncrypt,newDbPath: '$newDbPath',context: context);
       await tempFile.delete();
       checkList.remove(attachmentPath);
       print('$checkList the checkList');
@@ -126,43 +139,50 @@ Future passportAttachmentReEncrypt(List<Passports> passports,BuildContext contex
         continue;
       }
      }
-    Provider.of<ReEncryptionPercent>(context,listen: false).updateNumberOfFilesDownloaded();
    }
-     await Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.passports}').delete(recursive: true);
+
+   await _deleteDirectory(collection: Collection.passports);
 }
 
 Future documentAttachmentReEncrypt(List<Document> documents,BuildContext context) async {
   List<File> documentsCheckList = [];
-  bool pausedReEncryption = Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.documents}').existsSync();
+  int totalNumberOfBytesHere = 0;
+  bool pausedReEncryption = _doesDirectoryExist(collection: Collection.documents);
   if(!pausedReEncryption){
-  documents.forEach((document) => File('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.documents}/${document.dbName}.txt').createSync(recursive: true));
+  documents.forEach((document) => _createATextFile(collection: Collection.documents,dbName: document.dbName));
   }
-  List<File> allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.documents}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
-  documentsCheckList = allList;
+
+  if(_doesDirectoryExist(collection: Collection.documents)){
+  documentsCheckList = await _listAllFilesInDir(collection: Collection.documents);
+  }
+
   if(!pausedReEncryption){
   for(File checkList in List<File>.from(documentsCheckList)){
-  String dbName = _getDbNameFromFile(checkList);
-  List<String> attachmentList = await FirestoreFileStorage.getAttachmentList(collection: Collection.documents,dbName: dbName);
-  if(attachmentList.length != 0){
-  await _writeAttachmentListToCheckListFile(attachmentList: attachmentList,checkList: checkList);
+  String dbName = await _getDbNameFromFile(checkList);
+  ListOfFileInfo attachmentInfo = await FirestoreFileStorage.getAttachmentList(collection: Collection.documents,dbName: dbName);
+  List<String> attachmentList = attachmentInfo.listOfFiles;
+  totalNumberOfBytesHere += attachmentInfo.totalSizeInBytes;
+
+  (attachmentList.length != 0)
+  ?await _writeAttachmentListToCheckListFile(attachmentList: attachmentList,checkList: checkList)
+  :await _deleteATextFile(collection: Collection.documents,dbName: dbName).then((_) => 
+  documentsCheckList.remove(checkList));
+  }
   }else{
-    await File('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.documents}/$dbName.txt').delete(recursive: true);
-    documentsCheckList.remove(checkList);
+    totalNumberOfBytesHere = await _getTotalFileSizesToResumeReEncryption(collectionCheckList: documentsCheckList,collection: Collection.documents);
   }
-  }
-  }
-    Provider.of<ReEncryptionPercent>(context,listen: false).totalNumberOfFiles(documentsCheckList.length);
+    Provider.of<ReEncryptionPercent>(context,listen: false).totalNumberOfBytes(totalNumberOfBytesHere);
    for(File list in documentsCheckList){
-     String dbName = _getDbNameFromFile(list);
+     String dbName = await _getDbNameFromFile(list);
      List<String> checkList = list.readAsLinesSync();
     for(String attachmentPath in List<String>.from(checkList)){
       try{
-      List<int> currentDbPath = (await encrypt(attachmentPath,Cyptography.ReEncryption)).toString().codeUnits;
-      List<int> newDbPath = (await reEncryptData(plainText: attachmentPath)).toString().codeUnits;
+      List<int> currentDbPath = await _getCurrentDbPath(attachmentPath: attachmentPath);
+      List<int> newDbPath = await _generateNewDbPath(attachmentPath: attachmentPath);
       print('$dbName $currentDbPath');
       File tempFile = await _downloadAndWriteToTemp(collection: Collection.documents,dbName: dbName,currentDbPath: '$currentDbPath');
-      File decryptedFile = await fileDecrypt(tempFile, attachmentPath, Collection.documents, dbName,mode: Cyptography.ReEncryption);
-      await _uploadReEncryptedFileToFirebase(collection: Collection.documents,dbName: dbName,currentDbPath: '$currentDbPath',decryptedFile: decryptedFile,newDbPath: '$newDbPath');
+      File fileToReEncrypt = await fileDecrypt(tempFile, attachmentPath, Collection.documents, dbName,mode: Cyptography.ReEncryption);
+      await _uploadReEncryptedFileToFirebase(collection: Collection.documents,dbName: dbName,currentDbPath: '$currentDbPath',fileToReEncrypt: fileToReEncrypt,newDbPath: '$newDbPath',context: context);
       await tempFile.delete();
       checkList.remove(attachmentPath);
       print('$checkList the checkList');
@@ -177,42 +197,49 @@ Future documentAttachmentReEncrypt(List<Document> documents,BuildContext context
         continue;
       }
      }
-    Provider.of<ReEncryptionPercent>(context,listen: false).updateNumberOfFilesDownloaded();
    }
-     await Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.documents}').delete(recursive: true);
+
+   await _deleteDirectory(collection: Collection.documents);
 }
 
 Future certificateAttachmentReEncrypt(List<Certificates> certificates,BuildContext context) async {
   List<File> certificatesCheckList = [];
-  bool pausedReEncryption = Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.certificates}').existsSync();
+  int totalNumberOfBytesHere = 0;
+  bool pausedReEncryption = _doesDirectoryExist(collection: Collection.certificates);
   if(!pausedReEncryption){
-  certificates.forEach((certificate) => File('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.certificates}/${certificate.dbName}.txt').createSync(recursive: true));
+  certificates.forEach((certificate) => _createATextFile(collection: Collection.certificates,dbName: certificate.dbName));
   }
-  List<File> allList = await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.certificates}').list()).where((item)=>  item is File).map((item)=> item as File).toList();
-  certificatesCheckList = allList;
+
+  if(_doesDirectoryExist(collection: Collection.certificates)){
+  certificatesCheckList = await _listAllFilesInDir(collection: Collection.certificates);
+  }
+
   if(!pausedReEncryption){
   for(File checkList in List<File>.from(certificatesCheckList)){
-  String dbName = _getDbNameFromFile(checkList);
-  List<String> attachmentList = await FirestoreFileStorage.getAttachmentList(collection: Collection.certificates,dbName: dbName);
-    if(attachmentList.length != 0){
-  await _writeAttachmentListToCheckListFile(attachmentList: attachmentList,checkList: checkList);
+  String dbName = await _getDbNameFromFile(checkList);
+  ListOfFileInfo attachmentInfo = await FirestoreFileStorage.getAttachmentList(collection: Collection.certificates,dbName: dbName);
+  List<String> attachmentList = attachmentInfo.listOfFiles;
+  totalNumberOfBytesHere += attachmentInfo.totalSizeInBytes;
+
+  (attachmentList.length != 0)
+  ?await _writeAttachmentListToCheckListFile(attachmentList: attachmentList,checkList: checkList)
+  :await _deleteATextFile(collection: Collection.certificates,dbName: dbName).then((_) => 
+  certificatesCheckList.remove(checkList));
+  }
   }else{
-    await File('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.certificates}/$dbName.txt').delete(recursive: true);
-    certificatesCheckList.remove(checkList);
+    totalNumberOfBytesHere = await _getTotalFileSizesToResumeReEncryption(collectionCheckList: certificatesCheckList,collection: Collection.certificates);
   }
-  }
-  }
-    Provider.of<ReEncryptionPercent>(context,listen: false).totalNumberOfFiles(certificatesCheckList.length);
+    Provider.of<ReEncryptionPercent>(context,listen: false).totalNumberOfBytes(totalNumberOfBytesHere);
    for(File list in certificatesCheckList){
-     String dbName = _getDbNameFromFile(list);
+     String dbName = await _getDbNameFromFile(list);
      List<String> checkList = list.readAsLinesSync();
     for(String attachmentPath in List<String>.from(checkList)){
       try{
-      List<int> currentDbPath = (await encrypt(attachmentPath,Cyptography.ReEncryption)).toString().codeUnits;
-      List<int> newDbPath = (await reEncryptData(plainText: attachmentPath)).toString().codeUnits;
+      List<int> currentDbPath = await _getCurrentDbPath(attachmentPath: attachmentPath);
+      List<int> newDbPath = await _generateNewDbPath(attachmentPath: attachmentPath);
       File tempFile = await _downloadAndWriteToTemp(collection: Collection.certificates,dbName: dbName,currentDbPath: '$currentDbPath');
-      File decryptedFile = await fileDecrypt(tempFile, attachmentPath, Collection.certificates, dbName,mode: Cyptography.ReEncryption);
-      await _uploadReEncryptedFileToFirebase(collection: Collection.certificates,dbName: dbName,currentDbPath: '$currentDbPath',decryptedFile: decryptedFile,newDbPath: '$newDbPath');
+      File fileToReEncrypt = await fileDecrypt(tempFile, attachmentPath, Collection.certificates, dbName,mode: Cyptography.ReEncryption);
+      await _uploadReEncryptedFileToFirebase(collection: Collection.certificates,dbName: dbName,currentDbPath: '$currentDbPath',fileToReEncrypt: fileToReEncrypt,newDbPath: '$newDbPath',context: context);
       await tempFile.delete();
       checkList.remove(attachmentPath);
       list.writeAsStringSync('',mode: FileMode.writeOnly);
@@ -226,9 +253,9 @@ Future certificateAttachmentReEncrypt(List<Certificates> certificates,BuildConte
         continue;
       }
      }
-     Provider.of<ReEncryptionPercent>(context,listen: false).updateNumberOfFilesDownloaded();
    }
-     await Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/${Collection.certificates}').delete(recursive: true);
+
+   await _deleteDirectory(collection: Collection.certificates);
 }
 
 _writeAttachmentListToCheckListFile({@required List<String> attachmentList,@required File checkList}) async {
@@ -239,7 +266,6 @@ _writeAttachmentListToCheckListFile({@required List<String> attachmentList,@requ
 }
 
 Future<File> _downloadAndWriteToTemp({@required String collection,@required String dbName,@required String currentDbPath}) async {
-  print('started cycle');
  Reference ref = FirebaseStorage.instance
             .ref()
             .child(userUid)
@@ -255,7 +281,8 @@ await ref.writeToFile(tempFile);
 return tempFile;
 }
 
-_uploadReEncryptedFileToFirebase({@required String collection,@required String dbName,@required String newDbPath,@required File decryptedFile,@required String currentDbPath}) async {
+_uploadReEncryptedFileToFirebase({@required String collection,@required String dbName,@required String newDbPath,@required File fileToReEncrypt,@required String currentDbPath,@required BuildContext context}) async {
+  UploadTask uploadTask;
   Reference storageReference = FirebaseStorage.instance
           .ref()
           .child(userUid)
@@ -263,8 +290,19 @@ _uploadReEncryptedFileToFirebase({@required String collection,@required String d
           .child(collection)
           .child(dbName)
           .child(newDbPath);
-  Map<FileEncrypt, dynamic> encrypted = await fileEncrypt(decryptedFile,mode: Cyptography.ReEncryption);
-  await storageReference.putFile(encrypted[FileEncrypt.file]).then((_) async {
+  Map<FileEncrypt, dynamic> encrypted = await fileEncrypt(fileToReEncrypt,mode: Cyptography.ReEncryption);
+  uploadTask = storageReference.putFile(encrypted[FileEncrypt.file]);
+  //Because bytesTransferred is joining all the total byte transferred so will show me the size of byte uploaded currently
+  int trackProgress = 0;
+  uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+  //The size of byte currently uploaded
+  int currentSizeUploaded = (snapshot.bytesTransferred - trackProgress);
+  Provider.of<ReEncryptionPercent>(context,listen: false).updateNumberOfBytesDownloaded((currentSizeUploaded));
+  trackProgress = snapshot.bytesTransferred;
+  },
+  onError: (Object e) => print(e));
+
+  await uploadTask.then((_) async {
       await FirebaseStorage.instance
           .ref()
           .child(userUid)
@@ -279,4 +317,40 @@ _uploadReEncryptedFileToFirebase({@required String collection,@required String d
 _getDbNameFromFile(File file){
   String dbName = file.path.split('/').last.split('.').first;
   return dbName;
+}
+
+_createATextFile({@required String collection,@required String dbName}) => File('${GetDirectories.pathToVaultFolder}/CheckList/$email/$collection/$dbName.txt').createSync(recursive: true);
+_deleteATextFile({@required String collection,@required String dbName}) async => await File('${GetDirectories.pathToVaultFolder}/CheckList/$email/$collection/$dbName.txt').delete(recursive: true);
+_doesDirectoryExist({@required String collection}) => Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/$collection').existsSync();
+_listAllFilesInDir({@required String collection}) async => await (Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/$collection').list()).where((item)=>  item is File).map((item)=> item as File).toList();
+_getCurrentDbPath({@required String attachmentPath}) async => ((await encrypt(attachmentPath,Cyptography.ReEncryption)).toString().codeUnits);
+_generateNewDbPath({@required String attachmentPath}) async => ((await reEncryptData(plainText: attachmentPath)).toString().codeUnits);
+
+_getTotalFileSizesToResumeReEncryption({@required List<File> collectionCheckList,@required collection}) async {
+  int totalFileSize = 0;
+      for(File crediential in collectionCheckList){
+      String dbName = await _getDbNameFromFile(crediential);
+      List<String> filesLeftUnEncrypted = crediential.readAsLinesSync();
+
+      for(String leftUnEncrypted in filesLeftUnEncrypted){
+      List<int> currentDbPath = await _getCurrentDbPath(attachmentPath: leftUnEncrypted);
+      var fileInfo = FirebaseStorage.instance
+      .ref()
+      .child(userUid)
+      .child(Collection.vault)
+      .child(collection)
+      .child(dbName)
+      .child('$currentDbPath');
+      
+      totalFileSize += ((await fileInfo.getMetadata()).size);
+      print('the total number of bytes here are $totalFileSize');
+      }
+    }
+    return totalFileSize;
+}
+
+_deleteDirectory({@required String collection}){
+  if(Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/$collection').existsSync()){
+     Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email/$collection').deleteSync(recursive: true);
+  }
 }

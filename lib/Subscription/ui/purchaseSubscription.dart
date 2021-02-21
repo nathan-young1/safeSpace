@@ -66,10 +66,10 @@ class _PurchaseSubscriptionState extends State<PurchaseSubscription> {
             children: [
               SizedBox(height: 20.h),
             Text('Features', style: Theme.of(context).appBarTheme.textTheme.headline1.copyWith(fontSize: RFontSize.medium)),
-            ListTile(
-              leading: MyBullet(),
-              title: Text('Biometric Authentication', style: TextStyle(fontSize: RFontSize.normal)),
-            ),
+            // ListTile(
+            //   leading: MyBullet(),
+            //   title: Text('Biometric Authentication', style: TextStyle(fontSize: RFontSize.normal)),
+            // ),
             ListTile(
               leading: MyBullet(),
               title: Text('2Gb Encrypted Storage', style: TextStyle(fontSize: RFontSize.normal)),

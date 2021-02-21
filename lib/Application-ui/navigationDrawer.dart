@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +14,7 @@ import 'package:safeSpace/Passports/ui/passport.dart';
 import 'package:safeSpace/Passwords/ui/password.dart';
 import 'package:safeSpace/Payments/ui/payment.dart';
 import 'package:safeSpace/Settings/settings.dart';
+import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
 import 'package:safeSpace/Subscription/code/subscription.dart';
 import 'package:safeSpace/Subscription/ui/subscriptionStatus.dart';
@@ -25,17 +26,22 @@ class SafeDrawer extends StatefulWidget {
   @override
   _SafeDrawerState createState() => _SafeDrawerState();
 }
-
+  Timer getStorageLeft;
 class _SafeDrawerState extends State<SafeDrawer> {
+
   @override
     void initState() {
-      super.initState();
-      getStorageLeft();
       WidgetsBinding.instance.addPostFrameCallback((_){
       //check if reencryption has not been completed
       if(Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email').existsSync()){
       continueUnfinishedReEncryption(context: context);
       }});
+      getStorageLeft = Timer.periodic(Duration(seconds: 10),(_){
+        user.getIdTokenResult(true).then((token){
+        VaultIdToken.setStorageLeft(token.claims['storageLeft']);
+      });
+      });
+      super.initState();
     }
 
   @override
@@ -59,8 +65,9 @@ class _SafeDrawerState extends State<SafeDrawer> {
                   if(context.isMobileTypeHandset)Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(email,style: TextStyle(color:color,fontSize: 16)),
-                      Text((!SafeSpaceSubscription.isPremiumUser || SafeSpaceSubscription.timeLeftToExpire() == null)?'Trial Version':'Time Left: ${SafeSpaceSubscription.timeLeftToExpire()} minutes',style: TextStyle(color:color,fontSize: 16))
+                      Text(email,style: TextStyle(color:color,fontSize: RFontSize.small)),
+                      SizedBox(height: 5.h),
+                      Text((!SafeSpaceSubscription.isPremiumUser)?'Trial Version':'Time Left: ${SafeSpaceSubscription.timeLeftToExpire()} minutes',style: TextStyle(color:color,fontSize: 16))
                     ],
                   ),
                 ],
@@ -260,12 +267,4 @@ class SearchBar with ChangeNotifier{
   updateSearchBar(bool update){
     searching = update;
   }
-}
-getStorageLeft(){
-  auth.idTokenChanges().listen((User user){
-      (user!=null)?user.getIdTokenResult(true).then((token){
-        print(token.claims['storageLeft']);
-        VaultIdToken.setStorageLeft(token.claims['storageLeft']);
-      }):print(null);
-    }); 
 }

@@ -75,11 +75,11 @@ Future<Authentication> signInWithEmailAndPasswordInLogin(String emailAddress,Str
 }
 
 signOut(BuildContext context) async{
+  getStorageLeft.cancel();
   await auth.signOut();
   masterkey = null;
   Navigator.pushReplacementNamed(context, 'Login');
   Provider.of<Dashboard>(context,listen: false).change(Password());
-  print("User Sign Out");
 }
 
 String createEncryptionKey(String vaultKey){

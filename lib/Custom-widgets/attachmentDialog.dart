@@ -3,7 +3,9 @@ import 'package:safeSpace/Core-Services/enum.dart';
 import 'package:safeSpace/Core-Services/filePicker.dart';
 import 'package:safeSpace/Core-Services/global.dart';
 import 'package:safeSpace/Custom-widgets/progressDialog.dart';
+import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
+import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
 
     attachmentPicker({@required BuildContext buildContext}) async {
     FocusScope.of(buildContext).unfocus();
@@ -20,14 +22,13 @@ import 'package:safeSpace/Styles/textStyle.dart';
           Row(children: [
             SizedBox(width: 6),
             IconButton(
-                icon: Icon(Icons.arrow_back_ios),
+                icon: Icon(Icons.arrow_back_ios,size: 28.r),
                 onPressed: () =>Navigator.of(context).pop()),
                 SizedBox(width: 3),
                 Text('Attachments',style: dialogTitle),
                 new Spacer(),
                 IconButton(
-                    icon: Icon(Icons.add),
-                    iconSize: 32,
+                    icon: Icon(Icons.add,size: 30.r),
                     onPressed: () async {
                       await progressDialog(buildContext:context,message:'Please Wait....',command: ProgressDialogVisiblity.show);
                       attachments.addAll(await filePicker());
@@ -35,27 +36,27 @@ import 'package:safeSpace/Styles/textStyle.dart';
                       setState(() {});
                     }),
                         ]),
-                        SizedBox(height: 8),
-                        (attachments.isEmpty)
-                        ?StatefulBuilder(
+                SizedBox(height: 10.h),
+                (attachments.isEmpty)
+                  ?StatefulBuilder(
                     builder: (context, StateSetter setState) => Container(
-                    height: 300,
-                    width: 300,
-                    child: Center(child: Text('Add files')),
+                    height: 300.h,
+                    width: 300.w,
+                    child: Center(child: Text('Add files',style: TextStyle(fontSize: RFontSize.normal))),
                   ))
               :StatefulBuilder(
               builder: (context, StateSetter setState) => Container(
-              height: 300,
-              width: 300,
+              height: 300.h,
+              width: 300.w,
               child: ListView(
                 children: attachments.map((attachment)=> 
                 Container(
                   color: Colors.grey[250],
                   child: ListTile(
-                    title: Text(
-                        attachment.path.toString().split('/').last),
+                    title: Text(attachment.path.toString().split('/').last,
+                    style: TextStyle(fontSize: RFontSize.normal)),
                     trailing: IconButton(
-                        icon: Icon(Icons.close),
+                        icon: Icon(Icons.close,size: 28.r),
                         onPressed: () {
                           setState(() {
                             attachments.remove(attachment);
@@ -66,32 +67,26 @@ import 'package:safeSpace/Styles/textStyle.dart';
                 ).toList(),
                 ),
                 )),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pop();
-                            return attachments;
+                        InkWell(
+                          onTap: (){
+                          Navigator.of(context).pop();
+                          return attachments;
                           },
-                          child: SizedBox(
-                            height: 50,
-                            child: InkWell(
-                              child: Container(
-                                padding: EdgeInsets.only(top: 10.0),
-                                decoration: BoxDecoration(
-                                  color: mainColor,
-                                  borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(32.0),
-                                      bottomRight: Radius.circular(32.0)),
-                                ),
-                                child: Text(
-                                  "Ok",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 23,
-                                    fontFamily: 'style',
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
+                          child: Container(
+                            height: 50.h,
+                            padding: EdgeInsets.only(top: 10.0),
+                            decoration: BoxDecoration(
+                              color: mainColor,
+                              borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(32.0),
+                                  bottomRight: Radius.circular(32.0)),
+                            ),
+                            child: Text(
+                              "Ok",
+                              style: TextStyle(fontSize: RFontSize.medium,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                              textAlign: TextAlign.center,
                             ),
                           ),
                         ),

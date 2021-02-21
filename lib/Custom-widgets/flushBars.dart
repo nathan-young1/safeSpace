@@ -53,13 +53,14 @@ showAttachmentFlushBar(context, message) {
           SizedBox(width: 6),
           Text(message,
               style: TextStyle(
-                  color: mainColor, fontSize: 17, fontFamily: 'styles')),
+                  color: mainColor, fontSize: RFontSize.normal)),
         ],
       ),
     ),
     barBlur: 20,
   )..show(context);
 }
+
 
 showFlushBar(context, message, icon) {
     Flushbar(
@@ -78,8 +79,7 @@ showFlushBar(context, message, icon) {
             Text( message,
               style: TextStyle(
                 color: mainColor,
-                fontSize: 18.ssp,
-                fontFamily: 'styles',
+                fontSize: RFontSize.normal
               ),
             ),
           ],
