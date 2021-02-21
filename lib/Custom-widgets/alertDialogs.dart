@@ -131,14 +131,17 @@ authenticateVaultKeyBeforeUserDelete({@required BuildContext context}){
                      Navigator.of(context).pop();
                     progressDialog(buildContext: context,message: 'Deleting User...',command: ProgressDialogVisiblity.show);
                     try {
-                      await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: masterkey,emailAddress: email)).then((_) async {
-                      await user.delete();
-                      });
-                    } on Exception catch (e) {
-                      showFlushBar(context,'An error occurred',Icons.error);
-                    }
+                    await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: masterkey,emailAddress: email)).then((_){
+                    user.delete().then((_){
                     progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
                     signOut(context);
+                      });
+                      });
+                    } on Exception catch (e) {
+                      print(e);
+                      Navigator.of(context).pop();
+                      showFlushBar(context,'An error occurred',Icons.error);
+                    }
                     }
         },
       ),
@@ -178,15 +181,17 @@ authenticateVaultKeyBeforeUserDelete({@required BuildContext context}){
                    if(_authBeforeUserDelete.currentState.validate()){
                      Navigator.of(context).pop();
                     progressDialog(buildContext: context,message: 'Deleting User...',command: ProgressDialogVisiblity.show);
-                    try {
-                      await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: masterkey,emailAddress: email)).then((_) async {
-                      await user.delete();
-                      });
-                    } on Exception catch (e) {
-                      showFlushBar(context,'An error occurred',Icons.error);
-                    }
+                    try {print(enterVaultKey.text);
+                      await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: enterVaultKey.text,emailAddress: email)).then((_) async {
+                      await user.delete().then((_){
                     progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
                     signOut(context);
+                      });
+                      });
+                    } on Exception catch (e) {
+                      progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
+                      showFlushBar(context,'An error occurred',Icons.error);
+                    }
                     }
                  },
                  decoration: InputDecoration(

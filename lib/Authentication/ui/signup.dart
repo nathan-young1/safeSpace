@@ -1,4 +1,5 @@
 import 'package:animations/animations.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:password_strength/password_strength.dart';
@@ -9,6 +10,7 @@ import 'package:safeSpace/Core-Services/global.dart';
 import 'package:safeSpace/Custom-widgets/flushBars.dart';
 import 'package:safeSpace/Custom-widgets/passwordStrengthIndicator.dart';
 import 'package:safeSpace/Custom-widgets/progressDialog.dart';
+import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login.dart';
@@ -34,10 +36,11 @@ class _SignupState extends State<Signup> {
   FocusNode retypePasswordFocus = FocusNode();
   double passwordStrength = 0.0;
   Color passwordStrengthColor = Colors.transparent;
-
+  bool agreementCheckBox;
   @override
     void initState() {
       super.initState();
+      agreementCheckBox = false;
       //clears the password by creating new text editing controller on each init state
       password = TextEditingController(text: '');
       retypePassword  = TextEditingController(text: '');
@@ -161,6 +164,43 @@ class _SignupState extends State<Signup> {
                                 labelText: 'Retype Vault Key')),
                           ),
                           SizedBox(height: 15.h),
+                            Container(
+                              child: Flexible(
+                                child: Row(
+                                  children: [
+                                    Transform.scale(
+                                      scale: 1.5,
+                                      child: Checkbox(
+                                        activeColor: mainColor,
+                                        value: agreementCheckBox,
+                                        onChanged: (_)=>setState(()=> agreementCheckBox = !agreementCheckBox),
+                                      ),
+                                    ),
+                                    Wrap(children:[
+                                    Text('I agree to the ',
+                                      style: TextStyle(fontSize: RFontSize.normal),),
+                                    GestureDetector(
+                                      onTap:() => Navigator.of(context).pushNamed('TermsOfService'),
+                                      child: Text('Terms Of Service ',
+                                      style: TextStyle(fontSize: RFontSize.normal,
+                                      fontWeight: FontWeight.bold,
+                                      color: secondaryColor),)),
+                                     Text('and ',
+                                      style: TextStyle(fontSize: RFontSize.normal),),
+                                    GestureDetector(
+                                      onTap: () => Navigator.of(context).pushNamed('PrivacyPolicy'),
+                                      child: Text('Privacy Policy',
+                                      style: TextStyle(fontSize: RFontSize.normal,
+                                      fontWeight: FontWeight.bold,
+                                      color: secondaryColor))),
+                                      Text('.',
+                                      style: TextStyle(fontSize: RFontSize.normal),)
+                          ]),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          SizedBox(height: 15.h),
                           ButtonTheme(
                             minWidth: 100.w,
                             child: RaisedButton(
@@ -178,10 +218,6 @@ class _SignupState extends State<Signup> {
                               color: mainColor,
                             ),
                           ),
-                          SizedBox(height: 10.h),
-                          Row(children:[
-                            
-                          ]),
                           SizedBox(height: 20.h),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
