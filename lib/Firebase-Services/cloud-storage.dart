@@ -86,58 +86,60 @@ class FirestoreFileStorage{
         if (attachments.isNotEmpty) {
         showTaskDialog(context, attachments.length,TaskDialog.upload);
         int currentIndex = 1;
-        for (File file in attachments) {
-          print(file.path.split('/').last);
-          print(checkIfExist);
-          if(taskCanceled){
-            uploadTask.cancel();
-            break;
+        while (!taskCanceled) {
+          for (File file in attachments) {
+            print(file.path.split('/').last);
+            print(checkIfExist);
+            // if(taskCanceled){
+            //   uploadTask.cancel();
+            //   break;
+            // }
+          Provider.of<AttachmentDownload>(context, listen: false).updateIndex(currentIndex);
+          if(!checkIfExist.contains(file.path.split('/').last)){
+          await encrypt(file.path.split('/').last).then((filePath) async {
+          List<int> fullPath = filePath.toString().codeUnits;
+          Reference storageReference = auth.storage 
+              .ref()
+              .child(auth.userUid)
+              .child(Collection.vault)
+              .child(collection)
+              .child(dbName)
+              .child('$fullPath');
+          Map<FileEncrypt, dynamic> encryptedFile = await fileEncrypt(file);
+          uploadTask = storageReference.putFile(encryptedFile[FileEncrypt.file]);
+          uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) =>
+          Provider.of<AttachmentDownload>(context,listen: false).update((snapshot.bytesTransferred) /(snapshot.totalBytes)), 
+          onError: (Object e) {
+            print(e); // FirebaseException
+          });
+          await uploadTask;
+          await File(encryptedFile[FileEncrypt.filePath]).delete();
+           });}else{
+             //update already existing file
+          await encrypt(file.path.split('/').last).then((filePath) async {
+          List<int> fullPath = filePath.toString().codeUnits;
+          Reference storageReference = auth.storage 
+              .ref()
+              .child(auth.userUid)
+              .child(Collection.vault)
+              .child(collection)
+              .child(dbName)
+              .child('$fullPath');
+          //delete before update
+          await storageReference.delete();
+          Map<FileEncrypt, dynamic> encryptedFile = await fileEncrypt(file);
+          uploadTask = storageReference.putFile(encryptedFile[FileEncrypt.file]);
+          uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) =>
+          Provider.of<AttachmentDownload>(context,listen: false).update((snapshot.bytesTransferred) /(snapshot.totalBytes)), 
+          onError: (Object e) {
+            print(e); // FirebaseException
+          });
+          await uploadTask;
+          await File(encryptedFile[FileEncrypt.filePath]).delete();
+           });
+           }
+            currentIndex++;
           }
-        Provider.of<AttachmentDownload>(context, listen: false).updateIndex(currentIndex);
-        if(!checkIfExist.contains(file.path.split('/').last)){
-        await encrypt(file.path.split('/').last).then((filePath) async {
-        List<int> fullPath = filePath.toString().codeUnits;
-        Reference storageReference = auth.storage 
-            .ref()
-            .child(auth.userUid)
-            .child(Collection.vault)
-            .child(collection)
-            .child(dbName)
-            .child('$fullPath');
-        Map<FileEncrypt, dynamic> encryptedFile = await fileEncrypt(file);
-        uploadTask = storageReference.putFile(encryptedFile[FileEncrypt.file]);
-        uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) =>
-        Provider.of<AttachmentDownload>(context,listen: false).update((snapshot.bytesTransferred) /(snapshot.totalBytes)), 
-        onError: (Object e) {
-          print(e); // FirebaseException
-        });
-        await uploadTask;
-        await File(encryptedFile[FileEncrypt.filePath]).delete();
-         });}else{
-           //update already existing file
-        await encrypt(file.path.split('/').last).then((filePath) async {
-        List<int> fullPath = filePath.toString().codeUnits;
-        Reference storageReference = auth.storage 
-            .ref()
-            .child(auth.userUid)
-            .child(Collection.vault)
-            .child(collection)
-            .child(dbName)
-            .child('$fullPath');
-        //delete before update
-        await storageReference.delete();
-        Map<FileEncrypt, dynamic> encryptedFile = await fileEncrypt(file);
-        uploadTask = storageReference.putFile(encryptedFile[FileEncrypt.file]);
-        uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) =>
-        Provider.of<AttachmentDownload>(context,listen: false).update((snapshot.bytesTransferred) /(snapshot.totalBytes)), 
-        onError: (Object e) {
-          print(e); // FirebaseException
-        });
-        await uploadTask;
-        await File(encryptedFile[FileEncrypt.filePath]).delete();
-         });
-         }
-          currentIndex++;
         }
         Navigator.of(context).pop();
       }
@@ -159,37 +161,39 @@ class FirestoreFileStorage{
         .toList()
         .length;
     showTaskDialog(context,filesLength,TaskDialog.download);
-    for (int i = 0; i < filenames.length; i++) {
-      if (taskCanceled){
-        await download.cancel();
-        break;}
-      String filePath = filenames[i];
-      List<int> dbPath = (await encrypt(filenames[i])).toString().codeUnits;
-      if (!fileExists(collection: collection,documentName: documentName, fileName: filenames[i])) {
-        Provider.of<AttachmentDownload>(context, listen: false).updateIndex(currentIndex);
-        Reference ref = FirebaseStorage.instance
-            .ref()
-            .child(auth.userUid)
-            .child(Collection.vault)
-            .child(collection)
-            .child(dbName)
-            .child('$dbPath');
-
-        final Directory systemTempDir = Directory.systemTemp;
-        final File tempFile = File('${systemTempDir.path}/Decrypted');
-        if (tempFile.existsSync()) {await tempFile.delete();}
-        await tempFile.create();
-        download = ref.writeToFile(tempFile);
-        download.snapshotEvents.listen((TaskSnapshot snapshot) =>
-          Provider.of<AttachmentDownload>(context, listen: false).update((snapshot.bytesTransferred / snapshot.totalBytes)));
-        await download.then((value) async {
-          await fileDecrypt(tempFile, filePath, collection, documentName);
-        });
-        await tempFile.delete();
-        currentIndex++;
-      } else {
-        print('$filePath already exists');
-        continue;
+    while (!taskCanceled) {
+      for (String filename in filenames) {
+        // if (taskCanceled){
+        //   await download.cancel();
+        //   break;}
+        String filePath = filename;
+        List<int> dbPath = (await encrypt(filename)).toString().codeUnits;
+        if (!fileExists(collection: collection,documentName: documentName, fileName: filename)) {
+          Provider.of<AttachmentDownload>(context, listen: false).updateIndex(currentIndex);
+          Reference ref = FirebaseStorage.instance
+              .ref()
+              .child(auth.userUid)
+              .child(Collection.vault)
+              .child(collection)
+              .child(dbName)
+              .child('$dbPath');
+      
+          final Directory systemTempDir = Directory.systemTemp;
+          final File tempFile = File('${systemTempDir.path}/Decrypted');
+          if (tempFile.existsSync()) {await tempFile.delete();}
+          await tempFile.create();
+          download = ref.writeToFile(tempFile);
+          download.snapshotEvents.listen((TaskSnapshot snapshot) =>
+            Provider.of<AttachmentDownload>(context, listen: false).update((snapshot.bytesTransferred / snapshot.totalBytes)));
+          await download.then((value) async {
+            await fileDecrypt(tempFile, filePath, collection, documentName);
+          });
+          await tempFile.delete();
+          currentIndex++;
+        } else {
+          print('$filePath already exists');
+          continue;
+        }
       }
     }
     Navigator.of(context).pop();

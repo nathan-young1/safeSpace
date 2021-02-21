@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:safeSpace/Application-ui/navigationDrawer.dart';
 import 'package:safeSpace/Authentication/code/authentication.dart';
 import 'package:safeSpace/Certificates/code/certificateDetails.dart';
 import 'package:safeSpace/Core-Services/attachment.dart';
@@ -25,7 +26,11 @@ vaultReEncryption({String masterKey,String newPassword,BuildContext context,Vaul
     Provider.of<ReEncryptionPercent>(context,listen: false).intialize();
     if(mode == VaultReEncryptionMode.Normal){
     //assert that the key the user type is correct 
-    assert(createEncryptionKey(masterKey) == masterkey);
+    try {
+      assert(createEncryptionKey(masterKey) == masterkey);
+    } on Exception catch (e) {
+      showFlushBar(context,'Invalid Vault Key',Icons.dangerous);
+    }
     VaultReEncryption.initalize(updatedVaultKey: newPassword,oldVaultKey: masterkey);
     }
     List<Passwords> passwords = await _getPasswordsFromFirestore();
@@ -35,11 +40,16 @@ vaultReEncryption({String masterKey,String newPassword,BuildContext context,Vaul
     List<Certificates> certificates = await _getCertificatesFromFirestore();
     if(mode == VaultReEncryptionMode.Resume){
       //check if it is owner that is resuming the reEncryption
-      //assert(createEncryptionKey(newPassword) == masterkey);
-      //former key represents old password
+      try {
+        assert(createEncryptionKey(newPassword) == masterkey);
+      } on Exception catch (e) {
+        showFlushBar(context,'Invalid Vault Key',Icons.dangerous);
+      }
       VaultReEncryption.initalize(updatedVaultKey: newPassword,oldVaultKey: masterKey);
     }
   try{
+    //stop the getting of storage token during reEncryption
+    getStorageLeft.cancel();
     if(mode == VaultReEncryptionMode.Normal){
 
     await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: masterKey,emailAddress: email)).then((_) async {
