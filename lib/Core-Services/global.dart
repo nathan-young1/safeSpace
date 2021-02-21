@@ -17,6 +17,7 @@ String masterkey;
 String query = '';
 //to tell the class when to update the widget based on the current search bar state
 StreamSubscription searchBarState = searchBarStateController.stream.listen((_){});
+StreamController cancelUploadOrDownload = StreamController();
 List<File> attachments = List<File>();
 double passwordLength = 30.0;
 String generatedPassword;

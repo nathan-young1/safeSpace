@@ -26,11 +26,7 @@ vaultReEncryption({String masterKey,String newPassword,BuildContext context,Vaul
     Provider.of<ReEncryptionPercent>(context,listen: false).intialize();
     if(mode == VaultReEncryptionMode.Normal){
     //assert that the key the user type is correct 
-    try {
       assert(createEncryptionKey(masterKey) == masterkey);
-    } on Exception catch (e) {
-      showFlushBar(context,'Invalid Vault Key',Icons.dangerous);
-    }
     VaultReEncryption.initalize(updatedVaultKey: newPassword,oldVaultKey: masterkey);
     }
     List<Passwords> passwords = await _getPasswordsFromFirestore();
@@ -40,11 +36,8 @@ vaultReEncryption({String masterKey,String newPassword,BuildContext context,Vaul
     List<Certificates> certificates = await _getCertificatesFromFirestore();
     if(mode == VaultReEncryptionMode.Resume){
       //check if it is owner that is resuming the reEncryption
-      try {
-        assert(createEncryptionKey(newPassword) == masterkey);
-      } on Exception catch (e) {
-        showFlushBar(context,'Invalid Vault Key',Icons.dangerous);
-      }
+
+      assert(createEncryptionKey(newPassword) == masterkey);
       VaultReEncryption.initalize(updatedVaultKey: newPassword,oldVaultKey: masterKey);
     }
   try{
@@ -75,7 +68,6 @@ vaultReEncryption({String masterKey,String newPassword,BuildContext context,Vaul
     }catch(e){
     print(e);
     Navigator.pop(context);
-    signOut(context);
     showFlushBar(context,'An Error Occured',Icons.dangerous);
     }
     }

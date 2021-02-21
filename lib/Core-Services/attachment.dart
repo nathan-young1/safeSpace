@@ -204,7 +204,7 @@ showTaskDialog(BuildContext context, int filesLength,TaskDialog type) {
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(15.0))),
         contentPadding: EdgeInsets.only(top: 10.h, bottom: 10.h, left: 10.w, right: 10.w),
-        content: StatefulBuilder(builder: (context, StateSetter setState) {
+        content: StatefulBuilder(builder: (_, StateSetter setState) {
           int index = Provider.of<AttachmentDownload>(context).currentFileIndex;
           double percent = double.parse(Provider.of<AttachmentDownload>(context)
               .percent
@@ -232,7 +232,10 @@ showTaskDialog(BuildContext context, int filesLength,TaskDialog type) {
               SizedBox(height: 8.h),
               GestureDetector(
                 onTap: (){
-                  setState(()=> taskCanceled = true);
+                  setState((){ 
+                    taskCanceled = true;
+                    cancelUploadOrDownload.add(null);
+                  });
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,

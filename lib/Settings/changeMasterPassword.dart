@@ -146,8 +146,9 @@ class _ChangeMasterPasswordState extends State<ChangeMasterPassword> {
   }
   }
 
+final continueFormKey = GlobalKey<FormState>();
 class ContinueReEncryption extends StatelessWidget {
-  const ContinueReEncryption({
+  ContinueReEncryption({
     Key key,
     @required this.formerPassword,
     @required this.newPassword,
@@ -158,7 +159,9 @@ class ContinueReEncryption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
+    return Form(
+    key: continueFormKey,
+    child: Column(children: [
       Container(
         width: 270.w,
         child: TextField(
@@ -178,9 +181,15 @@ class ContinueReEncryption extends StatelessWidget {
       SizedBox(height: 10.h),
       Container(
         width: 270.w,
-        child: TextField(
+        child: TextFormField(
           controller: newPassword,
           style: authTextField,
+          validator: (currentKey){
+            if(createEncryptionKey(currentKey) != masterkey){
+              return 'Invalid vault key';
+            }
+            return null;
+          },
           decoration: InputDecoration(
               filled: true,
               isDense: true,
@@ -198,9 +207,12 @@ class ContinueReEncryption extends StatelessWidget {
           child: RaisedButton.icon(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
             color: secondaryColor,
-            onPressed: () =>
+            onPressed: () {
+            if(continueFormKey.currentState.validate()){
             //make the masterkey the former password so it can decrypt the data to continue reEncryption
-            vaultReEncryption(masterKey: formerPassword.text,newPassword: newPassword.text,context: context,mode: VaultReEncryptionMode.Resume),
+            vaultReEncryption(masterKey: formerPassword.text,newPassword: newPassword.text,context: context,mode: VaultReEncryptionMode.Resume);
+            }
+            },
             label: Text('Continue ReEncryption',
             style: TextStyle(fontSize: RFontSize.normal,color: Colors.white)),
             icon: Icon(Icons.pause,size: 25.r),),
@@ -217,6 +229,6 @@ class ContinueReEncryption extends StatelessWidget {
                   ],
                 ),
             ),
-    ]);
+    ]));
   }
 } 

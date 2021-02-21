@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flushbar/flushbar_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:safeSpace/Application-ui/navigationDrawer.dart';
@@ -8,10 +10,14 @@ import 'package:safeSpace/Core-Services/attachment.dart';
 import 'package:safeSpace/Core-Services/encrypt.dart';
 import 'package:safeSpace/Core-Services/enum.dart';
 import 'package:safeSpace/Core-Services/filePicker.dart';
+import 'package:safeSpace/Core-Services/global.dart';
+import 'package:safeSpace/Custom-widgets/flushBars.dart';
 import 'package:safeSpace/Custom-widgets/progressDialog.dart';
 import 'package:safeSpace/Firebase-Services/firebase-models.dart';
 import 'package:safeSpace/Vault-Recryption/listOfFilesInfo.dart';
 
+
+  StreamSubscription uploadAndDownloadCancelListener = cancelUploadOrDownload.stream.listen((_){});
 class FirestoreFileStorage{
     FirebaseStorage database = FirebaseStorage.instance;
     static Future<ListOfFileInfo> getAttachmentList({String collection, String dbName}) async {
@@ -70,7 +76,7 @@ class FirestoreFileStorage{
     }   
       }
 
-    static Future<void> uploadFileToFirestore({String dbName,BuildContext context,String collection,List<File> filesToUpload = const[],List<String> checkIfExist = const[],UploadFileToFirestore commandFrom = UploadFileToFirestore.fromOther}) async {
+    static Future<void> uploadFileToFirestore({String dbName,@required BuildContext context,String collection,List<File> filesToUpload = const[],List<String> checkIfExist = const[],UploadFileToFirestore commandFrom = UploadFileToFirestore.fromOther}) async {
         List<File> attachments;
         taskCanceled = false;
         UploadTask uploadTask;
@@ -86,14 +92,22 @@ class FirestoreFileStorage{
         if (attachments.isNotEmpty) {
         showTaskDialog(context, attachments.length,TaskDialog.upload);
         int currentIndex = 1;
-        while (!taskCanceled) {
+
+          try {
+            uploadAndDownloadCancelListener.onData((_) async {
+            await uploadTask.cancel();
+            Navigator.of(context).pop();
+            });
+          } on Exception catch (e) {
+            Navigator.of(context).pop();
+          }
+
           for (File file in attachments) {
-            print(file.path.split('/').last);
-            print(checkIfExist);
-            // if(taskCanceled){
-            //   uploadTask.cancel();
-            //   break;
-            // }
+            
+            if(taskCanceled){
+            uploadTask.cancel();
+            break; 
+            }
           Provider.of<AttachmentDownload>(context, listen: false).updateIndex(currentIndex);
           if(!checkIfExist.contains(file.path.split('/').last)){
           await encrypt(file.path.split('/').last).then((filePath) async {
@@ -115,33 +129,15 @@ class FirestoreFileStorage{
           await uploadTask;
           await File(encryptedFile[FileEncrypt.filePath]).delete();
            });}else{
-             //update already existing file
-          await encrypt(file.path.split('/').last).then((filePath) async {
-          List<int> fullPath = filePath.toString().codeUnits;
-          Reference storageReference = auth.storage 
-              .ref()
-              .child(auth.userUid)
-              .child(Collection.vault)
-              .child(collection)
-              .child(dbName)
-              .child('$fullPath');
-          //delete before update
-          await storageReference.delete();
-          Map<FileEncrypt, dynamic> encryptedFile = await fileEncrypt(file);
-          uploadTask = storageReference.putFile(encryptedFile[FileEncrypt.file]);
-          uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) =>
-          Provider.of<AttachmentDownload>(context,listen: false).update((snapshot.bytesTransferred) /(snapshot.totalBytes)), 
-          onError: (Object e) {
-            print(e); // FirebaseException
-          });
-          await uploadTask;
-          await File(encryptedFile[FileEncrypt.filePath]).delete();
-           });
+          await showFileAlreadyExistFlushBar(context,file.path.split('/').last);
+           continue;
            }
             currentIndex++;
           }
-        }
+          //because it was popping twice
+        if(!taskCanceled){
         Navigator.of(context).pop();
+        }
       }
     }
 
@@ -161,11 +157,21 @@ class FirestoreFileStorage{
         .toList()
         .length;
     showTaskDialog(context,filesLength,TaskDialog.download);
-    while (!taskCanceled) {
+
+      try {
+        uploadAndDownloadCancelListener.onData((_) async {
+          await download.cancel();
+          Navigator.of(context).pop();
+        });
+      } on Exception catch (e) {
+        Navigator.of(context).pop();
+      }
+      
       for (String filename in filenames) {
-        // if (taskCanceled){
-        //   await download.cancel();
-        //   break;}
+
+        if (taskCanceled){
+          await download.cancel();
+          break;}
         String filePath = filename;
         List<int> dbPath = (await encrypt(filename)).toString().codeUnits;
         if (!fileExists(collection: collection,documentName: documentName, fileName: filename)) {
@@ -195,7 +201,8 @@ class FirestoreFileStorage{
           continue;
         }
       }
-    }
+    if(!taskCanceled){
     Navigator.of(context).pop();
+    }
     }
   }

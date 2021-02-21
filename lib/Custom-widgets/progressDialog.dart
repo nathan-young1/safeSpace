@@ -2,21 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:safeSpace/Core-Services/enum.dart';
 import 'package:safeSpace/Core-Services/global.dart';
+import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
+import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
 
-progressDialog({@required BuildContext buildContext, String message = '', @required ProgressDialogVisiblity command}) {
+progressDialog({@required BuildContext buildContext, String message = '', @required ProgressDialogVisiblity command,bool fileAlreadyExists = false}) {
   final ProgressDialog dialog = ProgressDialog(buildContext, isDismissible: false);
   dialog.style(
       message: message,
       borderRadius: 10.0,
       backgroundColor: Colors.white,
-      progressWidget: Transform.scale(
+      progressWidget: (!fileAlreadyExists)
+      ?Transform.scale(
       scale: 0.7,
-      child: CircularProgressIndicator(backgroundColor: mainColor)),
+      child: CircularProgressIndicator(backgroundColor: mainColor))
+      :Icon(Icons.file_present,size: 30.r),
       elevation: 10.0,
       insetAnimCurve: Curves.easeInOut,
       progressTextStyle: TextStyle(color: mainColor, fontSize: 13.0, fontWeight: FontWeight.w400),
-      messageTextStyle: popupStyle);
+      messageTextStyle: (!fileAlreadyExists)
+      ?popupStyle
+      :TextStyle(fontSize: RFontSize.normal));
       switch (command) {
         case ProgressDialogVisiblity.show:
           dialog.show();

@@ -34,7 +34,7 @@ Future paymentAttachmentReEncrypt(List<Payments> payments,BuildContext context) 
   if(!pausedReEncryption){
   //for each paymentCard in payments
   for(File checkList in List<File>.from(paymentCheckList)){
-  String dbName = _getDbNameFromFile(checkList);
+  String dbName = await _getDbNameFromFile(checkList);
   //get list of attachment for each payment
   ListOfFileInfo attachmentInfo = await FirestoreFileStorage.getAttachmentList(collection: Collection.payments,dbName: dbName);
   List<String> attachmentList = attachmentInfo.listOfFiles;
@@ -46,20 +46,20 @@ Future paymentAttachmentReEncrypt(List<Payments> payments,BuildContext context) 
   paymentCheckList.remove(checkList));
   }
   }else{
-    totalNumberOfBytesHere = await _getTotalFileSizesToResumeReEncryption(collectionCheckList: paymentCheckList);
+    totalNumberOfBytesHere = await _getTotalFileSizesToResumeReEncryption(collectionCheckList: paymentCheckList,collection: Collection.payments);
   }
 
   Provider.of<ReEncryptionPercent>(context,listen: false).totalNumberOfBytes(totalNumberOfBytesHere);
    //the actual reEncryption process
    for(File list in paymentCheckList){
      //get database name from file path
-     String dbName = _getDbNameFromFile(list);
+     String dbName = await _getDbNameFromFile(list);
      List<String> checkList = list.readAsLinesSync();
      //for each attachment in that document reEncrypt it
     for(String attachmentPath in List<String>.from(checkList)){
       try{
-      List<int> currentDbPath = _getCurrentDbPath(attachmentPath: attachmentPath);
-      List<int> newDbPath = _generateNewDbPath(attachmentPath: attachmentPath);
+      List<int> currentDbPath = await _getCurrentDbPath(attachmentPath: attachmentPath);
+      List<int> newDbPath = await _generateNewDbPath(attachmentPath: attachmentPath);
       File tempFile = await _downloadAndWriteToTemp(collection: Collection.payments,dbName: dbName,currentDbPath: '$currentDbPath');
       File fileToReEncrypt = await fileDecrypt(tempFile, attachmentPath, Collection.payments, dbName,mode: Cyptography.ReEncryption);
       await _uploadReEncryptedFileToFirebase(collection: Collection.payments,dbName: dbName,currentDbPath: '$currentDbPath',fileToReEncrypt: fileToReEncrypt,newDbPath: '$newDbPath',context: context);
@@ -101,7 +101,7 @@ Future passportAttachmentReEncrypt(List<Passports> passports,BuildContext contex
 
   if(!pausedReEncryption){
   for(File checkList in List<File>.from(passportsCheckList)){
-  String dbName = _getDbNameFromFile(checkList);
+  String dbName = await _getDbNameFromFile(checkList);
   ListOfFileInfo attachmentInfo = await FirestoreFileStorage.getAttachmentList(collection: Collection.passports,dbName: dbName);
   List<String> attachmentList = attachmentInfo.listOfFiles;
   totalNumberOfBytesHere += attachmentInfo.totalSizeInBytes;
@@ -112,16 +112,16 @@ Future passportAttachmentReEncrypt(List<Passports> passports,BuildContext contex
   passportsCheckList.remove(checkList));
   }
   }else{
-    totalNumberOfBytesHere = await _getTotalFileSizesToResumeReEncryption(collectionCheckList: passportsCheckList);
+    totalNumberOfBytesHere = await _getTotalFileSizesToResumeReEncryption(collectionCheckList: passportsCheckList,collection: Collection.passports);
   }
     Provider.of<ReEncryptionPercent>(context,listen: false).totalNumberOfBytes(totalNumberOfBytesHere);
    for(File list in passportsCheckList){
-     String dbName = _getDbNameFromFile(list);
+     String dbName = await _getDbNameFromFile(list);
      List<String> checkList = list.readAsLinesSync();
     for(String attachmentPath in List<String>.from(checkList)){
       try{
-      List<int> currentDbPath = (await encrypt(attachmentPath,Cyptography.ReEncryption)).toString().codeUnits;
-      List<int> newDbPath = (await reEncryptData(plainText: attachmentPath)).toString().codeUnits;
+      List<int> currentDbPath = await _getCurrentDbPath(attachmentPath: attachmentPath);
+      List<int> newDbPath = await _generateNewDbPath(attachmentPath: attachmentPath);
       File tempFile = await _downloadAndWriteToTemp(collection: Collection.passports,dbName: dbName,currentDbPath: '$currentDbPath');
       File fileToReEncrypt = await fileDecrypt(tempFile, attachmentPath, Collection.passports, dbName,mode: Cyptography.ReEncryption);
       await _uploadReEncryptedFileToFirebase(collection: Collection.passports,dbName: dbName,currentDbPath: '$currentDbPath',fileToReEncrypt: fileToReEncrypt,newDbPath: '$newDbPath',context: context);
@@ -158,7 +158,7 @@ Future documentAttachmentReEncrypt(List<Document> documents,BuildContext context
 
   if(!pausedReEncryption){
   for(File checkList in List<File>.from(documentsCheckList)){
-  String dbName = _getDbNameFromFile(checkList);
+  String dbName = await _getDbNameFromFile(checkList);
   ListOfFileInfo attachmentInfo = await FirestoreFileStorage.getAttachmentList(collection: Collection.documents,dbName: dbName);
   List<String> attachmentList = attachmentInfo.listOfFiles;
   totalNumberOfBytesHere += attachmentInfo.totalSizeInBytes;
@@ -169,16 +169,16 @@ Future documentAttachmentReEncrypt(List<Document> documents,BuildContext context
   documentsCheckList.remove(checkList));
   }
   }else{
-    totalNumberOfBytesHere = await _getTotalFileSizesToResumeReEncryption(collectionCheckList: documentsCheckList);
+    totalNumberOfBytesHere = await _getTotalFileSizesToResumeReEncryption(collectionCheckList: documentsCheckList,collection: Collection.documents);
   }
     Provider.of<ReEncryptionPercent>(context,listen: false).totalNumberOfBytes(totalNumberOfBytesHere);
    for(File list in documentsCheckList){
-     String dbName = _getDbNameFromFile(list);
+     String dbName = await _getDbNameFromFile(list);
      List<String> checkList = list.readAsLinesSync();
     for(String attachmentPath in List<String>.from(checkList)){
       try{
-      List<int> currentDbPath = (await encrypt(attachmentPath,Cyptography.ReEncryption)).toString().codeUnits;
-      List<int> newDbPath = (await reEncryptData(plainText: attachmentPath)).toString().codeUnits;
+      List<int> currentDbPath = await _getCurrentDbPath(attachmentPath: attachmentPath);
+      List<int> newDbPath = await _generateNewDbPath(attachmentPath: attachmentPath);
       print('$dbName $currentDbPath');
       File tempFile = await _downloadAndWriteToTemp(collection: Collection.documents,dbName: dbName,currentDbPath: '$currentDbPath');
       File fileToReEncrypt = await fileDecrypt(tempFile, attachmentPath, Collection.documents, dbName,mode: Cyptography.ReEncryption);
@@ -216,7 +216,7 @@ Future certificateAttachmentReEncrypt(List<Certificates> certificates,BuildConte
 
   if(!pausedReEncryption){
   for(File checkList in List<File>.from(certificatesCheckList)){
-  String dbName = _getDbNameFromFile(checkList);
+  String dbName = await _getDbNameFromFile(checkList);
   ListOfFileInfo attachmentInfo = await FirestoreFileStorage.getAttachmentList(collection: Collection.certificates,dbName: dbName);
   List<String> attachmentList = attachmentInfo.listOfFiles;
   totalNumberOfBytesHere += attachmentInfo.totalSizeInBytes;
@@ -227,16 +227,16 @@ Future certificateAttachmentReEncrypt(List<Certificates> certificates,BuildConte
   certificatesCheckList.remove(checkList));
   }
   }else{
-    totalNumberOfBytesHere = await _getTotalFileSizesToResumeReEncryption(collectionCheckList: certificatesCheckList);
+    totalNumberOfBytesHere = await _getTotalFileSizesToResumeReEncryption(collectionCheckList: certificatesCheckList,collection: Collection.certificates);
   }
     Provider.of<ReEncryptionPercent>(context,listen: false).totalNumberOfBytes(totalNumberOfBytesHere);
    for(File list in certificatesCheckList){
-     String dbName = _getDbNameFromFile(list);
+     String dbName = await _getDbNameFromFile(list);
      List<String> checkList = list.readAsLinesSync();
     for(String attachmentPath in List<String>.from(checkList)){
       try{
-      List<int> currentDbPath = (await encrypt(attachmentPath,Cyptography.ReEncryption)).toString().codeUnits;
-      List<int> newDbPath = (await reEncryptData(plainText: attachmentPath)).toString().codeUnits;
+      List<int> currentDbPath = await _getCurrentDbPath(attachmentPath: attachmentPath);
+      List<int> newDbPath = await _generateNewDbPath(attachmentPath: attachmentPath);
       File tempFile = await _downloadAndWriteToTemp(collection: Collection.certificates,dbName: dbName,currentDbPath: '$currentDbPath');
       File fileToReEncrypt = await fileDecrypt(tempFile, attachmentPath, Collection.certificates, dbName,mode: Cyptography.ReEncryption);
       await _uploadReEncryptedFileToFirebase(collection: Collection.certificates,dbName: dbName,currentDbPath: '$currentDbPath',fileToReEncrypt: fileToReEncrypt,newDbPath: '$newDbPath',context: context);
@@ -326,23 +326,23 @@ _listAllFilesInDir({@required String collection}) async => await (Directory('${G
 _getCurrentDbPath({@required String attachmentPath}) async => ((await encrypt(attachmentPath,Cyptography.ReEncryption)).toString().codeUnits);
 _generateNewDbPath({@required String attachmentPath}) async => ((await reEncryptData(plainText: attachmentPath)).toString().codeUnits);
 
-_getTotalFileSizesToResumeReEncryption({@required List<File> collectionCheckList}) async {
-  int totalFileSize;
+_getTotalFileSizesToResumeReEncryption({@required List<File> collectionCheckList,@required collection}) async {
+  int totalFileSize = 0;
       for(File crediential in collectionCheckList){
-      String dbName = _getDbNameFromFile(crediential);
+      String dbName = await _getDbNameFromFile(crediential);
       List<String> filesLeftUnEncrypted = crediential.readAsLinesSync();
 
       for(String leftUnEncrypted in filesLeftUnEncrypted){
-      List<int> currentDbPath = _getCurrentDbPath(attachmentPath: leftUnEncrypted);
+      List<int> currentDbPath = await _getCurrentDbPath(attachmentPath: leftUnEncrypted);
       var fileInfo = FirebaseStorage.instance
       .ref()
       .child(userUid)
       .child(Collection.vault)
-      .child(Collection.payments)
+      .child(collection)
       .child(dbName)
       .child('$currentDbPath');
       
-      totalFileSize += (await fileInfo.getMetadata()).size;
+      totalFileSize += ((await fileInfo.getMetadata()).size);
       print('the total number of bytes here are $totalFileSize');
       }
     }

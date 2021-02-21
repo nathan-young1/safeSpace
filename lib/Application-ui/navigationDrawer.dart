@@ -37,7 +37,6 @@ class _SafeDrawerState extends State<SafeDrawer> {
       continueUnfinishedReEncryption(context: context);
       }});
       getStorageLeft = Timer.periodic(Duration(seconds: 10),(_){
-        print('called');
         user.getIdTokenResult(true).then((token){
         VaultIdToken.setStorageLeft(token.claims['storageLeft']);
       });

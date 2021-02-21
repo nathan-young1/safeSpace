@@ -64,28 +64,29 @@ class _ManageAccountState extends State<ManageAccount> {
                 )
             ),
              ),
+            //  Container(
+            //    height: 60.h,
+            //    child: Card(
+            //     child: Align(
+            //       child: SwitchListTile(
+            //         onChanged: (value)=> setState(()=> _biometric = value),
+            //         value: _biometric,
+            //         title: Text('Enable Biometric',style: TextStyle(fontSize: RFontSize.normal)),
+            //         secondary: Icon(MdiIcons.fingerprint,size: 35.r,color: mainColor)
+            //       ),
+            //     )
+            // ),
+            //  ),
              Container(
                height: 60.h,
                child: Card(
                 child: Align(
-                  child: SwitchListTile(
-                    onChanged: (value)=> setState(()=> _biometric = value),
-                    value: _biometric,
-                    title: Text('Enable Biometric',style: TextStyle(fontSize: RFontSize.normal)),
-                    secondary: Icon(MdiIcons.fingerprint,size: 35.r,color: mainColor)
-                  ),
-                )
-            ),
-             ),
-             Container(
-               height: 60.h,
-               child: Card(
-                child: Align(
-                  child: SwitchListTile(
-                    onChanged: (value) => setState(()=> _screenShot = value),
-                    value: _screenShot,
-                    title: Text('Disable Screenshot',style: TextStyle(fontSize: RFontSize.normal)),
-                    secondary: Icon(MdiIcons.cellphoneScreenshot,size: 35.r,color: mainColor)
+                  child: ListTile(
+                   onTap: (){
+                    Navigator.of(context).pushNamed('UpgradePlan',arguments: ModalRoute.of(context).settings.arguments);
+                  },
+                    title: Text('Go Premium',style: TextStyle(fontSize: RFontSize.normal)),
+                    leading: Icon(Icons.credit_card,size: 35.r,color: mainColor)
                   ),
                 )
             ),
