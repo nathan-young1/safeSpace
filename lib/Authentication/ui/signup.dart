@@ -133,7 +133,7 @@ class _SignupState extends State<Signup> {
                                     (hideText)
                                     ?Icons.lock
                                     :Icons.lock_open,
-                                    color: mainColor),
+                                    color: mainColor,size: 18.w),
                                     onPressed: () =>  setState(() => hideText =! hideText),
                                   ),
                                   ),
