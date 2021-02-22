@@ -84,8 +84,22 @@ class _ManageAccountState extends State<ManageAccount> {
                    onTap: (){
                     Navigator.of(context).pushNamed('UpgradePlan',arguments: ModalRoute.of(context).settings.arguments);
                   },
-                    title: Text('Go Premium',style: TextStyle(fontSize: RFontSize.normal)),
+                    title: Text('Get Premium',style: TextStyle(fontSize: RFontSize.normal)),
                     leading: Icon(Icons.credit_card,size: 35.r,color: mainColor)
+                  ),
+                )
+            ),
+             ),
+              Container(
+               height: 60.h,
+               child: Card(
+                child: Align(
+                  child: ListTile(
+                   onTap: (){
+                    authenticateVaultKeyBeforeUserDelete(context: context);
+                  },
+                    title: Text('Delete My Account',style: TextStyle(fontSize: RFontSize.normal)),
+                    leading: Icon(Icons.delete_forever,size: 35.r,color: mainColor)
                   ),
                 )
             ),

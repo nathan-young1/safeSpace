@@ -59,7 +59,7 @@ class _PurchaseSubscriptionState extends State<PurchaseSubscription> {
           child: IconButton(icon: Icon(Icons.arrow_back_ios,size: (context.isMobileTypeHandset)?30:19.w,color: Colors.black),
           onPressed: ()=> Navigator.of(context).pop()),
         ),
-          title: Text('Go Premium',style: Theme.of(context).appBarTheme.textTheme.headline1),
+          title: Text('Get Premium',style: Theme.of(context).appBarTheme.textTheme.headline1),
         ),
         body: (internetConnection)?Container(
           child: Column(

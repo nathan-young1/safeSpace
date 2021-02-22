@@ -1,4 +1,5 @@
 import 'package:animations/animations.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:password_strength/password_strength.dart';
@@ -9,6 +10,7 @@ import 'package:safeSpace/Core-Services/global.dart';
 import 'package:safeSpace/Custom-widgets/flushBars.dart';
 import 'package:safeSpace/Custom-widgets/passwordStrengthIndicator.dart';
 import 'package:safeSpace/Custom-widgets/progressDialog.dart';
+import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login.dart';
@@ -26,7 +28,10 @@ class _SignupState extends State<Signup> {
     RegExp regExp = new RegExp(pattern, caseSensitive: false);
     return regExp.hasMatch(value);
   }
-
+  _goToTermsOfService() => Navigator.of(context).pushNamed('TermsOfService');
+  _goToPrivacyPolicy() => Navigator.of(context).pushNamed('PrivacyPolicy');
+  TapGestureRecognizer _termsOfService;
+  TapGestureRecognizer _privacyPolicy;
   TextEditingController password;
   TextEditingController retypePassword;
   bool hideText = true;
@@ -34,13 +39,18 @@ class _SignupState extends State<Signup> {
   FocusNode retypePasswordFocus = FocusNode();
   double passwordStrength = 0.0;
   Color passwordStrengthColor = Colors.transparent;
-
+  bool agreementCheckBox;
   @override
     void initState() {
       super.initState();
+      agreementCheckBox = false;
       //clears the password by creating new text editing controller on each init state
       password = TextEditingController(text: '');
       retypePassword  = TextEditingController(text: '');
+      _termsOfService = TapGestureRecognizer()
+      ..onTap = _goToTermsOfService;
+      _privacyPolicy = TapGestureRecognizer()
+      ..onTap = _goToPrivacyPolicy;
     }
   @override
     void dispose() {
@@ -123,7 +133,7 @@ class _SignupState extends State<Signup> {
                                     (hideText)
                                     ?Icons.lock
                                     :Icons.lock_open,
-                                    color: mainColor),
+                                    color: mainColor,size: 18.w),
                                     onPressed: () =>  setState(() => hideText =! hideText),
                                   ),
                                   ),
@@ -161,14 +171,56 @@ class _SignupState extends State<Signup> {
                                 labelText: 'Retype Vault Key')),
                           ),
                           SizedBox(height: 15.h),
+                            Container(
+                              width: 270.w,
+                              child: Row(
+                                children: [
+                                  Transform.scale(
+                                    scale: 1.4,
+                                    child: Checkbox(
+                                      activeColor: mainColor,
+                                      value: agreementCheckBox,
+                                      onChanged: (_)=>setState(()=> agreementCheckBox = !agreementCheckBox),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: RichText(
+                                    text: TextSpan(
+                                    children: <TextSpan>[
+                                    TextSpan(text: 'I agree to the ',
+                                      style: TextStyle(fontSize: RFontSize.small)),
+                                      TextSpan(text: 'Terms Of Service ',
+                                      recognizer: _termsOfService,
+                                      style: TextStyle(fontSize: RFontSize.small,
+                                      fontWeight: FontWeight.bold,
+                                      color: secondaryColor)),
+                                     TextSpan(text: 'and ',
+                                      style: TextStyle(fontSize: RFontSize.small),),
+                                      TextSpan(text: 'Privacy Policy',
+                                      recognizer: _privacyPolicy,
+                                      style: TextStyle(fontSize: RFontSize.small,
+                                      fontWeight: FontWeight.bold,
+                                      color: secondaryColor)),
+                                      TextSpan(text: '.',
+                                      style: TextStyle(fontSize: RFontSize.small),)
+                          ],style: TextStyle(fontSize: RFontSize.normal,color: Colors.black)),
+                          ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          SizedBox(height: 15.h),
                           ButtonTheme(
                             minWidth: 100.w,
                             child: RaisedButton(
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                               onPressed: () {
-                              if(passwordStrength == 100 && password.text == retypePassword.text){
+                              if(passwordStrength == 100 && password.text == retypePassword.text && agreementCheckBox){
                               registerSafe();
-                              }else if(passwordStrength != 100){
+                              }else if (!agreementCheckBox){
+                                showFlushBar(context,'Accept Agreement First',Icons.privacy_tip);
+                              }
+                              else if(passwordStrength != 100){
                                 showFlushBar(context,'Vault key is weak',MdiIcons.qualityLow);
                               }else if(password.text != retypePassword.text){
                                 showFlushBar(context,'Vault keys do not match',MdiIcons.notEqual);
@@ -178,10 +230,6 @@ class _SignupState extends State<Signup> {
                               color: mainColor,
                             ),
                           ),
-                          SizedBox(height: 10.h),
-                          Row(children:[
-                            
-                          ]),
                           SizedBox(height: 20.h),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,

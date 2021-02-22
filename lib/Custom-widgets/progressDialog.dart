@@ -6,23 +6,19 @@ import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
 import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
 
-progressDialog({@required BuildContext buildContext, String message = '', @required ProgressDialogVisiblity command,bool fileAlreadyExists = false}) {
+progressDialog({@required BuildContext buildContext, String message = '', @required ProgressDialogVisiblity command}) {
   final ProgressDialog dialog = ProgressDialog(buildContext, isDismissible: false);
   dialog.style(
       message: message,
       borderRadius: 10.0,
       backgroundColor: Colors.white,
-      progressWidget: (!fileAlreadyExists)
-      ?Transform.scale(
+      progressWidget: Transform.scale(
       scale: 0.7,
-      child: CircularProgressIndicator(backgroundColor: mainColor))
-      :Icon(Icons.file_present,size: 30.r),
+      child: CircularProgressIndicator(backgroundColor: mainColor)),
       elevation: 10.0,
       insetAnimCurve: Curves.easeInOut,
       progressTextStyle: TextStyle(color: mainColor, fontSize: 13.0, fontWeight: FontWeight.w400),
-      messageTextStyle: (!fileAlreadyExists)
-      ?popupStyle
-      :TextStyle(fontSize: RFontSize.normal));
+      messageTextStyle: popupStyle);
       switch (command) {
         case ProgressDialogVisiblity.show:
           dialog.show();

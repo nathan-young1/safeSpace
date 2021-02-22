@@ -17,6 +17,7 @@ import 'package:safeSpace/Payments/code/paymentDetails.dart';
 import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
 import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
+import 'package:safeSpace/Subscription/code/subscription.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class Payment extends StatefulWidget {
@@ -76,7 +77,14 @@ class _PaymentState extends State<Payment> {
             body: (internetConnection)? ListPage(): NoInternetConnection(),
             floatingActionButton: (!isSearching.searching && internetConnection)
               ? InkWell(
-                  onTap: () => paymentDialog(),
+                  onTap: () {
+                  if(Provider.of<List<Payments>>(context,listen: false).length == 5){
+                  (SafeSpaceSubscription.isPremiumUser)
+                  ?paymentDialog()
+                  :Navigator.of(context).pushNamed('UpgradePlan');
+                  }else{
+                  paymentDialog();
+                  }},
                   child: ClipRRect(
                     borderRadius:  BorderRadius.circular(15),
                     child: Container(

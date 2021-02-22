@@ -17,6 +17,7 @@ import 'package:safeSpace/Passwords/code/passwordDetails.dart';
 import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
 import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
+import 'package:safeSpace/Subscription/code/subscription.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 //todo if tablet different list tile size than if mobile
@@ -71,7 +72,14 @@ class _PasswordState extends State<Password> {
             body: (internetConnection)?ListPage():NoInternetConnection(),
             floatingActionButton: (!isSearching.searching && internetConnection)
               ? InkWell(
-                  onTap: () => password(),
+                  onTap: () {
+                  if(Provider.of<List<Passwords>>(context,listen: false).length == 5){
+                  (SafeSpaceSubscription.isPremiumUser)
+                  ?password()
+                  :Navigator.of(context).pushNamed('UpgradePlan');
+                  }else{
+                  password();
+                  }},
                   child: ClipRRect(
                     borderRadius:  BorderRadius.circular(15),
                     child: Container(

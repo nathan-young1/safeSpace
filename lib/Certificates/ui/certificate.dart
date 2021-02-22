@@ -16,6 +16,7 @@ import 'package:safeSpace/Firebase-Services/firebase-models.dart';
 import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
 import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
+import 'package:safeSpace/Subscription/code/subscription.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class Certificate extends StatefulWidget {
@@ -86,7 +87,14 @@ class _CertificateState extends State<Certificate> {
           body: (internetConnection)?ListPage():NoInternetConnection(),
           floatingActionButton: (!isSearching.searching && internetConnection)
               ? InkWell(
-                  onTap: () => certificateDialog(),
+                  onTap: () {
+                  if(Provider.of<List<Certificates>>(context,listen: false).length == 5){
+                  (SafeSpaceSubscription.isPremiumUser)
+                  ?certificateDialog()
+                  :Navigator.of(context).pushNamed('UpgradePlan');
+                  }else{
+                  certificateDialog();
+                  }},
                   child: ClipRRect(
                     borderRadius:  BorderRadius.circular(15),
                     child: Container(

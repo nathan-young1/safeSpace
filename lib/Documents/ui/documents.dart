@@ -15,6 +15,7 @@ import 'package:safeSpace/Firebase-Services/firebase-models.dart';
 import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
 import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
+import 'package:safeSpace/Subscription/code/subscription.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class Documents extends StatefulWidget {
@@ -59,7 +60,14 @@ class _DocumentsState extends State<Documents> {
           body: (internetConnection)?ListPage():NoInternetConnection(),
           floatingActionButton: (!isSearching.searching && internetConnection)
               ? InkWell(
-                  onTap: () => documentDialog(),
+                  onTap: () {
+                  if(Provider.of<List<Document>>(context,listen: false).length == 5){
+                  (SafeSpaceSubscription.isPremiumUser)
+                  ?documentDialog()()
+                  :Navigator.of(context).pushNamed('UpgradePlan');
+                  }else{
+                  documentDialog()();
+                  }},
                   child: ClipRRect(
                     borderRadius:  BorderRadius.circular(15),
                     child: Container(
