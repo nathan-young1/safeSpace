@@ -215,9 +215,12 @@ class _SignupState extends State<Signup> {
                             child: RaisedButton(
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                               onPressed: () {
-                              if(passwordStrength == 100 && password.text == retypePassword.text){
+                              if(passwordStrength == 100 && password.text == retypePassword.text && agreementCheckBox){
                               registerSafe();
-                              }else if(passwordStrength != 100){
+                              }else if (!agreementCheckBox){
+                                showFlushBar(context,'Accept Agreement First',Icons.privacy_tip);
+                              }
+                              else if(passwordStrength != 100){
                                 showFlushBar(context,'Vault key is weak',MdiIcons.qualityLow);
                               }else if(password.text != retypePassword.text){
                                 showFlushBar(context,'Vault keys do not match',MdiIcons.notEqual);
