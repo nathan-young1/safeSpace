@@ -28,7 +28,10 @@ class _SignupState extends State<Signup> {
     RegExp regExp = new RegExp(pattern, caseSensitive: false);
     return regExp.hasMatch(value);
   }
-
+  _goToTermsOfService() => Navigator.of(context).pushNamed('TermsOfService');
+  _goToPrivacyPolicy() => Navigator.of(context).pushNamed('PrivacyPolicy');
+  TapGestureRecognizer _termsOfService;
+  TapGestureRecognizer _privacyPolicy;
   TextEditingController password;
   TextEditingController retypePassword;
   bool hideText = true;
@@ -44,6 +47,10 @@ class _SignupState extends State<Signup> {
       //clears the password by creating new text editing controller on each init state
       password = TextEditingController(text: '');
       retypePassword  = TextEditingController(text: '');
+      _termsOfService = TapGestureRecognizer()
+      ..onTap = _goToTermsOfService;
+      _privacyPolicy = TapGestureRecognizer()
+      ..onTap = _goToPrivacyPolicy;
     }
   @override
     void dispose() {
@@ -165,39 +172,41 @@ class _SignupState extends State<Signup> {
                           ),
                           SizedBox(height: 15.h),
                             Container(
-                              child: Flexible(
-                                child: Row(
-                                  children: [
-                                    Transform.scale(
-                                      scale: 1.5,
-                                      child: Checkbox(
-                                        activeColor: mainColor,
-                                        value: agreementCheckBox,
-                                        onChanged: (_)=>setState(()=> agreementCheckBox = !agreementCheckBox),
-                                      ),
+                              width: 270.w,
+                              child: Row(
+                                children: [
+                                  Transform.scale(
+                                    scale: 1.4,
+                                    child: Checkbox(
+                                      activeColor: mainColor,
+                                      value: agreementCheckBox,
+                                      onChanged: (_)=>setState(()=> agreementCheckBox = !agreementCheckBox),
                                     ),
-                                    Wrap(children:[
-                                    Text('I agree to the ',
-                                      style: TextStyle(fontSize: RFontSize.normal),),
-                                    GestureDetector(
-                                      onTap:() => Navigator.of(context).pushNamed('TermsOfService'),
-                                      child: Text('Terms Of Service ',
-                                      style: TextStyle(fontSize: RFontSize.normal,
+                                  ),
+                                  Flexible(
+                                    child: RichText(
+                                    text: TextSpan(
+                                    children: <TextSpan>[
+                                    TextSpan(text: 'I agree to the ',
+                                      style: TextStyle(fontSize: RFontSize.small)),
+                                      TextSpan(text: 'Terms Of Service ',
+                                      recognizer: _termsOfService,
+                                      style: TextStyle(fontSize: RFontSize.small,
                                       fontWeight: FontWeight.bold,
-                                      color: secondaryColor),)),
-                                     Text('and ',
-                                      style: TextStyle(fontSize: RFontSize.normal),),
-                                    GestureDetector(
-                                      onTap: () => Navigator.of(context).pushNamed('PrivacyPolicy'),
-                                      child: Text('Privacy Policy',
-                                      style: TextStyle(fontSize: RFontSize.normal,
+                                      color: secondaryColor)),
+                                     TextSpan(text: 'and ',
+                                      style: TextStyle(fontSize: RFontSize.small),),
+                                      TextSpan(text: 'Privacy Policy',
+                                      recognizer: _privacyPolicy,
+                                      style: TextStyle(fontSize: RFontSize.small,
                                       fontWeight: FontWeight.bold,
-                                      color: secondaryColor))),
-                                      Text('.',
-                                      style: TextStyle(fontSize: RFontSize.normal),)
-                          ]),
-                                  ],
-                                ),
+                                      color: secondaryColor)),
+                                      TextSpan(text: '.',
+                                      style: TextStyle(fontSize: RFontSize.small),)
+                          ],style: TextStyle(fontSize: RFontSize.normal,color: Colors.black)),
+                          ),
+                                  )
+                                ],
                               ),
                             ),
                           SizedBox(height: 15.h),
