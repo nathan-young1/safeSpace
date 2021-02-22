@@ -22,6 +22,7 @@ User user;
 // ignore: missing_return
 Future<Authentication> signInWithEmailAndPassword(String password,BuildContext context) async {
   final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+    print(googleSignInAccount.email);
   try {
   await googleSignIn.signOut();
   //await user creation

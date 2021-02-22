@@ -16,6 +16,7 @@ import 'package:safeSpace/Passports/code/passportDetails.dart';
 import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
 import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
+import 'package:safeSpace/Subscription/code/subscription.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class Identity extends StatefulWidget {
@@ -122,7 +123,14 @@ class _IdentityState extends State<Identity> {
           body: (internetConnection)?ListPage():NoInternetConnection(),
           floatingActionButton: (!isSearching.searching && internetConnection)
               ? InkWell(
-                  onTap: () => passportDialog(),
+                  onTap: () {
+                  if(Provider.of<List<Passports>>(context,listen: false).length == 5){
+                  (SafeSpaceSubscription.isPremiumUser)
+                  ?passportDialog()
+                  :Navigator.of(context).pushNamed('UpgradePlan');
+                  }else{
+                  passportDialog();
+                  }},
                   child: ClipRRect(
                     borderRadius:  BorderRadius.circular(15),
                     child: Container(

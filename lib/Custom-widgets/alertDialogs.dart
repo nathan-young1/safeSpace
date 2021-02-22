@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:safeSpace/Application-ui/navigationDrawer.dart';
 import 'package:safeSpace/Authentication/code/authentication.dart';
 import 'package:safeSpace/Core-Services/enum.dart';
 import 'package:safeSpace/Core-Services/global.dart';
@@ -131,8 +132,9 @@ authenticateVaultKeyBeforeUserDelete({@required BuildContext context}){
                      Navigator.of(context).pop();
                     progressDialog(buildContext: context,message: 'Deleting User...',command: ProgressDialogVisiblity.show);
                     try {
-                    await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: masterkey,emailAddress: email)).then((_){
-                    user.delete().then((_){
+                    await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: enterVaultKey.text,emailAddress: email)).then((_) async {
+                    await user.delete().then((_){
+                    getStorageLeft.cancel();
                     progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
                     signOut(context);
                       });
