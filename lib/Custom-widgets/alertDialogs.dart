@@ -134,7 +134,6 @@ authenticateVaultKeyBeforeUserDelete({@required BuildContext context}){
                     try {
                     await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: enterVaultKey.text,emailAddress: email)).then((_) async {
                     await user.delete().then((_){
-                    getStorageLeft.cancel();
                     progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
                     signOut(context);
                       });
@@ -183,7 +182,7 @@ authenticateVaultKeyBeforeUserDelete({@required BuildContext context}){
                    if(_authBeforeUserDelete.currentState.validate()){
                      Navigator.of(context).pop();
                     progressDialog(buildContext: context,message: 'Deleting User...',command: ProgressDialogVisiblity.show);
-                    try {print(enterVaultKey.text);
+                    try {
                       await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: enterVaultKey.text,emailAddress: email)).then((_) async {
                       await user.delete().then((_){
                     progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
