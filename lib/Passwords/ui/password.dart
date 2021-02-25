@@ -193,6 +193,7 @@ class _PasswordState extends State<Password> {
                             tooltip: 'Generate Password',
                             icon: Icon(Icons.enhanced_encryption,color: secondaryColor,size: (context.isMobileTypeHandset)?30.r:22.r),
                             onPressed: (){ 
+                              FocusScope.of(context).unfocus();
                               passwordFocusNode.unfocus();
                               passwordFocusNode.canRequestFocus = false;
                               openPasswordMiner();

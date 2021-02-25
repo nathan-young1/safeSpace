@@ -63,10 +63,10 @@ class _DocumentsState extends State<Documents> {
                   onTap: () {
                   if(Provider.of<List<Document>>(context,listen: false).length == 5){
                   (SafeSpaceSubscription.isPremiumUser)
-                  ?documentDialog()()
+                  ?documentDialog()
                   :Navigator.of(context).pushNamed('UpgradePlan');
                   }else{
-                  documentDialog()();
+                  documentDialog();
                   }},
                   child: ClipRRect(
                     borderRadius:  BorderRadius.circular(15),
@@ -93,14 +93,16 @@ class _DocumentsState extends State<Documents> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                         SizedBox(width: 10.w),
-                        IconButton(
-                            icon: Icon(Icons.arrow_back_ios,size: 25.r),
-                            onPressed: () {
-                              clearText('Back');
-                            }),
+                        Flexible(
+                          child: IconButton(
+                            alignment: Alignment.bottomCenter,
+                              icon: Icon(Icons.arrow_back_ios,size: 25.r),
+                              onPressed: () {
+                                clearText('Back');
+                              }),
+                        ),
                         Text('Document',style: dialogTitle),
                       ]),
                       Card(
