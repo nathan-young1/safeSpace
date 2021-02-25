@@ -125,14 +125,16 @@ class _CertificateState extends State<Certificate> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                       SizedBox(width: 10.w),
-                      IconButton(
-                          icon: Icon(Icons.arrow_back_ios,size: 25.r),
-                          onPressed: () {
-                            clearText('Back');
-                          }),
+                      Flexible(
+                        child: IconButton(
+                          alignment: Alignment.bottomCenter,
+                            icon: Icon(Icons.arrow_back_ios,size: 25.r),
+                            onPressed: () {
+                              clearText('Back');
+                            }),
+                      ),
                             Text('Certificate',style: dialogTitle),
                           ]),
                           Card(

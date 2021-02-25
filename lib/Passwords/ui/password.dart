@@ -32,9 +32,10 @@ class _PasswordState extends State<Password> {
   TextEditingController title = TextEditingController();
   TextEditingController networkUrl = TextEditingController();
   TextEditingController accountUsername = TextEditingController();
-  final titleFocus = FocusNode();
-  final networkFocus = FocusNode();
-  final usernameFocus = FocusNode();
+  FocusNode titleFocus = FocusNode();
+  FocusNode networkFocus = FocusNode();
+  FocusNode usernameFocus = FocusNode();
+  FocusNode passwordFocusNode = FocusNode();
 
   @override
     void initState() {
@@ -108,10 +109,13 @@ class _PasswordState extends State<Password> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                 SizedBox(width: 10.w),
-                IconButton( icon: Icon(Icons.arrow_back_ios,size: 25.r),onPressed: () => clearText('Back')),
+                Flexible(
+                  child: IconButton( 
+                    alignment: Alignment.bottomCenter,
+                    icon: Icon(Icons.arrow_back_ios,size: 25.r),onPressed: () => clearText('Back')),
+                ),
                 Text('Password Field',style: dialogTitle)
               ]),
               Form(
@@ -120,7 +124,7 @@ class _PasswordState extends State<Password> {
                 color: Colors.transparent,
                 elevation: 0,
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 20.w),
+                  padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 20.w),
                   child: Column(children: [
                   Container(
                     width: (context.isMobileTypeHandset)?200.w:140.w,
@@ -172,10 +176,11 @@ class _PasswordState extends State<Password> {
                   Container(
                       width: (context.isMobileTypeHandset)?200.w:140.w,
                       child: TextFormField(
+                        focusNode: passwordFocusNode,
                         style: authTextField,
                         autovalidateMode: passwordValidation,
                         autofocus: false,
-                        readOnly: true,
+                        autocorrect: false,
                         controller: passwordField,
                         validator: (value) {
                           if (value.isEmpty) {
@@ -184,9 +189,15 @@ class _PasswordState extends State<Password> {
                           return null;
                         },
                       decoration: textInputDecoration.copyWith(
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.enhanced_encryption,color: secondaryColor,size: (context.isMobileTypeHandset)?25:22.r),
-                          onPressed: () => openPasswordMiner()),
+                      suffixIcon: IconButton(
+                            tooltip: 'Generate Password',
+                            icon: Icon(Icons.enhanced_encryption,color: secondaryColor,size: (context.isMobileTypeHandset)?30.r:22.r),
+                            onPressed: (){ 
+                              FocusScope.of(context).unfocus();
+                              passwordFocusNode.unfocus();
+                              passwordFocusNode.canRequestFocus = false;
+                              openPasswordMiner();
+                              }),
                         labelText: 'Password'),
                                       ))
                           ]),
@@ -265,19 +276,24 @@ class _PasswordState extends State<Password> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(children: [
-              SizedBox(width: 6),
-              IconButton(
-                  icon: Icon(Icons.arrow_back_ios, size: 25.r),
-                  onPressed: () => Navigator.of(context, rootNavigator: true).pop()),
+            Row(
+            children: [
               SizedBox(width: 10.w),
+              Flexible(
+                child: IconButton(
+                  alignment: Alignment.bottomCenter,
+                    icon: Icon(Icons.arrow_back_ios, size: 25.r),
+                    onPressed: () { 
+                      passwordFocusNode.canRequestFocus = true;
+                      Navigator.pop(context);}),
+              ),
               Text('Password Miner',style: dialogTitle),
               ]),
               Card(
                 color: Colors.transparent,
                 elevation: 0,
                 child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 10.w),
+                  padding: EdgeInsets.symmetric(vertical: 5.h),
                   child: Column(children: [
                     SizedBox(
                       width: (context.isMobileTypeHandset)?220.w:150.w,
@@ -424,6 +440,7 @@ class _PasswordState extends State<Password> {
                       GestureDetector(
                         onTap: () {
                           passwordField.text = passMiner.text;
+                          passwordFocusNode.canRequestFocus = true;
                           Navigator.pop(context);
                         },
                         child: SizedBox(
@@ -440,7 +457,16 @@ class _PasswordState extends State<Password> {
                         ),
                       ),
                     ])));
-    showDialog(context: context, child: dialog, barrierDismissible: false);
+    showDialog(
+    context: context, 
+    child: WillPopScope(
+      // ignore: missing_return
+      onWillPop: (){
+        passwordFocusNode.canRequestFocus = true;
+        Navigator.pop(context);
+      },
+      child: dialog), 
+    barrierDismissible: false);
   }
 }
 
