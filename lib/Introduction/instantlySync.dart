@@ -13,8 +13,8 @@ class InstantSyncPage extends StatelessWidget {
           color: Colors.transparent,
           child: Image.asset(
             'assets/images/introductionPictures/instantSync.png',
-            height: 380.h,
-            width: 250.w,
+            height: 350.h,
+            width: 230.w,
             fit: BoxFit.fill
           ),
         ),

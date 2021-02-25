@@ -2,6 +2,9 @@ package com.vault.safeSpace;
 
 import io.flutter.embedding.android.FlutterActivity;
 import android.view.View;
+import android.view.WindowManager; 
+import android.view.WindowManager.LayoutParams;
+import android.os.Bundle;
 
 public class MainActivity extends FlutterActivity {
     @Override
@@ -9,7 +12,15 @@ public class MainActivity extends FlutterActivity {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
             hideSystemUI();
+        }else {
+            showSystemUI();
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
     }
 
     private void hideSystemUI() {
