@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:safeSpace/Core-Services/global.dart';
 import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Splashscreen extends StatefulWidget {
   @override
@@ -15,7 +16,13 @@ class _SplashscreenState extends State<Splashscreen> {
     changeRouteTimer();
   }
 
-  changeRouteTimer() => Timer(Duration(seconds: 1), () => Navigator.pushReplacementNamed(context,'Login'));
+  Future<bool> isUserFirstTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isUserFirstTime = prefs.containsKey('isUserFirstTime') ? false : true;
+    return isUserFirstTime;
+  }
+
+  changeRouteTimer() => Timer(Duration(seconds: 2), () async =>(await isUserFirstTime())?Navigator.pushReplacementNamed(context,'IntroPages'):Navigator.pushReplacementNamed(context,'Login'));
 
   @override
   Widget build(BuildContext context) {

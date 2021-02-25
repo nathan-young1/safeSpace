@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:safeSpace/Agreement/privacyPolicy.dart';
 import 'package:safeSpace/Agreement/termsOfService.dart';
 import 'package:safeSpace/Core-Services/attachment.dart';
+import 'package:safeSpace/Introduction/introPagesHolder.dart';
 import 'package:safeSpace/Styles/theme.dart';
 import 'package:safeSpace/Subscription/ui/purchaseSubscription.dart';
 import 'package:safeSpace/Vault-Recryption/reEncryptionPercent.dart';
@@ -93,6 +94,7 @@ class _SafeState extends State<Safe> {
                   ),
                   routes: {
                     '/': (context)=> Splashscreen(),
+                    'IntroPages': (context)=> IntroPageHolder(),
                     'Login': (context) => Login(),
                     'SignUp': (context) => Signup(),
                     'SafeDrawer': (context) => SafeHome(),
