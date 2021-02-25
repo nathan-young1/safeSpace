@@ -18,8 +18,8 @@ class _MinePasswordPageState extends State<MinePasswordPage> {
           color: Colors.transparent,
           child: Image.asset(
             'assets/images/introductionPictures/mineSecurePasswords.jpg',
-            height: 380.h,
-            width: 250.w,
+            height: 350.h,
+            width: 230.w,
             fit: BoxFit.fill
           ),
         ),
