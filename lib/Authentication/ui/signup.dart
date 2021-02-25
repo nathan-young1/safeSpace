@@ -12,6 +12,7 @@ import 'package:safeSpace/Custom-widgets/passwordStrengthIndicator.dart';
 import 'package:safeSpace/Custom-widgets/progressDialog.dart';
 import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
+import 'package:safeSpace/Subscription/code/subscription.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -262,6 +263,7 @@ class _SignupState extends State<Signup> {
       case Authentication.Successful:
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('username', email);
+        await SafeSpaceSubscription.initalizePlugin();
         password.text = '';
         retypePassword.text='';
         Navigator.pushReplacement(
