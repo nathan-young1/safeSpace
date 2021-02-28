@@ -25,7 +25,7 @@ class Signup extends StatefulWidget {
 
 class _SignupState extends State<Signup> {
   bool _validateVaultKey(String value) {
-    String pattern =  r'^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9]).{8,}$';
+    String pattern =  r'^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?\d).{8,}$';
     //String pattern =  r'^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[@#=+!\$%&?(){}~_\\-\\.,^;:|#*]).{8,}$';
     RegExp regExp = new RegExp(pattern, caseSensitive: true/*false*/);
     return regExp.hasMatch(value);
@@ -93,6 +93,7 @@ class _SignupState extends State<Signup> {
                                 controller: password,
                                 style: authTextField,
                                 onChanged: (value){
+                                  print('changed'+value);
                                   setState(() {
                                     double strength = estimatePasswordStrength(value);
                                     if (value.length == 0) {
@@ -101,10 +102,10 @@ class _SignupState extends State<Signup> {
                                     } else if (strength <= 0.4 && strength > 0) {
                                       passwordStrengthColor = Colors.red;
                                       passwordStrength = 40.0;
-                                    } else if (strength <= 0.7 && strength > 0.4) {
+                                    } else if (strength <= 0.8 && strength > 0.4) {
                                       passwordStrengthColor = Colors.yellow;
                                       passwordStrength = 70.0;
-                                    } else if (strength <= 1 && strength > 0.7 && _validateVaultKey(value)) {
+                                    } else if ((strength <= 1 && strength > 0.8) && _validateVaultKey(value)) {
                                       passwordStrengthColor = Colors.teal;
                                       passwordStrength = 100.0;
                                     }
