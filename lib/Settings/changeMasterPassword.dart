@@ -29,9 +29,7 @@ class _ChangeMasterPasswordState extends State<ChangeMasterPassword> {
   Color passwordStrengthColor = Colors.transparent;
 
   bool _validateVaultKey(String value) {
-    //String pattern =  r'^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[@#=+!\$%&?(){}~_\\-\\.,^;:|#*]).{8,}$';
-    String pattern =  r'^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9]).{8,}$';
-    RegExp regExp = new RegExp(pattern, caseSensitive: true/*false*/);
+    RegExp regExp = new RegExp(r'((?=.*?[a-z|@#=+!\$%&?(){}~_\\-\\.,^;:|#*])(?=.*?\d).{8,})', caseSensitive: false);
     return regExp.hasMatch(value);
   }
   @override
@@ -82,10 +80,10 @@ class _ChangeMasterPasswordState extends State<ChangeMasterPassword> {
                     } else if (strength <= 0.4 && strength > 0) {
                       passwordStrengthColor = Colors.red;
                       passwordStrength = 40.0;
-                    } else if (strength <= 0.7 && strength > 0.4) {
+                    } else if (strength <= 0.8 && strength > 0.4) {
                       passwordStrengthColor = Colors.yellow;
                       passwordStrength = 70.0;
-                    } else if (strength <= 1 && strength > 0.7 && _validateVaultKey(value)) {
+                    } else if (strength <= 1 && strength > 0.8 && _validateVaultKey(value)) {
                       passwordStrengthColor = Colors.teal;
                       passwordStrength = 100.0;
                     }

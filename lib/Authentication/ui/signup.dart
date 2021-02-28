@@ -25,9 +25,7 @@ class Signup extends StatefulWidget {
 
 class _SignupState extends State<Signup> {
   bool _validateVaultKey(String value) {
-    String pattern =  r'^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?\d).{8,}$';
-    //String pattern =  r'^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[@#=+!\$%&?(){}~_\\-\\.,^;:|#*]).{8,}$';
-    RegExp regExp = new RegExp(pattern, caseSensitive: true/*false*/);
+    RegExp regExp = new RegExp(r'((?=.*?[a-z|@#=+!\$%&?(){}~_\\-\\.,^;:|#*])(?=.*?\d).{8,})', caseSensitive: false);
     return regExp.hasMatch(value);
   }
   _goToTermsOfService() => Navigator.of(context).pushNamed('TermsOfService');
@@ -93,7 +91,6 @@ class _SignupState extends State<Signup> {
                                 controller: password,
                                 style: authTextField,
                                 onChanged: (value){
-                                  print('changed'+value);
                                   setState(() {
                                     double strength = estimatePasswordStrength(value);
                                     if (value.length == 0) {
