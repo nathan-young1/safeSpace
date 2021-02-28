@@ -29,8 +29,9 @@ class _ChangeMasterPasswordState extends State<ChangeMasterPassword> {
   Color passwordStrengthColor = Colors.transparent;
 
   bool _validateVaultKey(String value) {
-    String pattern =  r'^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[@#=+!\$%&?(){}~_\\-\\.,^;:|#*]).{8,}$';
-    RegExp regExp = new RegExp(pattern, caseSensitive: false);
+    //String pattern =  r'^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[@#=+!\$%&?(){}~_\\-\\.,^;:|#*]).{8,}$';
+    String pattern =  r'^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9]).{8,}$';
+    RegExp regExp = new RegExp(pattern, caseSensitive: true/*false*/);
     return regExp.hasMatch(value);
   }
   @override
