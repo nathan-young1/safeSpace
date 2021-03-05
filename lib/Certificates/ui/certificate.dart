@@ -88,7 +88,7 @@ class _CertificateState extends State<Certificate> {
           floatingActionButton: (!isSearching.searching && internetConnection)
               ? InkWell(
                   onTap: () {
-                  if(Provider.of<List<Certificates>>(context,listen: false).length == 5){
+                  if(Provider.of<List<Certificates>>(context,listen: false).length == 10){
                   (SafeSpaceSubscription.isPremiumUser)
                   ?certificateDialog()
                   :Navigator.of(context).pushNamed('UpgradePlan');

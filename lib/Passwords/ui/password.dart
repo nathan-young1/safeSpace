@@ -74,7 +74,7 @@ class _PasswordState extends State<Password> {
             floatingActionButton: (!isSearching.searching && internetConnection)
               ? InkWell(
                   onTap: () {
-                  if(Provider.of<List<Passwords>>(context,listen: false).length == 5){
+                  if(Provider.of<List<Passwords>>(context,listen: false).length == 10){
                   (SafeSpaceSubscription.isPremiumUser)
                   ?password()
                   :Navigator.of(context).pushNamed('UpgradePlan');

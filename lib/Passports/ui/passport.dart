@@ -124,7 +124,7 @@ class _IdentityState extends State<Identity> {
           floatingActionButton: (!isSearching.searching && internetConnection)
               ? InkWell(
                   onTap: () {
-                  if(Provider.of<List<Passports>>(context,listen: false).length == 5){
+                  if(Provider.of<List<Passports>>(context,listen: false).length == 10){
                   (SafeSpaceSubscription.isPremiumUser)
                   ?passportDialog()
                   :Navigator.of(context).pushNamed('UpgradePlan');

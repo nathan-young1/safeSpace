@@ -43,13 +43,13 @@ class Attachment extends StatelessWidget {
   
 
 class GetDirectories{
-  static Directory externalDirectory;
+  static Directory _externalDirectory;
   static final Directory systemTempDir = Directory.systemTemp;
   static String pathToVaultFolder;
 
   static initialize() async {
-    externalDirectory = await getExternalStorageDirectory();
-    pathToVaultFolder = '${externalDirectory.path.split('/Android').first}/Safe Space';
+    _externalDirectory = await getExternalStorageDirectory();
+    pathToVaultFolder = '${_externalDirectory.path}/vault';
   }
 }
 
@@ -68,7 +68,7 @@ class _AttachmentBodyState extends State<AttachmentBody> {
   bool taskCanceled = false;
 
     openfile(String collection, String docName, String fileName) async {
-    String fullPath ='${GetDirectories.externalDirectory.path.split('/Android').first}/Safe Space/$collection/$docName';
+    String fullPath ='${GetDirectories.pathToVaultFolder}/$collection/$docName';
     (File('$fullPath/$fileName').existsSync())
         ? OpenFile.open('$fullPath/$fileName')
         : await getFiles(collection: widget.collection,documentName: widget.docName,fileDir: fileName)
@@ -256,6 +256,6 @@ showTaskDialog(BuildContext context, int filesLength,TaskDialog type) {
   }
 
     bool fileExists({String collection, String documentName, String fileName}){
-    String fullPath = '${GetDirectories.externalDirectory.path.split('/Android').first}/Safe Space/$collection/$documentName';
+    String fullPath = '${GetDirectories.pathToVaultFolder}/$collection/$documentName';
     return (File('$fullPath/$fileName').existsSync());
   }

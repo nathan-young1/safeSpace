@@ -78,7 +78,7 @@ class _PaymentState extends State<Payment> {
             floatingActionButton: (!isSearching.searching && internetConnection)
               ? InkWell(
                   onTap: () {
-                  if(Provider.of<List<Payments>>(context,listen: false).length == 5){
+                  if(Provider.of<List<Payments>>(context,listen: false).length == 10){
                   (SafeSpaceSubscription.isPremiumUser)
                   ?paymentDialog()
                   :Navigator.of(context).pushNamed('UpgradePlan');
