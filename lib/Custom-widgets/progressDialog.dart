@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:safeSpace/Core-Services/enum.dart';
 import 'package:safeSpace/Core-Services/global.dart';
-import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
-import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
 
-progressDialog({@required BuildContext buildContext, String message = '', @required ProgressDialogVisiblity command}) {
+progressDialog({required BuildContext buildContext, String message = '', required ProgressDialogVisiblity command}) {
   final ProgressDialog dialog = ProgressDialog(buildContext, isDismissible: false);
   dialog.style(
       message: message,

@@ -76,7 +76,7 @@ Future<Authentication?> signInWithEmailAndPasswordInLogin(String emailAddress,St
 }
 
 signOut(BuildContext context) async{
-  getStorageLeft.cancel();
+  getStorageLeft!.cancel();
   await auth.signOut();
   UserEncryptionTools.clear();
   Navigator.pushReplacementNamed(context, 'Login');

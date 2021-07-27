@@ -4,7 +4,7 @@ import 'package:safeSpace/Styles/textStyle.dart';
 class AppListTile extends StatelessWidget {
   final String title;
   final String subtitle;
-  AppListTile({this.title,this.subtitle});
+  AppListTile({required this.title,required this.subtitle});
 
   @override
   Widget build(BuildContext context) {

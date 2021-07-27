@@ -33,19 +33,19 @@ class Passwords {
   final String timeStamp;
   
   Passwords(
-      {this.title,
-      this.color,
-      this.dbName,
-      this.networkUrl,
-      this.password,
-      this.username,
-      this.image,
-      this.timeStamp});
+      {required this.title,
+      required this.color,
+      required this.dbName,
+      required this.networkUrl,
+      required this.password,
+      required this.username,
+      required this.image,
+      required this.timeStamp});
 
-  static Future<void> deletePassword({String dbName,BuildContext context}) async {
+  static Future<void> deletePassword({required String dbName,required BuildContext context}) async {
   await progressDialog(buildContext:context, message:'Deleting...', command: ProgressDialogVisiblity.show);
   await FirebaseFirestore.instance
-      .collection(userUid)
+      .collection(userUid!)
       .doc(Collection.vault)
       .collection(Collection.passwords)
       .doc(dbName)
@@ -53,10 +53,10 @@ class Passwords {
   await progressDialog(buildContext:context,command: ProgressDialogVisiblity.hide);
 }
 
-  static Future<void> uploadPassword({title, networkUrl, username, password, color,BuildContext context}) async {
+  static Future<void> uploadPassword({title, networkUrl, username, password, color,required BuildContext context}) async {
     await progressDialog(buildContext: context, message:'Adding Password....', command: ProgressDialogVisiblity.show);
     final String uniqueId = '${DateTime.now().microsecondsSinceEpoch}';
-    Map map = Map<String, dynamic>();
+    Map<String, dynamic> map = Map();
     map['Title'] = await encrypt(title);
     map['Username'] = await encrypt(username);
     map['Password'] = await encrypt(password);
@@ -66,7 +66,7 @@ class Passwords {
 
     String customDbName = uniqueId;
     await FirebaseFirestore.instance
-        .collection(userUid)
+        .collection(userUid!)
         .doc(Collection.vault)
         .collection(Collection.passwords)
         .doc(customDbName)
@@ -75,13 +75,13 @@ class Passwords {
   }
 
 
-  static Future<void> updatePassword({username, password,BuildContext context,dbName}) async {
+  static Future<void> updatePassword({username, password,required BuildContext context,dbName}) async {
     await progressDialog(buildContext: context,message: 'Updating Data...',command: ProgressDialogVisiblity.show);
-    Map map = Map<String, String>();
+    Map<String, String> map = Map();
     map['Username'] = await encrypt(username);
     map['Password'] = await encrypt(password);
     await FirebaseFirestore.instance
-        .collection(userUid)
+        .collection(userUid!)
         .doc(Collection.vault)
         .collection(Collection.passwords)
         .doc(dbName)

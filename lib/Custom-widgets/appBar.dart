@@ -12,7 +12,7 @@ StreamController searchBarStateController = StreamController();
 
 class CustomAppBar extends StatefulWidget {
   final String collection;
-  CustomAppBar({@required this.collection});
+  CustomAppBar({required this.collection});
   @override
   _CustomAppBarState createState() => _CustomAppBarState();
 }
@@ -39,7 +39,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         onPressed: () => size.openDrawer(),
                         icon: Icon(MdiIcons.sortVariant,size: (context.isMobileTypeHandset)?30:19.w, color: Colors.black)),
                 ),
-                  title: Text('${widget.collection}',style: Theme.of(context).appBarTheme.textTheme.headline1),
+                  title: Text('${widget.collection}',style: Theme.of(context).appBarTheme.textTheme!.headline1),
                   actions: <Widget>[
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0,0,8,0),

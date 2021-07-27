@@ -41,7 +41,7 @@ class _SettingState extends State<Setting> {
             :IconButton(onPressed: (){
              size.openDrawer();
             },icon: Icon(MdiIcons.sortVariant,size: (context.isMobileTypeHandset)?30:19.w,color: Colors.black),),
-                title: Text('Settings',style: Theme.of(context).appBarTheme.textTheme.headline1),
+                title: Text('Settings',style: Theme.of(context).appBarTheme.textTheme!.headline1),
               ),
               body: (internetConnection)?(context.isMobileTypeHandset)
               ?MobileSettings()
@@ -54,9 +54,6 @@ class _SettingState extends State<Setting> {
 }
 
 class MobileSettings extends StatelessWidget {
-  const MobileSettings({
-    Key key,
-  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +66,7 @@ class MobileSettings extends StatelessWidget {
         leading: Image.asset('assets/images/SafeSpace.png',color: mainColor,height: 40,),
         title: Text('Manage Account',style: TextStyle(color: Colors.black,
                       fontSize: RFontSize.medium),),
-        subtitle: Text(email,style: TextStyle(color: Colors.black,
+        subtitle: Text(email!,style: TextStyle(color: Colors.black,
                       fontSize: RFontSize.small+2),),
         )
     ),
@@ -113,9 +110,6 @@ class MobileSettings extends StatelessWidget {
 }
 
 class TabletSettings extends StatelessWidget {
-  const TabletSettings({
-    Key key,
-  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +127,7 @@ class TabletSettings extends StatelessWidget {
               },
               leading: Image.asset('assets/images/SafeSpace.png',color: mainColor,height: 40.h),
               title: Text('Manage Account',style: TextStyle(fontSize: RFontSize.normal)),
-              subtitle: Text(email,style: TextStyle(fontSize: RFontSize.small)),
+              subtitle: Text(email!,style: TextStyle(fontSize: RFontSize.small)),
               ),
             )
       ),

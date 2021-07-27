@@ -32,18 +32,18 @@ Future<Certificates> decryptCertificateStream(Map<String, dynamic> certificatesJ
   final String timeStamp;
 
   Certificates(
-  {this.college,
-  this.dbName,
-  this.name,
-  this.timeStamp,
-  this.typeOfCertificate,
-  this.yearOfGraduation});
+  {required this.college,
+  required this.dbName,
+  required this.name,
+  required this.timeStamp,
+  required this.typeOfCertificate,
+  required this.yearOfGraduation});
 
-  static Future<void> uploadCertificate({String name,String typeOfCertificate,String yearOfGraduation,String college,BuildContext buildContext,List<File> filesToUpload}) async {
+  static Future<void> uploadCertificate({required String name,required String typeOfCertificate,required String yearOfGraduation,required String college,required BuildContext buildContext,required List<File> filesToUpload}) async {
     Navigator.of(buildContext).pop();
     await progressDialog(buildContext: buildContext , message:'Adding Certificate....',command: ProgressDialogVisiblity.show);
     final String uniqueId = '${DateTime.now().microsecondsSinceEpoch}';
-    Map map = Map<String, dynamic>();
+    Map<String, dynamic> map = Map<String, dynamic>();
     map['Name'] = await encrypt(name);
     map['Type Of Certificate'] = await encrypt(typeOfCertificate);
     map['College'] = await encrypt(college);
@@ -51,7 +51,7 @@ Future<Certificates> decryptCertificateStream(Map<String, dynamic> certificatesJ
     map['Time Stamp'] = DateTime.now().toIso8601String();
     String customDbName = uniqueId;
     await FirebaseFirestore.instance
-        .collection(userUid)
+        .collection(userUid!)
         .doc(Collection.vault)
         .collection(Collection.certificates)
         .doc(customDbName)
@@ -64,15 +64,15 @@ Future<Certificates> decryptCertificateStream(Map<String, dynamic> certificatesJ
     dbName: customDbName);
   }
 
-  static Future<void> updateCertificate({name,typeOfCertificate,college,yearOfGraduation,BuildContext context,dbName}) async {
+  static Future<void> updateCertificate({name,typeOfCertificate,college,yearOfGraduation,required BuildContext context,dbName}) async {
     await progressDialog(buildContext: context , message:'Updating Data...',command:ProgressDialogVisiblity.show);
-    Map updated = Map<String, dynamic>();
+    Map<String, dynamic> updated = Map<String, dynamic>();
     updated['Name'] = await encrypt(name);
     updated['Type Of Certificate'] = await encrypt(typeOfCertificate);
     updated['College'] = await encrypt(college);
     updated['Year Of Graduation'] = await encrypt(yearOfGraduation);
     await FirebaseFirestore.instance
-        .collection(userUid)
+        .collection(userUid!)
       .doc(Collection.vault)
         .collection(Collection.certificates)
         .doc(dbName)
@@ -81,11 +81,12 @@ Future<Certificates> decryptCertificateStream(Map<String, dynamic> certificatesJ
     Navigator.pop(context);
   }
 
-  static Future<void> deleteCertificate({String dbName,BuildContext context}) async {
+  static Future<void> deleteCertificate({required String dbName,required BuildContext context}) async {
     await progressDialog(buildContext: context,message :'Deleting...',command: ProgressDialogVisiblity.show);
     await FirestoreFileStorage.deleteDirectoryFirestore(Collection.certificates,dbName);
+    
     await FirebaseFirestore.instance
-    .collection(userUid)
+    .collection(userUid!)
       .doc(Collection.vault)
     .collection(Collection.certificates).doc(dbName)
     .delete();

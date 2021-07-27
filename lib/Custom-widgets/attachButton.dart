@@ -6,9 +6,6 @@ import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
 import 'attachmentDialog.dart';
 
 class AttachButton extends StatelessWidget {
-  const AttachButton({
-    Key key,
-  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

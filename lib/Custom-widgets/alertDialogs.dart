@@ -4,6 +4,7 @@ import 'package:safeSpace/Application-ui/navigationDrawer.dart';
 import 'package:safeSpace/Authentication/code/authentication.dart';
 import 'package:safeSpace/Core-Services/enum.dart';
 import 'package:safeSpace/Core-Services/global.dart';
+import 'package:safeSpace/Core-Services/userEncryptionTools.dart';
 import 'package:safeSpace/Custom-widgets/flushBars.dart';
 import 'package:safeSpace/Custom-widgets/progressDialog.dart';
 import 'package:safeSpace/Styles/fontSize.dart';
@@ -11,7 +12,7 @@ import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
 //import 'package:velocity_x/velocity_x.dart';
 
-authenticateVaultKeyBeforeReEncryption({@required BuildContext context}){
+authenticateVaultKeyBeforeReEncryption({required BuildContext context}){
   final _authBeforeReEncryptionKey = GlobalKey<FormState>();
   TextEditingController enterVaultKey = TextEditingController();
   bool obscureText = true;
@@ -30,7 +31,7 @@ authenticateVaultKeyBeforeReEncryption({@required BuildContext context}){
         child: Text('Continue',
         style: TextStyle(fontSize: RFontSize.medium,color: Colors.white)),
         onPressed: (){
-          if(_authBeforeReEncryptionKey.currentState.validate()){
+          if(_authBeforeReEncryptionKey.currentState!.validate()){
           //first remove the alert dialog before going to another page
           Navigator.of(context).pop();
           Navigator.of(context).pushNamed('ChangeMasterPassword',arguments: enterVaultKey.text);}
@@ -58,16 +59,16 @@ authenticateVaultKeyBeforeReEncryption({@required BuildContext context}){
                  autofocus: true,
                  obscureText: obscureText,
                  validator: (text){
-                   if(text.isEmpty){
+                   if(text!.isEmpty){
                      return 'Vault Key is required';
-                   }else if(increasePasswordLengthTo32(text) == masterkey){
+                   }else if(increasePasswordLengthTo32(text) == UserEncryptionTools.passwordToEncryptEncryptionKey){
                      return null;
                    }else{
                    return 'Invaild Vault Key';
                    }
                  },
                  onFieldSubmitted: (_){
-                   if(_authBeforeReEncryptionKey.currentState.validate()){
+                   if(_authBeforeReEncryptionKey.currentState!.validate()){
                     //first remove the alert dialog before going to another page
                     Navigator.of(context).pop();
                     Navigator.of(context).pushNamed('ChangeMasterPassword',arguments: enterVaultKey.text);}
@@ -108,7 +109,7 @@ authenticateVaultKeyBeforeReEncryption({@required BuildContext context}){
   );
 }
 
-authenticateVaultKeyBeforeUserDelete({@required BuildContext context}){
+authenticateVaultKeyBeforeUserDelete({required BuildContext context}){
   final _authBeforeUserDelete = GlobalKey<FormState>();
   TextEditingController enterVaultKey = TextEditingController();
   bool obscureText = true;
@@ -127,12 +128,12 @@ authenticateVaultKeyBeforeUserDelete({@required BuildContext context}){
         child: Text('Continue',
         style: TextStyle(fontSize: RFontSize.medium,color: Colors.white)),
         onPressed: () async {
-          if(_authBeforeUserDelete.currentState.validate()){
+          if(_authBeforeUserDelete.currentState!.validate()){
                      Navigator.of(context).pop();
                     progressDialog(buildContext: context,message: 'Deleting User...',command: ProgressDialogVisiblity.show);
                     try {
-                    await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: enterVaultKey.text,emailAddress: email)).then((_) async {
-                    await user.delete().then((_){
+                    await auth.signInWithEmailAndPassword(email: email!,password: await hashVaultKey(password: enterVaultKey.text,emailAddress: email!)).then((_) async {
+                    await user!.delete().then((_){
                     progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
                     signOut(context);
                       });
@@ -167,21 +168,21 @@ authenticateVaultKeyBeforeUserDelete({@required BuildContext context}){
                  autofocus: true,
                  obscureText: obscureText,
                  validator: (text){
-                   if(text.isEmpty){
+                   if(text!.isEmpty){
                      return 'Vault Key is required';
-                   }else if(increasePasswordLengthTo32(text) == masterkey){
+                   }else if(increasePasswordLengthTo32(text) == UserEncryptionTools.passwordToEncryptEncryptionKey){
                      return null;
                    }else{
                    return 'Invaild Vault Key';
                    }
                  },
                  onFieldSubmitted: (_) async {
-                   if(_authBeforeUserDelete.currentState.validate()){
+                   if(_authBeforeUserDelete.currentState!.validate()){
                      Navigator.of(context).pop();
                     progressDialog(buildContext: context,message: 'Deleting User...',command: ProgressDialogVisiblity.show);
                     try {
-                      await auth.signInWithEmailAndPassword(email: email,password: await hashVaultKey(password: enterVaultKey.text,emailAddress: email)).then((_) async {
-                      await user.delete().then((_){
+                      await auth.signInWithEmailAndPassword(email: email!,password: await hashVaultKey(password: enterVaultKey.text,emailAddress: email!)).then((_) async {
+                      await user!.delete().then((_){
                     progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
                     signOut(context);
                       });
@@ -225,39 +226,5 @@ authenticateVaultKeyBeforeUserDelete({@required BuildContext context}){
      ],
  ), context: context,
     barrierDismissible: false,
-  );
-}
-
-continueUnfinishedReEncryption({@required BuildContext context}){
-  showDialog(
-    builder: (context) => AlertDialog(
-      title: Text("Oops! Your vault's reencryption has not completed",
-      style: TextStyle(fontSize: RFontSize.medium,fontWeight: FontWeight.bold)),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(MdiIcons.emoticonSad,size: 120.r,color: secondaryColor),
-        ],
-      ),
-      actions: [
-        Padding(
-          padding: EdgeInsets.all(10.r),
-          child: Container(
-            height: 40.h,
-            child: RaisedButton(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)), 
-            color: mainColor,
-            onPressed: (){
-            //Navigator.of(context).pop();
-            Navigator.of(context).pushNamed('ChangeMasterPassword');
-              },
-              child: Text('Continue ReEncryption',style: TextStyle(fontSize: RFontSize.normal)),
-            ),
-          ),
-        )
-      ],
-    ), context: context,
-    barrierDismissible: false
   );
 }

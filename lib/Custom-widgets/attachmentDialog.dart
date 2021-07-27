@@ -7,7 +7,7 @@ import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
 import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
 
-    attachmentPicker({@required BuildContext buildContext}) async {
+    attachmentPicker({required BuildContext buildContext}) async {
     FocusScope.of(buildContext).unfocus();
     AlertDialog dialog = AlertDialog(
     backgroundColor: Colors.white,
@@ -69,8 +69,7 @@ import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
                 )),
                         InkWell(
                           onTap: (){
-                          Navigator.of(context).pop();
-                          return attachments;
+                          Navigator.of(context).pop(attachments);
                           },
                           child: Container(
                             height: 50.h,

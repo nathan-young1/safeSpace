@@ -61,12 +61,6 @@ class _SafeState extends State<Safe> {
 
   @override
   Widget build(BuildContext context) {
-    if (_error) {
-      print('an error occured');
-    }
-    if (!_initialized) {
-      print('loading');
-    }
     return LayoutBuilder(
       builder: (_, constraints) {
         ScreenUtil.init(constraints);

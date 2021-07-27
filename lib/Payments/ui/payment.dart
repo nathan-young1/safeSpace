@@ -142,7 +142,7 @@ class _PaymentState extends State<Payment> {
                                     FocusScope.of(context).requestFocus(nameOnCardFocus);
                                   },
                                   validator: (value) {
-                                    if (value.isEmpty) {
+                                    if (value!.isEmpty) {
                                       return 'Name is required';
                                     }
                                     return null;
@@ -163,7 +163,7 @@ class _PaymentState extends State<Payment> {
                                       FocusScope.of(context).requestFocus(typeOfCardFocus);
                                     },
                                     validator: (value) {
-                                      if (value.isEmpty) {
+                                      if (value!.isEmpty) {
                                         return 'Card Name is required';
                                       }
                                       return null;
@@ -260,7 +260,7 @@ class _PaymentState extends State<Payment> {
                       SizedBox(height: 10),
                       GestureDetector(
                         onTap: (){
-                          if (_paymentFormKey.currentState.validate()) {
+                          if (_paymentFormKey.currentState!.validate()) {
                             clearText('Save');
                           }
                         },
@@ -444,7 +444,7 @@ class _ListPageState extends State<ListPage> {
 
 class DetailPage extends StatefulWidget {
   final Payments payments;
-  DetailPage({this.payments});
+  DetailPage({required this.payments});
   @override
   _DetailPageState createState() => _DetailPageState();
 }

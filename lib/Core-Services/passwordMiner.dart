@@ -2,7 +2,7 @@ import 'generatePassword.dart';
 import 'global.dart';
 
 bool checkPassword(String value, bool small, bool capital, bool number, bool special) {
-  String pattern;
+  String? pattern;
   if (small == true && capital == true && number == true && special == true) {
     pattern =
         r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[@#=+!\$%&?(){}~_\\-\\.,^;:|#*]).{10,}$';
@@ -69,7 +69,7 @@ bool checkPassword(String value, bool small, bool capital, bool number, bool spe
       special == false) {
     pattern = r'^(?=.*?[0-9]).{10,}$';
   }
-  RegExp regExp = new RegExp(pattern);
+  RegExp regExp = new RegExp(pattern!);
   return regExp.hasMatch(value);
 }
 

@@ -70,7 +70,7 @@ class _IntroPageHolderState extends State<IntroPageHolder> {
     );
   }
 
-  Widget pageIndicator({bool isActive,bool lastIndicator = false,int index}) {
+  Widget pageIndicator({required bool isActive,bool lastIndicator = false,required int index}) {
 
     return Padding(
       padding: EdgeInsets.only(right: (!lastIndicator)?10:0),

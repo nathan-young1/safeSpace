@@ -26,17 +26,17 @@ class Document {
   final String dbName;
   final String timeStamp;
   Document(
-      {this.nameOfDocument,
-      this.note,
-      this.dbName,
-      this.timeStamp}
+      {required this.nameOfDocument,
+      required this.note,
+      required this.dbName,
+      required this.timeStamp}
       );
 
-  static Future<void> deleteDocument({String dbName,BuildContext context}) async {
+  static Future<void> deleteDocument({required String dbName,required BuildContext context}) async {
   await progressDialog(buildContext:context, message:'Deleting...', command: ProgressDialogVisiblity.show);
   await FirestoreFileStorage.deleteDirectoryFirestore(Collection.documents,dbName);
   await FirebaseFirestore.instance
-      .collection(userUid)
+      .collection(userUid!)
       .doc(Collection.vault)
       .collection(Collection.documents)
       .doc(dbName)
@@ -44,17 +44,17 @@ class Document {
   await progressDialog(buildContext:context,command: ProgressDialogVisiblity.hide);
 }
 
-  static Future<void> uploadDocument({nameOfDocument, note,BuildContext context,filesToUpload}) async {
+  static Future<void> uploadDocument({nameOfDocument, note,required BuildContext context,filesToUpload}) async {
     Navigator.of(context).pop();
     await progressDialog(buildContext: context, message:'Adding Document....', command: ProgressDialogVisiblity.show);
     final String uniqueId = '${DateTime.now().microsecondsSinceEpoch}';
-    Map map = Map<String, dynamic>();
+    Map<String, dynamic> map = Map<String, dynamic>();
     map['Name Of Document'] = await encrypt(nameOfDocument);
     map['Note'] = await encrypt(note);
     map['Time Stamp'] = DateTime.now().toIso8601String();
     String customDbName = uniqueId;
     await FirebaseFirestore.instance
-        .collection(userUid)
+        .collection(userUid!)
       .doc(Collection.vault)
         .collection(Collection.documents)
         .doc(customDbName)
@@ -63,13 +63,13 @@ class Document {
     await FirestoreFileStorage.uploadFileToFirestore(collection: Collection.documents,dbName: customDbName,filesToUpload: filesToUpload,context: context);
   }
   
-  static Future<void> updateDocument({BuildContext context,nameOfDocument,note,dbName}) async {
+  static Future<void> updateDocument({required BuildContext context,nameOfDocument,note,dbName}) async {
     await progressDialog(buildContext: context,message: 'Updating Data...',command: ProgressDialogVisiblity.show);
-    Map updated = Map<String, dynamic>();
+    Map<String, dynamic> updated = Map<String, dynamic>();
     updated['Name Of Document'] = await encrypt(nameOfDocument);
     updated['Note'] = await encrypt(note);
     await FirebaseFirestore.instance
-        .collection(userUid)
+        .collection(userUid!)
       .doc(Collection.vault)
         .collection(Collection.documents)
         .doc(dbName)

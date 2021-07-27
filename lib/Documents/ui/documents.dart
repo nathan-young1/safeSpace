@@ -121,7 +121,7 @@ class _DocumentsState extends State<Documents> {
                                       autovalidateMode:
                                           AutovalidateMode.onUserInteraction,
                                       validator: (value) {
-                                        if (value.isEmpty) {
+                                        if (value!.isEmpty) {
                                           return 'Document name is required';
                                         }
                                         return null;
@@ -156,7 +156,7 @@ class _DocumentsState extends State<Documents> {
                       SizedBox(height: 10),
                       GestureDetector(
                         onTap: () {
-                          if (_documentFormKey.currentState.validate()) {
+                          if (_documentFormKey.currentState!.validate()) {
                             clearText('Save');
                           }
                         },
@@ -334,7 +334,7 @@ class _ListPageState extends State<ListPage> {
 
 class DetailPage extends StatefulWidget {
   final Document document;
-  DetailPage({this.document});
+  DetailPage({required this.document});
   @override
   _DetailPageState createState() => _DetailPageState();
 }

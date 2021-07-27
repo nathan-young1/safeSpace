@@ -134,7 +134,7 @@ class _PasswordState extends State<Password> {
                       focusNode: titleFocus,
                       controller: title,
                       validator: (value) {
-                        if (value.isEmpty) {
+                        if (value!.isEmpty) {
                           return 'Title is required';
                         }
                         return null;
@@ -163,7 +163,7 @@ class _PasswordState extends State<Password> {
                         focusNode: usernameFocus,
                         controller: accountUsername,
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value!.isEmpty) {
                             return 'Username is required';
                           }
                           return null;
@@ -183,7 +183,7 @@ class _PasswordState extends State<Password> {
                         autocorrect: false,
                         controller: passwordField,
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value!.isEmpty) {
                             return 'Password is required';
                           }
                           return null;
@@ -205,7 +205,7 @@ class _PasswordState extends State<Password> {
                         ),
                   GestureDetector(
                     onTap: (){
-                      if (_passwordFormKey.currentState.validate()) {
+                      if (_passwordFormKey.currentState!.validate()) {
                         clearText('Save');
                       }
                     },
@@ -463,6 +463,7 @@ class _PasswordState extends State<Password> {
       onWillPop: (){
         passwordFocusNode.canRequestFocus = true;
         Navigator.pop(context);
+        return Future.value(true);
       },
       child: dialog), context: context, 
     barrierDismissible: false);

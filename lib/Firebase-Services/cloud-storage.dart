@@ -12,22 +12,22 @@ import 'package:safeSpace/Core-Services/filePicker.dart';
 import 'package:safeSpace/Core-Services/global.dart';
 import 'package:safeSpace/Custom-widgets/progressDialog.dart';
 import 'package:safeSpace/Firebase-Services/firebase-models.dart';
-import 'package:safeSpace/Vault-Recryption/listOfFilesInfo.dart';
+import 'listOfFileInfo.dart';
 
 
   StreamSubscription uploadAndDownloadCancelListener = cancelUploadOrDownload.stream.listen((_){});
 class FirestoreFileStorage{
     FirebaseStorage database = FirebaseStorage.instance;
-    static Future<ListOfFileInfo> getAttachmentList({String collection, String dbName}) async {
+    static Future<ListOfFileInfo> getAttachmentList({required String collection, required String dbName}) async {
       List<String> fileNames = [];
       int totalFileSizeInBytes = 0;
       await FirebaseStorage.instance
       .ref()    
-      .child(auth.userUid).child(Collection.vault).child(collection).child(dbName)
+      .child(auth.userUid!).child(Collection.vault).child(collection).child(dbName)
       .listAll()
       .then((ref) async {
         for(var item in ref.items){
-        totalFileSizeInBytes += (await item.getMetadata()).size;
+        totalFileSizeInBytes += (await item.getMetadata()).size!;
         String result = (item.fullPath.split('/').last);
         int len = result.length-1;
         var decrypted = await decrypt(String.fromCharCodes(result.substring(1,len).split(',').toList().map(int.parse).toList()));
@@ -38,16 +38,16 @@ class FirestoreFileStorage{
       return attachments;
       }
     //using this to test stream in attachments page let it work
-    static Stream<List<String>> streamAttachmentList({String collection, String dbName}){
-      List<String> fileNames;
+    static Stream<List<String>> streamAttachmentList({required String collection, required String dbName}){
+      List<String> fileNames = [];
       print('stream is called');
        return Stream.periodic(Duration(seconds: 1),(_){
       FirebaseStorage.instance
       .ref()    
-      .child(auth.userUid).child(Collection.vault).child(collection).child(dbName)
+      .child(auth.userUid!).child(Collection.vault).child(collection).child(dbName)
       .list()
       .then((ref) async {
-        fileNames = List<String>();
+        fileNames = [];
         for(var item in ref.items){
         String result = (item.fullPath.split('/').last);
         int len = result.length-1;
@@ -62,7 +62,7 @@ class FirestoreFileStorage{
     try{
         auth.storage   
         .ref()    
-        .child(auth.userUid).child(Collection.vault).child('$collection').child('$dbName').listAll()
+        .child(auth.userUid!).child(Collection.vault).child('$collection').child('$dbName').listAll()
         .then((files) {
           for(var file in files.items){
             file.delete();
@@ -74,10 +74,10 @@ class FirestoreFileStorage{
     }   
       }
 
-    static Future<void> uploadFileToFirestore({String dbName,@required BuildContext context,String collection,List<File> filesToUpload = const[],List<String> checkIfExist = const[],UploadFileToFirestore commandFrom = UploadFileToFirestore.fromOther}) async {
+    static Future<void> uploadFileToFirestore({required String dbName,required BuildContext context,required String collection,List<File> filesToUpload = const[],List<String> checkIfExist = const[],UploadFileToFirestore commandFrom = UploadFileToFirestore.fromOther}) async {
         List<File> attachments;
         taskCanceled = false;
-        UploadTask uploadTask;
+        UploadTask? uploadTask;
         if(filesToUpload.isEmpty && commandFrom == UploadFileToFirestore.fromAttachment){
         attachments = [];
         await progressDialog(buildContext: context,message: 'Please Wait...',command: ProgressDialogVisiblity.show);
@@ -93,7 +93,7 @@ class FirestoreFileStorage{
 
           try {
             uploadAndDownloadCancelListener.onData((_) async {
-            await uploadTask.cancel();
+            await uploadTask!.cancel();
             Navigator.of(context).pop();
             });
           } on Exception catch (_) {
@@ -103,7 +103,7 @@ class FirestoreFileStorage{
           for (File file in attachments) {
             
             if(taskCanceled){
-            uploadTask.cancel();
+            uploadTask!.cancel();
             break; 
             }
           Provider.of<AttachmentDownload>(context, listen: false).updateIndex(currentIndex);
@@ -112,14 +112,14 @@ class FirestoreFileStorage{
           List<int> fullPath = filePath.toString().codeUnits;
           Reference storageReference = auth.storage 
               .ref()
-              .child(auth.userUid)
+              .child(auth.userUid!)
               .child(Collection.vault)
               .child(collection)
               .child(dbName)
               .child('$fullPath');
-          Map<FileEncrypt, dynamic> encryptedFile = await fileEncrypt(file);
+          Map<FileEncrypt, dynamic> encryptedFile = (await fileEncrypt(file))!;
           uploadTask = storageReference.putFile(encryptedFile[FileEncrypt.file]);
-          uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) =>
+          uploadTask!.snapshotEvents.listen((TaskSnapshot snapshot) =>
           Provider.of<AttachmentDownload>(context,listen: false).update((snapshot.bytesTransferred) /(snapshot.totalBytes)), 
           onError: (Object e) {
             print(e); // FirebaseException
@@ -133,16 +133,16 @@ class FirestoreFileStorage{
         List<int> fullPath = filePath.toString().codeUnits;
         Reference storageReference = auth.storage 
             .ref()
-            .child(auth.userUid)
+            .child(auth.userUid!)
             .child(Collection.vault)
             .child(collection)
             .child(dbName)
             .child('$fullPath');
         //delete before update
         await storageReference.delete();
-        Map<FileEncrypt, dynamic> encryptedFile = await fileEncrypt(file);
+        Map<FileEncrypt, dynamic> encryptedFile = (await fileEncrypt(file))!;
         uploadTask = storageReference.putFile(encryptedFile[FileEncrypt.file]);
-        uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) =>
+        uploadTask!.snapshotEvents.listen((TaskSnapshot snapshot) =>
         Provider.of<AttachmentDownload>(context,listen: false).update((snapshot.bytesTransferred) /(snapshot.totalBytes)), 
         onError: (Object e) {
           print(e); // FirebaseException
@@ -160,11 +160,11 @@ class FirestoreFileStorage{
       }
     }
 
-    static downloadFilesFromFirestore({@required String dbName,@required BuildContext context,@required String collection,@required dynamic attachmentNames,@required String documentName}) async {
+    static downloadFilesFromFirestore({required String dbName,required BuildContext context,required String collection,required dynamic attachmentNames,required String documentName}) async {
     print(taskCanceled);
     taskCanceled = false;
-    List<String> filenames = List<String>();
-    DownloadTask download;
+    List<String> filenames = [];
+    DownloadTask? download;
     (attachmentNames.runtimeType != String)
     ? filenames.addAll(attachmentNames)
     : filenames.add(attachmentNames);
@@ -179,7 +179,7 @@ class FirestoreFileStorage{
 
       try {
         uploadAndDownloadCancelListener.onData((_) async {
-          await download.cancel();
+          await download!.cancel();
           Navigator.of(context).pop();
         });
       } on Exception catch (_) {
@@ -189,7 +189,7 @@ class FirestoreFileStorage{
       for (String filename in filenames) {
 
         if (taskCanceled){
-          await download.cancel();
+          await download!.cancel();
           break;}
         String filePath = filename;
         List<int> dbPath = (await encrypt(filename)).toString().codeUnits;
@@ -197,7 +197,7 @@ class FirestoreFileStorage{
           Provider.of<AttachmentDownload>(context, listen: false).updateIndex(currentIndex);
           Reference ref = FirebaseStorage.instance
               .ref()
-              .child(auth.userUid)
+              .child(auth.userUid!)
               .child(Collection.vault)
               .child(collection)
               .child(dbName)

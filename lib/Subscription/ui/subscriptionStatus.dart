@@ -17,18 +17,18 @@ class Subscription extends StatefulWidget {
 
 class _SubscriptionState extends State<Subscription> {
 
-   Timer timer;
+   Timer? timer;
   @override
     void initState() {
       super.initState();
-       WidgetsBinding.instance.addPostFrameCallback((_) { 
+       WidgetsBinding.instance!.addPostFrameCallback((_) { 
           timer = Timer.periodic(Duration(milliseconds: 30),(_) => setState((){}));
        });
     }
     @override
       void dispose() {
         super.dispose();
-        timer.cancel();
+        timer!.cancel();
       }
 
   @override
@@ -42,7 +42,7 @@ class _SubscriptionState extends State<Subscription> {
           child: IconButton(icon: Icon(Icons.arrow_back_ios,size: (context.isMobileTypeHandset)?30:19.w,color: Colors.black),
           onPressed: ()=> Navigator.of(context).pop()),
         ),
-        title: Text('Subscription Status',style: Theme.of(context).appBarTheme.textTheme.headline1),
+        title: Text('Subscription Status',style: Theme.of(context).appBarTheme.textTheme!.headline1),
       ),
       body: (internetConnection)?Column(
         children: [
@@ -95,8 +95,8 @@ class _SubscriptionState extends State<Subscription> {
 
 
 class VaultIdToken{
-  static int _storageLeft;
-  static int get currentStorageLeft => _storageLeft;
+  static int? _storageLeft;
+  static int get currentStorageLeft => _storageLeft!;
   static setStorageLeft(var spaceLeft){
     //i am divide it so as to convert it to megabytes
     _storageLeft = (spaceLeft as int)~/1048576;

@@ -4,10 +4,9 @@ import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 class PasswordStrengthIndicator extends StatelessWidget {
   const PasswordStrengthIndicator({
-    Key key,
-    @required this.passwordStrength,
-    @required this.passwordStrengthColor,
-  }) : super(key: key);
+    required this.passwordStrength,
+    required this.passwordStrengthColor,
+  });
 
   final double passwordStrength;
   final Color passwordStrengthColor;

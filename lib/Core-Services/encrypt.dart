@@ -6,16 +6,15 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:safeSpace/Authentication/code/authentication.dart';
 import 'package:safeSpace/Core-Services/attachment.dart';
 import 'package:safeSpace/Core-Services/userEncryptionTools.dart';
-import 'package:safeSpace/Vault-Recryption/mainReEncryptionFunction.dart';
 import 'enum.dart';
 import 'package:uuid/uuid.dart';
 
 
-encrypt([String plainText = '',Cyptography mode = Cyptography.Normal]) async {
+encrypt([String plainText = '']) async {
   if (plainText != ''){
   var aesKey = Key.fromUtf8(UserEncryptionTools.encryptionKey);
 
-  final aesIv = IV.fromUtf8(userUid.substring(0, 16));
+  final aesIv = IV.fromUtf8(userUid!.substring(0, 16));
   final aesEncrypter = Encrypter(AES(aesKey, mode: AESMode.cbc));
 
   final aesEncrypted = aesEncrypter.encrypt(plainText, iv: aesIv);
@@ -26,12 +25,12 @@ encrypt([String plainText = '',Cyptography mode = Cyptography.Normal]) async {
   }
 }
 
-decrypt([String textToDecrypt = '',Cyptography mode = Cyptography.Normal]) async {
+decrypt([String textToDecrypt = '']) async {
   if (textToDecrypt != ''){
   var aesKey = Key.fromUtf8(UserEncryptionTools.encryptionKey);
 
   final aesEncrypter = Encrypter(AES(aesKey, mode: AESMode.cbc));
-  final aesIv = IV.fromUtf8(userUid.substring(0, 16));
+  final aesIv = IV.fromUtf8(userUid!.substring(0, 16));
 
   String result = aesEncrypter.decrypt64(textToDecrypt, iv: aesIv);
   return result;
@@ -57,8 +56,7 @@ Future<Map<FileEncrypt, dynamic>?> fileEncrypt(File file,{Cyptography mode = Cyp
 }
 
 
-fileDecrypt(File file, String filePath, String collection, String docName,{Cyptography mode = Cyptography.Normal}) async {
-  if(mode == Cyptography.Normal){
+fileDecrypt(File file, String filePath, String collection, String docName) async {
   var crypt = AesCrypt(UserEncryptionTools.encryptionKey);
   crypt.setOverwriteMode(AesCryptOwMode.on);
   if (await Permission.storage.request().isGranted) {
@@ -71,16 +69,5 @@ fileDecrypt(File file, String filePath, String collection, String docName,{Cypto
     File permanentFile = File('$fileStoragePath/$filePath');
     permanentFile.create();
     crypt.decryptFileSync(file.path, permanentFile.path);
-  }
-  }else if(mode == Cyptography.ReEncryption){
-    var crypt = AesCrypt(VaultReEncryption?.masterKey);
-    crypt.setOverwriteMode(AesCryptOwMode.on);
-    File tempFile = File('${GetDirectories.systemTempDir.path}/Decrypted $docName');
-    if (tempFile.existsSync()) {
-      await tempFile.delete();
-    }
-    await tempFile.create();
-    crypt.decryptFileSync(file.path, tempFile.path);
-    return tempFile;
   }
 }

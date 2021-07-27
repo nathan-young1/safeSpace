@@ -45,7 +45,7 @@ class _IdentityState extends State<Identity> {
   final passportNumberFocus = FocusNode();
   final issuedAuthorityFocus = FocusNode();
   Future selectDate(BuildContext context, String textField) async {
-    final DateTime picked = await showDatePicker(
+    final DateTime? picked = await showDatePicker(
         helpText: textField.toUpperCase(),
         fieldLabelText: textField,
         context: context,
@@ -185,7 +185,7 @@ class _IdentityState extends State<Identity> {
                           style: (context.isMobileTypeTablet)?authTextField:null,
                           autovalidateMode:AutovalidateMode.onUserInteraction,
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'Name is required';
                             }
                             return null;
@@ -205,7 +205,7 @@ class _IdentityState extends State<Identity> {
                       style: (context.isMobileTypeTablet)?authTextField:null,
                           autovalidateMode:AutovalidateMode.onUserInteraction,
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'Nationality is required';
                             }
                             return null;
@@ -227,7 +227,7 @@ class _IdentityState extends State<Identity> {
                           autovalidateMode:
                               AutovalidateMode.onUserInteraction,
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'Gender is required';
                             }
                             return null;
@@ -250,7 +250,7 @@ class _IdentityState extends State<Identity> {
                           autovalidateMode:
                               AutovalidateMode.onUserInteraction,
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'Country is required';
                             }
                             return null;
@@ -369,7 +369,7 @@ class _IdentityState extends State<Identity> {
                       SizedBox(height: 10),
                       GestureDetector(
                         onTap: (){
-                          if (_identityFormKey.currentState.validate()) {
+                          if (_identityFormKey.currentState!.validate()) {
                             clearText('Save');
                           }
                         },
@@ -552,7 +552,7 @@ class _ListPageState extends State<ListPage> {
 
 class DetailPage extends StatefulWidget {
   final Passports passports;
-  DetailPage({this.passports});
+  DetailPage({required this.passports});
   @override
   _DetailPageState createState() => _DetailPageState();
 }
@@ -571,7 +571,7 @@ class _DetailPageState extends State<DetailPage> {
   TextEditingController issuedAuthority = TextEditingController();
 
   Future selectDate(BuildContext context, String textField) async {
-    final DateTime picked = await showDatePicker(
+    final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(1950, 1),
@@ -602,7 +602,7 @@ class _DetailPageState extends State<DetailPage> {
       });
   }
 
-  bool enabled;
+  bool? enabled;
 
   @override
   void initState() {
@@ -725,7 +725,7 @@ class _DetailPageState extends State<DetailPage> {
                                     case PopupMenuChoice.delete:
                                       FocusScope.of(context).unfocus();
                                       if(await showConfirmFileDeleteDialog(context,DeleteOption.document)){
-                                      await Passports.deletePassport(dbName: widget.passports.dbName);
+                                      await Passports.deletePassport(dbName: widget.passports.dbName, context: context);
                                       Navigator.of(context).pop();
                                       }
                                       break;

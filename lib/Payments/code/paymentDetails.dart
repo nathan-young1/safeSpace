@@ -36,23 +36,23 @@ class Payments {
   final String image;
   final String timeStamp;
   Payments(
-      {this.expirationDate,
-      this.dbName,
-      this.name,
-      this.nameOnCard,
-      this.numberOnCard,
-      this.securityCode,
-      this.timeStamp,
-      this.typeOfCard,
-      this.image}
+      {required this.expirationDate,
+      required this.dbName,
+      required this.name,
+      required this.nameOnCard,
+      required this.numberOnCard,
+      required this.securityCode,
+      required this.timeStamp,
+      required this.typeOfCard,
+      required this.image}
       );
 
 
-  static Future<void> deletePayment({String dbName,BuildContext context}) async {
+  static Future<void> deletePayment({required String dbName,required BuildContext context}) async {
   await progressDialog(buildContext: context,message: 'Deleting...',command: ProgressDialogVisiblity.show);
   await FirestoreFileStorage.deleteDirectoryFirestore(Collection.payments,dbName);
   await FirebaseFirestore.instance
-      .collection(userUid)
+      .collection(userUid!)
       .doc(Collection.vault)
       .collection(Collection.payments)
       .doc(dbName)
@@ -60,11 +60,11 @@ class Payments {
   await progressDialog(buildContext: context, command:ProgressDialogVisiblity.hide);
   }
 
-  static Future<void> uploadPayment({name, nameOnCard, numberOnCard, securityCode, typeOfCard,expirationDate,BuildContext context,List<File> filesToUpload}) async {
+  static Future<void> uploadPayment({name, nameOnCard, numberOnCard, securityCode, typeOfCard,expirationDate,required BuildContext context,required List<File> filesToUpload}) async {
     Navigator.of(context).pop();
     await progressDialog(buildContext: context, message:'Adding Payment....', command: ProgressDialogVisiblity.show);
     final String uniqueId = '${DateTime.now().microsecondsSinceEpoch}';
-    Map map = Map<String, dynamic>();
+    Map<String, dynamic> map = Map();
     map['Name'] = await encrypt(name);
     map['Name On Card'] = await encrypt(nameOnCard);
     map['Type Of Card'] = await encrypt(typeOfCard);
@@ -75,7 +75,7 @@ class Payments {
     map['Time Stamp'] = DateTime.now().toIso8601String();
     String customDbName = uniqueId;
     await FirebaseFirestore.instance
-        .collection(userUid)
+        .collection(userUid!)
       .doc(Collection.vault)
         .collection(Collection.payments)
         .doc(customDbName)
@@ -84,10 +84,10 @@ class Payments {
     await FirestoreFileStorage.uploadFileToFirestore(collection: Collection.payments,context: context,filesToUpload: filesToUpload,dbName: customDbName);
   }
   
-  static Future<void> updatePayment({name, nameOnCard, numberOnCard, securityCode, typeOfCard,expirationDate,BuildContext context, dbName}) async {
+  static Future<void> updatePayment({name, nameOnCard, numberOnCard, securityCode, typeOfCard,expirationDate,required BuildContext context, dbName}) async {
     await progressDialog(buildContext: context, message:'Updating Data....', command: ProgressDialogVisiblity.show);
     FocusScope.of(context).unfocus();
-    Map updated = Map<String, dynamic>();
+    Map<String, dynamic> updated = Map<String, dynamic>();
     updated['Name'] = await encrypt(name);
     updated['Name On Card'] = await encrypt(nameOnCard);
     updated['Type Of Card'] = await encrypt(typeOfCard);
@@ -95,7 +95,7 @@ class Payments {
     updated['Security Code'] = await encrypt(securityCode);
     updated['Expiration Date'] = await encrypt(expirationDate);
     await FirebaseFirestore.instance
-        .collection(userUid)
+        .collection(userUid!)
       .doc(Collection.vault)
         .collection(Collection.payments)
         .doc(dbName)

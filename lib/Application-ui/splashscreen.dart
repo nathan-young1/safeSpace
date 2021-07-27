@@ -27,7 +27,7 @@ class _SplashscreenState extends State<Splashscreen> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () => null,
+      onWillPop: () => Future.value(null),
       child: Scaffold(
      body: Center(
     child: Column(

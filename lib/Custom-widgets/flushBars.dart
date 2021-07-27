@@ -90,7 +90,7 @@ showFlushBar(context, message, icon) {
   }
 //enum to show copied in password dart ui file
 enum PasswordCopiedType{Username,Password}
-  passwordFlushBar({BuildContext context,PasswordCopiedType type}){
+  passwordFlushBar({required BuildContext context,required PasswordCopiedType type}){
     Flushbar(
       maxWidth: 230.r,
       borderRadius: 15.r,

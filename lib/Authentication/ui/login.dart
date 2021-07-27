@@ -25,21 +25,21 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   IconData passIcon = Icons.lock;
   bool hideText = true;
-  TextEditingController safeSpacePassword;
+  TextEditingController? safeSpacePassword;
   TextEditingController safeSpaceUsername = TextEditingController();
   final passwordFocus = FocusNode();
   bool loading = false;
   autofillUsername() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String username = prefs.containsKey('username') ? prefs.getString('username') : '';
-    safeSpaceUsername.text = username;
+    String? username = prefs.containsKey('username') ? prefs.getString('username') : '';
+    safeSpaceUsername.text = username!;
   }
   @override
   void initState() {
     super.initState();
     //clears the password by creating new text editing controller on each init state
     safeSpacePassword = TextEditingController(text: '');
-    WidgetsBinding.instance.addPostFrameCallback((_) { 
+    WidgetsBinding.instance!.addPostFrameCallback((_) { 
     subscription = DataConnectionChecker().onStatusChange.listen((status) async {
      switch (status) {
       case DataConnectionStatus.connected:
@@ -60,9 +60,9 @@ class _LoginState extends State<Login> {
 @override
   void dispose() {
     super.dispose();
-    subscription.cancel();
-    safeSpacePassword.clear();
-    safeSpacePassword.dispose();
+    subscription!.cancel();
+    safeSpacePassword!.clear();
+    safeSpacePassword!.dispose();
     safeSpaceUsername.dispose();
     passwordFocus.dispose();
   }
@@ -72,7 +72,10 @@ class _LoginState extends State<Login> {
     return loading
         ? Loading()
         : WillPopScope(
-            onWillPop: () => SystemNavigator.pop(),
+            onWillPop: () {
+               SystemNavigator.pop();
+               return Future.value(true);
+            },
             child: SafeArea(
               child: Scaffold(
                 body: SingleChildScrollView(
@@ -216,22 +219,22 @@ class _LoginState extends State<Login> {
   }
 
   loginIntoSafe() async {
-    Authentication result = await signInWithEmailAndPasswordInLogin(safeSpaceUsername.text, safeSpacePassword.text,context);
+    Authentication? result = await signInWithEmailAndPasswordInLogin(safeSpaceUsername.text, safeSpacePassword!.text,context);
     switch (result) {
       case Authentication.Successful:
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('username', email);
+        prefs.setString('username', email!);
         await SafeSpaceSubscription.initalizePlugin();
         Navigator.of(context).pushReplacement(_routeToHome());
         break;
       case Authentication.InvalidDetail:
         setState(() => loading = false);
-        safeSpacePassword.text = '';
+        safeSpacePassword!.text = '';
         showFlushBar(context, 'Invalid details', MdiIcons.lockAlert);
         break;
       case Authentication.WrongPassword:
         setState(() => loading = false);
-        safeSpacePassword.text = '';
+        safeSpacePassword!.text = '';
         showFlushBar(context, 'Wrong Password', MdiIcons.lockAlert);
         break;
       case Authentication.Error:
@@ -240,7 +243,7 @@ class _LoginState extends State<Login> {
         break;
       default:
         setState(() => loading = false);
-        safeSpacePassword.text = '';
+        safeSpacePassword!.text = '';
         showFlushBar(context, 'Error occured during login', Icons.error);
         break;
     }

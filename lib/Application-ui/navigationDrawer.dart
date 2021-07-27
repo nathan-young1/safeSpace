@@ -26,19 +26,15 @@ class SafeDrawer extends StatefulWidget {
   @override
   _SafeDrawerState createState() => _SafeDrawerState();
 }
-  Timer getStorageLeft;
+  Timer? getStorageLeft;
 class _SafeDrawerState extends State<SafeDrawer> {
 
   @override
     void initState() {
-      WidgetsBinding.instance.addPostFrameCallback((_){
-      //check if reencryption has not been completed
-      if(Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email').existsSync()){
-      continueUnfinishedReEncryption(context: context);
-      }});
+
       getStorageLeft = Timer.periodic(Duration(seconds: 10),(_){
-        user.getIdTokenResult(true).then((token){
-        VaultIdToken.setStorageLeft(token.claims['storageLeft']);
+        user!.getIdTokenResult(true).then((token){
+        VaultIdToken.setStorageLeft(token.claims!['storageLeft']);
       });
       });
       super.initState();
@@ -65,7 +61,7 @@ class _SafeDrawerState extends State<SafeDrawer> {
                   if(context.isMobileTypeHandset)Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(email,style: TextStyle(color:color,fontSize: RFontSize.small)),
+                      Text(email!,style: TextStyle(color:color,fontSize: RFontSize.small)),
                       SizedBox(height: 5.h),
                       Text((!SafeSpaceSubscription.isPremiumUser)?'Trial Version':'Time Left: ${SafeSpaceSubscription.timeLeftToExpire()} days',style: TextStyle(color:color,fontSize: 16))
                     ],

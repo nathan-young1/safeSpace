@@ -30,7 +30,7 @@ class _ManageAccountState extends State<ManageAccount> {
           onPressed: ()=> Navigator.of(context).pop()),
         ),
         title: Text('Manage Account',
-        style: Theme.of(context).appBarTheme.textTheme.headline1),),
+        style: Theme.of(context).appBarTheme.textTheme!.headline1),),
       body: (internetConnection)?Padding(
         padding: (context.isMobileTypeHandset)?const EdgeInsets.all(0):const EdgeInsets.fromLTRB(0,8,0,0),
         child: ListView(
@@ -69,7 +69,7 @@ class _ManageAccountState extends State<ManageAccount> {
                 child: Align(
                   child: ListTile(
                    onTap: (){
-                    Navigator.of(context).pushNamed('UpgradePlan',arguments: ModalRoute.of(context).settings.arguments);
+                    Navigator.of(context).pushNamed('UpgradePlan',arguments: ModalRoute.of(context)!.settings.arguments);
                   },
                     title: Text('Get Premium',style: TextStyle(fontSize: RFontSize.normal)),
                     leading: Icon(Icons.credit_card,size: 35.r,color: mainColor)

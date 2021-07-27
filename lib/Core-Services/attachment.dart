@@ -26,12 +26,12 @@ class Attachment extends StatelessWidget {
   final String dbName;
   final String collection;
   final String docName;
-  Attachment({Key key,this.collection, this.dbName, this.docName}):super(key: key);
+  Attachment({required this.collection,required this.dbName,required this.docName});
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: StreamProvider<List<String>>.value(
+      child: StreamProvider<List<String>?>.value(
         value: FirestoreFileStorage.streamAttachmentList(collection: collection,dbName: dbName),
         catchError: (_, __) => null,
         builder: (context,_)=>  AttachmentBody(collection: collection,dbName: dbName,docName: docName),
@@ -44,12 +44,12 @@ class Attachment extends StatelessWidget {
   
 
 class GetDirectories{
-  static Directory _externalDirectory;
+  static late Directory _externalDirectory;
   static final Directory systemTempDir = Directory.systemTemp;
-  static String pathToVaultFolder;
+  static late String pathToVaultFolder;
 
   static initialize() async {
-    _externalDirectory = await getExternalStorageDirectory();
+    _externalDirectory = (await getExternalStorageDirectory())!;
     pathToVaultFolder = '${_externalDirectory.path}/vault';
   }
 }
@@ -58,7 +58,7 @@ class AttachmentBody extends StatefulWidget {
   final String dbName;
   final String collection;
   final String docName;
-  AttachmentBody({Key key,this.collection, this.dbName, this.docName}):super(key: key);
+  AttachmentBody({required this.collection,required this.dbName,required this.docName});
   @override
   _AttachmentBodyState createState() => _AttachmentBodyState();
 }
@@ -91,7 +91,7 @@ class _AttachmentBodyState extends State<AttachmentBody> {
               child: IconButton(icon: Icon(Icons.arrow_back_ios,size: (context.isMobileTypeHandset)?30:18.w,color: Colors.black),
               onPressed: ()=> Navigator.of(context).pop()),
             ),
-              title: Text('Attachments',style: Theme.of(context).appBarTheme.textTheme.headline1),
+              title: Text('Attachments',style: Theme.of(context).appBarTheme.textTheme!.headline1),
               backgroundColor: Colors.transparent,
               shadowColor: Colors.transparent,
               actions: [
@@ -180,7 +180,7 @@ class _AttachmentBodyState extends State<AttachmentBody> {
                 : Container(height: 50),
     );
   }
-  Future getFiles({String collection, String documentName, dynamic fileDir}) async {
+  Future getFiles({required String collection, required String documentName, dynamic fileDir}) async {
     FirestoreFileStorage.downloadFilesFromFirestore(dbName: widget.dbName,attachmentNames: fileDir,collection: collection,documentName: documentName, context: context);
   }
 
@@ -189,7 +189,7 @@ class _AttachmentBodyState extends State<AttachmentBody> {
     List<int> dbName = (await encrypt(fileName)).toString().codeUnits;
     await FirebaseStorage.instance
         .ref()
-        .child(userUid)
+        .child(userUid!)
         .child(Collection.vault)
         .child(collection)
         .child(docName)
@@ -256,7 +256,7 @@ showTaskDialog(BuildContext context, int filesLength,TaskDialog type) {
     showDialog(builder: (context) => downloadProgress, context: context, barrierDismissible: false);
   }
 
-    bool fileExists({String collection, String documentName, String fileName}){
+    bool fileExists({required String collection,required String documentName,required String fileName}){
     String fullPath = '${GetDirectories.pathToVaultFolder}/$collection/$documentName';
     return (File('$fullPath/$fileName').existsSync());
   }

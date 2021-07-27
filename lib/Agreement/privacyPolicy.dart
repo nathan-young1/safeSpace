@@ -16,7 +16,7 @@ class PrivacyPolicy extends StatelessWidget {
           onPressed: ()=> Navigator.of(context).pop()),
         ),
         title: Text('Privacy Policy',
-        style: Theme.of(context).appBarTheme.textTheme.headline1),),
+        style: Theme.of(context).appBarTheme.textTheme!.headline1),),
         body: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.all(12.r),

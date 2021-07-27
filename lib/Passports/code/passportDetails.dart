@@ -44,37 +44,37 @@ Future<Passports> decryptPassportStream(Map<String, dynamic> passportsJson,datab
   final String dbName;
 
   Passports({
-  this.name,
-  this.nationality,
-  this.gender,
-  this.country,
-  this.idNumber,
-  this.typeOfPassport,
-  this.passportNumber,
-  this.issuedDate,
-  this.expireDate,
-  this.birthDate,
-  this.issuedAuthority,
-  this.timeStamp,
-  this.dbName});
+  required this.name,
+  required this.nationality,
+  required this.gender,
+  required this.country,
+  required this.idNumber,
+  required this.typeOfPassport,
+  required this.passportNumber,
+  required this.issuedDate,
+  required this.expireDate,
+  required this.birthDate,
+  required this.issuedAuthority,
+  required this.timeStamp,
+  required this.dbName});
 
-  static Future<void> deletePassport({String dbName,BuildContext context}) async {
+  static Future<void> deletePassport({required String dbName,required BuildContext context}) async {
     await progressDialog(buildContext: context,message :'Deleting...',command: ProgressDialogVisiblity.show);
     await FirestoreFileStorage.deleteDirectoryFirestore(Collection.passports,dbName);
     await FirebaseFirestore.instance
-    .collection(userUid)
+    .collection(userUid!)
       .doc(Collection.vault) 
     .collection(Collection.passports).doc(dbName)
     .delete();
     await progressDialog(buildContext: context, command:ProgressDialogVisiblity.hide);
   }
 
-  static Future<void> uploadPassport({BuildContext context,name,nationality,gender,country,idNumber,typeOfPassport,passportNumber,issuedDate,
-    expireDate,birthDate,issuedAuthority,List<File> filesToUpload}) async {
+  static Future<void> uploadPassport({required BuildContext context,name,nationality,gender,country,idNumber,typeOfPassport,passportNumber,issuedDate,
+    expireDate,birthDate,issuedAuthority,required List<File> filesToUpload}) async {
     Navigator.of(context).pop();
     await progressDialog(buildContext: context, message:'Adding Passport....', command: ProgressDialogVisiblity.show);
     final String uniqueId = '${DateTime.now().microsecondsSinceEpoch}';
-    Map map = Map<String, dynamic>();
+    Map<String, dynamic> map = Map<String, dynamic>();
     map['Name'] = await encrypt(name);
     map['Nationality'] = await encrypt(nationality);
     map['Gender'] = await encrypt(gender);
@@ -89,7 +89,7 @@ Future<Passports> decryptPassportStream(Map<String, dynamic> passportsJson,datab
     map['Time Stamp'] = DateTime.now().toIso8601String();
     String customDbName = uniqueId;
     await FirebaseFirestore.instance
-        .collection(userUid)
+        .collection(userUid!)
         .doc(Collection.vault)
         .collection(Collection.passports)
         .doc(customDbName)
@@ -98,11 +98,11 @@ Future<Passports> decryptPassportStream(Map<String, dynamic> passportsJson,datab
     await FirestoreFileStorage.uploadFileToFirestore(collection: Collection.passports,context: context,filesToUpload: filesToUpload,dbName: customDbName);
   }
 
-  static Future<void> updatePassport({BuildContext context, name,nationality,gender,country,idNumber,typeOfPassport,
+  static Future<void> updatePassport({required BuildContext context, name,nationality,gender,country,idNumber,typeOfPassport,
   passportNumber,issuedDate,expireDate,birthDate,issuedAuthority,dbName}) async {
     FocusScope.of(context).unfocus();
     await progressDialog(buildContext: context,message: 'Updating Data...',command: ProgressDialogVisiblity.show);
-    Map updated = Map<String, dynamic>();
+    Map<String, dynamic> updated = Map();
     updated['Name'] = await encrypt(name);
     updated['Nationality'] = await encrypt(nationality);
     updated['Gender'] = await encrypt(gender);
@@ -115,7 +115,7 @@ Future<Passports> decryptPassportStream(Map<String, dynamic> passportsJson,datab
     updated['Date Of Birth'] = await encrypt(birthDate);
     updated['Issued Authority'] = await encrypt(issuedAuthority);
     await FirebaseFirestore.instance
-        .collection(userUid)
+        .collection(userUid!)
       .doc(Collection.vault)
         .collection(Collection.passports)
         .doc(dbName)

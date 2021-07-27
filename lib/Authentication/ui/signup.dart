@@ -30,16 +30,16 @@ class _SignupState extends State<Signup> {
   }
   _goToTermsOfService() => Navigator.of(context).pushNamed('TermsOfService');
   _goToPrivacyPolicy() => Navigator.of(context).pushNamed('PrivacyPolicy');
-  TapGestureRecognizer _termsOfService;
-  TapGestureRecognizer _privacyPolicy;
-  TextEditingController password;
-  TextEditingController retypePassword;
+  TapGestureRecognizer? _termsOfService;
+  TapGestureRecognizer? _privacyPolicy;
+  TextEditingController? password;
+  TextEditingController? retypePassword;
   bool hideText = true;
   FocusNode masterPasswordFocus = FocusNode();
   FocusNode retypePasswordFocus = FocusNode();
   double passwordStrength = 0.0;
   Color passwordStrengthColor = Colors.transparent;
-  bool agreementCheckBox;
+  bool? agreementCheckBox;
   @override
     void initState() {
       super.initState();
@@ -55,8 +55,8 @@ class _SignupState extends State<Signup> {
   @override
     void dispose() {
       super.dispose();
-      password.dispose();
-      retypePassword.dispose();
+      password!.dispose();
+      retypePassword!.dispose();
       masterPasswordFocus.dispose();
       retypePasswordFocus.dispose();
     }
@@ -180,7 +180,7 @@ class _SignupState extends State<Signup> {
                                     child: Checkbox(
                                       activeColor: mainColor,
                                       value: agreementCheckBox,
-                                      onChanged: (_)=>setState(()=> agreementCheckBox = !agreementCheckBox),
+                                      onChanged: (_)=>setState(()=> agreementCheckBox = !agreementCheckBox!),
                                     ),
                                   ),
                                   Flexible(
@@ -215,14 +215,14 @@ class _SignupState extends State<Signup> {
                             child: RaisedButton(
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                               onPressed: () {
-                              if(passwordStrength == 100 && password.text == retypePassword.text && agreementCheckBox){
+                              if(passwordStrength == 100 && password!.text == retypePassword!.text && agreementCheckBox!){
                               registerSafe();
-                              }else if (!agreementCheckBox){
+                              }else if (!agreementCheckBox!){
                                 showFlushBar(context,'Accept Agreement First',Icons.privacy_tip);
                               }
                               else if(passwordStrength != 100){
                                 showFlushBar(context,'Vault key is weak',MdiIcons.qualityLow);
-                              }else if(password.text != retypePassword.text){
+                              }else if(password!.text != retypePassword!.text){
                                 showFlushBar(context,'Vault keys do not match',MdiIcons.notEqual);
                               }
                               },
@@ -256,15 +256,15 @@ class _SignupState extends State<Signup> {
 
   registerSafe() async {
     progressDialog(buildContext: context,message: 'Setting Things Up',command: ProgressDialogVisiblity.show);
-    Authentication result = await registerWithEmailAndPassword(password.text,context);
+    Authentication result = (await registerWithEmailAndPassword(password!.text,context))!;
     progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
     switch (result) {
       case Authentication.Successful:
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('username', email);
+        prefs.setString('username', email!);
         await SafeSpaceSubscription.initalizePlugin();
-        password.text = '';
-        retypePassword.text='';
+        password!.text = '';
+        retypePassword!.text='';
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => SafeHome()));
         break;

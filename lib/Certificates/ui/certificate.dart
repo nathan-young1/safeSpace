@@ -34,11 +34,11 @@ class _CertificateState extends State<Certificate> {
   final typeOfCertificateFocus = FocusNode();
   final collegeFocus = FocusNode();
   Future selectGraduationYear(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
+    final DateTime picked = (await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(1950, 1),
-        lastDate: DateTime(2130, 12));
+        lastDate: DateTime(2130, 12)))!;
     if (picked != null && picked != DateTime.now())
       setState(() {
         var startSelect;
@@ -156,7 +156,7 @@ class _CertificateState extends State<Certificate> {
                                             FocusScope.of(context).requestFocus(collegeFocus);
                                           },
                                           validator: (value) {
-                                            if (value.isEmpty) {
+                                            if (value!.isEmpty) {
                                               return 'Name is required';
                                             }
                                             return null;
@@ -191,7 +191,7 @@ class _CertificateState extends State<Certificate> {
                                           focusNode: typeOfCertificateFocus,
                                           controller: typeOfCertificate,
                                           validator: (value) {
-                                            if (value.isEmpty) {
+                                            if (value!.isEmpty) {
                                               return 'Type is required';
                                             }
                                             return null;
@@ -225,7 +225,7 @@ class _CertificateState extends State<Certificate> {
                               SizedBox(height: 10),
                           GestureDetector(
                             onTap: (){
-                              if (_certificateFormKey.currentState.validate()) {
+                              if (_certificateFormKey.currentState!.validate()) {
                                 clearText('Save');
                               }
                             },
@@ -397,7 +397,7 @@ class _ListPageState extends State<ListPage> {
 
 class DetailPage extends StatefulWidget {
   final Certificates certificate;
-  DetailPage({this.certificate});
+  DetailPage({required this.certificate});
   @override
   _DetailPageState createState() => _DetailPageState();
 }
@@ -408,11 +408,11 @@ class _DetailPageState extends State<DetailPage> {
   TextEditingController typeOfCertificate = TextEditingController();
   TextEditingController yearOfGraduation = TextEditingController();
   Future selectGraduationYear(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
+    final DateTime picked = (await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(1950, 1),
-        lastDate: DateTime(2130, 12));
+        lastDate: DateTime(2130, 12)))!;
     if (picked != null && picked != DateTime.now())
       setState(() {
         var startSelect;

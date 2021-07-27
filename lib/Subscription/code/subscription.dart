@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:safeSpace/Authentication/code/authentication.dart';
 
@@ -14,7 +14,7 @@ class SafeSpaceSubscription{
   //past purchases
   static List<PurchaseDetails> _purchases = [];
   //updates to purchase
-  static StreamSubscription _subscription;
+  static StreamSubscription? _subscription;
 
   static initalizePlugin() async {
     bool pluginAvailable = await _iap.isAvailable();
@@ -23,23 +23,23 @@ class SafeSpaceSubscription{
         await Future.wait([_getProducts(),_iap.restorePurchases()]);
         _subscription = _iap.purchaseStream.listen((data) async {
           
-          data.forEach((e)=> print('$e just entered'));
+          data.forEach((e)=> debugPrint('$e just entered'));
           await Future.wait([_completePurchase(),_getPastPurchases(data)]);
           updateState.add(null);
         },
-        onDone: ()=> _subscription.cancel(),
-        onError: (e)=> print(e)
+        onDone: ()=> _subscription!.cancel(),
+        onError: (e)=> debugPrint(e)
         );
       }
   }
 
 
   static PurchaseDetails _hasPurchased(){
-  return _purchases.firstWhere((purchase) => purchase.productID == playStoreId, orElse: ()=> null);
+  return _purchases.firstWhere((purchase) => purchase.productID == playStoreId);
   }
 
   static void buyProduct(){
-  ProductDetails product =_products.firstWhere((product) => product.id == playStoreId,orElse: ()=> null);
+  ProductDetails product =_products.firstWhere((product) => product.id == playStoreId);
   if(product != null){
   final PurchaseParam purchaseParam = PurchaseParam(productDetails: product,applicationUserName: email);
   _iap.buyNonConsumable(purchaseParam: purchaseParam);
@@ -58,7 +58,7 @@ class SafeSpaceSubscription{
   PurchaseDetails purchase = _hasPurchased();
 
   if (purchase != null && purchase.status == PurchaseStatus.purchased){
-    print('purchase ${purchase.verificationData.localVerificationData}');
+    debugPrint('purchase ${purchase.verificationData.localVerificationData}');
     await _iap.completePurchase(purchase);
   }else if(purchase != null && purchase.status == PurchaseStatus.pending){
     await _iap.completePurchase(purchase);
@@ -76,7 +76,7 @@ class SafeSpaceSubscription{
       }
 
     if(purchase.error != null){
-      print('the errors are ${purchase.error}');
+      debugPrint('the errors are ${purchase.error}');
     }
     _purchases.add(purchase);
     }
@@ -86,7 +86,7 @@ class SafeSpaceSubscription{
   static timeLeftToExpire(){
     PurchaseDetails purchase = _hasPurchased();
     if(purchase != null){
-    var expirationTime = DateTime.fromMillisecondsSinceEpoch(int.parse(purchase.transactionDate)).add(Duration(days: 366));
+    var expirationTime = DateTime.fromMillisecondsSinceEpoch(int.parse(purchase.transactionDate!)).add(Duration(days: 366));
     var timeDifference = expirationTime.difference(DateTime.now());
     if(timeDifference.inDays.isNegative){
       var time = 366 - (timeDifference.inDays.abs() % 366);
