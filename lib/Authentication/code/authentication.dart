@@ -26,12 +26,12 @@ Future<Authentication?> registerWithEmailAndPassword(String password,BuildContex
   await googleSignIn.signOut();
   //await user creation
   user = (await auth.createUserWithEmailAndPassword(email: googleSignInAccount!.email, password: await hashVaultKey(password: password,emailAddress: googleSignInAccount.email))).user;
-  UserEncryptionTools.setEncryptionKeyForNewUser(userPassword: password);
  //await sign in to set the user custom claims
   await Future.delayed(Duration(seconds: 5),() async =>await user!.reload());
   email = googleSignInAccount.email;
   name = googleSignInAccount.email.substring(0,googleSignInAccount.email.indexOf('@'));
   userUid = user!.uid;
+  UserEncryptionTools.setEncryptionKeyForNewUser(userPassword: password);
   return Authentication.Successful;
   } on FirebaseAuthException catch (e) {
   showFlushBar(context,e.code,Icons.error);
@@ -55,10 +55,10 @@ Future<Authentication?> registerWithEmailAndPassword(String password,BuildContex
 Future<Authentication?> signInWithEmailAndPasswordInLogin(String emailAddress,String password,[BuildContext? context]) async {
   try{
   user = (await auth.signInWithEmailAndPassword(email: emailAddress, password: await hashVaultKey(password: password,emailAddress: emailAddress))).user;
-    UserEncryptionTools.initialize(userPassword: password);
     email = emailAddress;
     name = emailAddress.substring(0,emailAddress.indexOf('@'));
    userUid = user!.uid;
+   UserEncryptionTools.initialize(userPassword: password);
   return Authentication.Successful;
   } on FirebaseAuthException catch (e) {
     print(e);

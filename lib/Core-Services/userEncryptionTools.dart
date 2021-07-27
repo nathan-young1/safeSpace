@@ -42,7 +42,7 @@ class UserEncryptionTools{
 
   /// Generates a random encryption key for a user, then encrypt it with the user's password and store it in firestore.
   static Future<void> setEncryptionKeyForNewUser({required String userPassword}) async {
-      String userGeneratedEncryptionKey = externalEncryptPackage.Key.fromSecureRandom(256).base64;
+      String userGeneratedEncryptionKey = externalEncryptPackage.Key.fromSecureRandom(32).base64;
       String encryptedFormatToStoreInDb = _encryptEncryptionKeyForOnlineStorage(
                                             increasedPassword: _increasePasswordLengthTo32(userPassword),
                                             encryptionKey: userGeneratedEncryptionKey);

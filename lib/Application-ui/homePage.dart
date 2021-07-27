@@ -12,6 +12,7 @@ import 'package:velocity_x/velocity_x.dart';
 import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
 
 class SafeHome extends StatelessWidget {
+  
   @override
   Widget build(BuildContext context) {
     SearchBar isSearching = Provider.of<SearchBar>(context);
@@ -21,11 +22,11 @@ class SafeHome extends StatelessWidget {
             },
           child: MultiProvider(
         providers: [
-          StreamProvider<List<Passwords>?>.value(value: FirestoreDatabase.getPasswords(),catchError: (_, __) => null, initialData: [],),
-          StreamProvider<List<Passports>?>.value(value: FirestoreDatabase.getPassports(),catchError: (_, __) => null, initialData: [],),
-          StreamProvider<List<Payments>?>.value(value: FirestoreDatabase.getPayments(),catchError: (_, __) => null, initialData: [],),
-          StreamProvider<List<Certificates>?>.value(value: FirestoreDatabase.getCertificates(),catchError: (_, __) => null, initialData: [],),
-          StreamProvider<List<Document>?>.value(value: FirestoreDatabase.getDocuments(),catchError: (_, __) => null, initialData: [],),
+          StreamProvider<List<Passwords>>.value(value: FirestoreDatabase.getPasswords(), initialData: [],),
+          StreamProvider<List<Passports>>.value(value: FirestoreDatabase.getPassports(), initialData: [],),
+          StreamProvider<List<Payments>>.value(value: FirestoreDatabase.getPayments(), initialData: [],),
+          StreamProvider<List<Certificates>>.value(value: FirestoreDatabase.getCertificates(), initialData: [],),
+          StreamProvider<List<Document>>.value(value: FirestoreDatabase.getDocuments(), initialData: [],),
           ],
           child: SafeArea(
           child: Scaffold(

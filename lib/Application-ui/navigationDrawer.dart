@@ -1,14 +1,12 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:safeSpace/Authentication/code/authentication.dart';
 import 'package:safeSpace/Authentication/ui/login.dart';
 import 'package:safeSpace/Certificates/ui/certificate.dart';
-import 'package:safeSpace/Core-Services/attachment.dart';
 import 'package:safeSpace/Core-Services/global.dart';
-import 'package:safeSpace/Custom-widgets/alertDialogs.dart';
 import 'package:safeSpace/Documents/ui/documents.dart';
 import 'package:safeSpace/Passports/ui/passport.dart';
 import 'package:safeSpace/Passwords/ui/password.dart';
@@ -26,7 +24,7 @@ class SafeDrawer extends StatefulWidget {
   @override
   _SafeDrawerState createState() => _SafeDrawerState();
 }
-  Timer? getStorageLeft;
+Timer? getStorageLeft;
 class _SafeDrawerState extends State<SafeDrawer> {
 
   @override

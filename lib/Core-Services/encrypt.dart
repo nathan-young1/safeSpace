@@ -12,7 +12,7 @@ import 'package:uuid/uuid.dart';
 
 encrypt([String plainText = '']) async {
   if (plainText != ''){
-  var aesKey = Key.fromUtf8(UserEncryptionTools.encryptionKey);
+  var aesKey = Key.fromBase64(UserEncryptionTools.encryptionKey);
 
   final aesIv = IV.fromUtf8(userUid!.substring(0, 16));
   final aesEncrypter = Encrypter(AES(aesKey, mode: AESMode.cbc));
@@ -27,7 +27,7 @@ encrypt([String plainText = '']) async {
 
 decrypt([String textToDecrypt = '']) async {
   if (textToDecrypt != ''){
-  var aesKey = Key.fromUtf8(UserEncryptionTools.encryptionKey);
+  var aesKey = Key.fromBase64(UserEncryptionTools.encryptionKey);
 
   final aesEncrypter = Encrypter(AES(aesKey, mode: AESMode.cbc));
   final aesIv = IV.fromUtf8(userUid!.substring(0, 16));

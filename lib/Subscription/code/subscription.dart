@@ -24,7 +24,8 @@ class SafeSpaceSubscription{
         _subscription = _iap.purchaseStream.listen((data) async {
           
           data.forEach((e)=> debugPrint('$e just entered'));
-          await Future.wait([_completePurchase(),_getPastPurchases(data)]);
+          await _getPastPurchases(data);
+          await await _completePurchase();
           updateState.add(null);
         },
         onDone: ()=> _subscription!.cancel(),
@@ -34,7 +35,7 @@ class SafeSpaceSubscription{
   }
 
 
-  static PurchaseDetails _hasPurchased(){
+  static PurchaseDetails? _hasPurchased(){
   return _purchases.firstWhere((purchase) => purchase.productID == playStoreId);
   }
 
@@ -55,7 +56,7 @@ class SafeSpaceSubscription{
 
 
   static Future _completePurchase() async {
-  PurchaseDetails purchase = _hasPurchased();
+  PurchaseDetails purchase = _hasPurchased()!;
 
   if (purchase != null && purchase.status == PurchaseStatus.purchased){
     debugPrint('purchase ${purchase.verificationData.localVerificationData}');
@@ -84,7 +85,7 @@ class SafeSpaceSubscription{
   }
   
   static timeLeftToExpire(){
-    PurchaseDetails purchase = _hasPurchased();
+    PurchaseDetails purchase = _hasPurchased()!;
     if(purchase != null){
     var expirationTime = DateTime.fromMillisecondsSinceEpoch(int.parse(purchase.transactionDate!)).add(Duration(days: 366));
     var timeDifference = expirationTime.difference(DateTime.now());
