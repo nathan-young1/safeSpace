@@ -174,14 +174,14 @@ class _LoginState extends State<Login> {
                                 SizedBox(height: 15.h),
                                 ButtonTheme(
                                     minWidth: 100.w,
-                                    child: RaisedButton(
-                                        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(12.0)),
+                                    child: ElevatedButton(
+                                        style: ButtonStyle(
+                                          backgroundColor: MaterialStateColor.resolveWith((states) => mainColor)),
                                         onPressed: (){
                                             setState(() => loading = true);
                                             loginIntoSafe();
                                         },
-                                        child: Text('Login',style: authTextStyle),
-                                        color: mainColor)),
+                                        child: Text('Login',style: authTextStyle))),
                                 SizedBox(height: 20.h),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,

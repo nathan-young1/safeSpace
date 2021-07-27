@@ -34,7 +34,8 @@ class Attachment extends StatelessWidget {
       child: StreamProvider<List<String>>.value(
         value: FirestoreFileStorage.streamAttachmentList(collection: collection,dbName: dbName),
         catchError: (_, __) => null,
-        builder: (context,_)=>  AttachmentBody(collection: collection,dbName: dbName,docName: docName)
+        builder: (context,_)=>  AttachmentBody(collection: collection,dbName: dbName,docName: docName),
+         initialData: [],
       )
     );
   }
@@ -64,7 +65,7 @@ class AttachmentBody extends StatefulWidget {
 
 class _AttachmentBodyState extends State<AttachmentBody> {
 
-  List<File> attachments = List<File>();
+  List<File> attachments = [];
   bool taskCanceled = false;
 
     openfile(String collection, String docName, String fileName) async {
@@ -252,7 +253,7 @@ showTaskDialog(BuildContext context, int filesLength,TaskDialog type) {
             ]),
           );
         }));
-    showDialog(context: context, child: downloadProgress, barrierDismissible: false);
+    showDialog(builder: (context) => downloadProgress, context: context, barrierDismissible: false);
   }
 
     bool fileExists({String collection, String documentName, String fileName}){

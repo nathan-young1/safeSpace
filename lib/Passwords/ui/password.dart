@@ -5,6 +5,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:provider/provider.dart';
 import 'package:custom_switch/custom_switch.dart';
 import 'package:safeSpace/Application-ui/navigationDrawer.dart';
+import 'package:safeSpace/Authentication/code/authentication.dart';
 import 'package:safeSpace/Core-Services/enum.dart';
 import 'package:safeSpace/Core-Services/global.dart';
 import 'package:safeSpace/Core-Services/passwordMiner.dart';
@@ -39,7 +40,6 @@ class _PasswordState extends State<Password> {
 
   @override
     void initState() {
-      // TODO: implement initState
       super.initState();
       //set state when search Bar contents changes
       searchBarState.onData((_) => setState(() {}));
@@ -224,7 +224,7 @@ class _PasswordState extends State<Password> {
                         ),
                       ]),
                 )));
-    showDialog(context: context, child: dialog, barrierDismissible: false);
+    showDialog(builder: (context) => dialog, context: context, barrierDismissible: false);
   }
 
   openPasswordMiner() {
@@ -458,14 +458,13 @@ class _PasswordState extends State<Password> {
                       ),
                     ])));
     showDialog(
-    context: context, 
-    child: WillPopScope(
+    builder: (context) => WillPopScope(
       // ignore: missing_return
       onWillPop: (){
         passwordFocusNode.canRequestFocus = true;
         Navigator.pop(context);
       },
-      child: dialog), 
+      child: dialog), context: context, 
     barrierDismissible: false);
   }
 }
@@ -568,7 +567,7 @@ class _ListPageState extends State<ListPage> {
                                   ]),
                           )),
                           ])));
-              showDialog(context: context, child: dialog, barrierDismissible: true);
+              showDialog(builder: (context) => dialog, context: context, barrierDismissible: true);
             },
             child: Container(
               padding: EdgeInsets.fromLTRB(0, 5, 0, 0),

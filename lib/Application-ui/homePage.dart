@@ -21,11 +21,11 @@ class SafeHome extends StatelessWidget {
             },
           child: MultiProvider(
         providers: [
-          StreamProvider<List<Passwords>>.value(value: FirestoreDatabase.getPasswords(),catchError: (_, __) => null),
-          StreamProvider<List<Passports>>.value(value: FirestoreDatabase.getPassports(),catchError: (_, __) => null),
-          StreamProvider<List<Payments>>.value(value: FirestoreDatabase.getPayments(),catchError: (_, __) => null),
-          StreamProvider<List<Certificates>>.value(value: FirestoreDatabase.getCertificates(),catchError: (_, __) => null),
-          StreamProvider<List<Document>>.value(value: FirestoreDatabase.getDocuments(),catchError: (_, __) => null),
+          StreamProvider<List<Passwords>>.value(value: FirestoreDatabase.getPasswords(),catchError: (_, __) => null, initialData: [],),
+          StreamProvider<List<Passports>>.value(value: FirestoreDatabase.getPassports(),catchError: (_, __) => null, initialData: [],),
+          StreamProvider<List<Payments>>.value(value: FirestoreDatabase.getPayments(),catchError: (_, __) => null, initialData: [],),
+          StreamProvider<List<Certificates>>.value(value: FirestoreDatabase.getCertificates(),catchError: (_, __) => null, initialData: [],),
+          StreamProvider<List<Document>>.value(value: FirestoreDatabase.getDocuments(),catchError: (_, __) => null, initialData: [],),
           ],
           child: SafeArea(
           child: Scaffold(

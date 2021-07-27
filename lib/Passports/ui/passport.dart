@@ -388,7 +388,7 @@ class _IdentityState extends State<Identity> {
                         ),
                       ),
                     ])))));
-    showDialog(context: context, child: dialog, barrierDismissible: false);
+    showDialog(builder: (context) => dialog, context: context, barrierDismissible: false);
   }
 
   clearText(String option) async {
@@ -503,7 +503,7 @@ class _ListPageState extends State<ListPage> {
                                     ])),
                               ])));
                   showDialog(
-                      context: context, child: dialog, barrierDismissible: true);
+                      builder: (context) => dialog, context: context, barrierDismissible: true);
                 },
                 child: Container(
                   height: 90.h,

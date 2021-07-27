@@ -5,4 +5,5 @@ class Collection{
   static final String certificates = 'Certificates';
   static final String passports = 'Passports';
   static final String vault = 'Vault';
+  static final String encryptionKeyDoc = 'EncryptionKey';
 }

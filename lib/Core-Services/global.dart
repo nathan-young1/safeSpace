@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:random_color/random_color.dart';
 import 'package:safeSpace/Application-ui/navigationDrawer.dart';
 import 'package:safeSpace/Authentication/code/authentication.dart';
+import 'package:safeSpace/Core-Services/encrypt.dart';
 import 'package:safeSpace/Custom-widgets/appBar.dart';
 import 'package:safeSpace/Styles/fontSize.dart';
 import 'package:safeSpace/Styles/textStyle.dart';
@@ -13,14 +14,15 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-String masterkey;
 String query = '';
+
+
 //to tell the class when to update the widget based on the current search bar state
 StreamSubscription searchBarState = searchBarStateController.stream.listen((_){});
 StreamController cancelUploadOrDownload = StreamController();
-List<File> attachments = List<File>();
+List<File> attachments = [];
 double passwordLength = 30.0;
-String generatedPassword;
+String? generatedPassword;
 RandomColor randomColor = RandomColor();
 Color allColor = randomColor.randomColor();
 Color mainColor = Colors.teal;
@@ -40,12 +42,12 @@ BoxDecoration authenticationContainerDecoration = BoxDecoration(
 final InputDecoration textInputDecoration = InputDecoration(
   errorStyle: authTextField,
   isDense: true,
-  labelStyle: TextStyle(color: Colors.black, fontSize: 17.ssp),
+  labelStyle: TextStyle(color: Colors.black, fontSize: 17.sp),
   border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
 );
 final InputDecoration detailInputDecoration = InputDecoration(
   isDense: true,
-  labelStyle: TextStyle(color: Colors.black, fontSize: 17.ssp),
+  labelStyle: TextStyle(color: Colors.black, fontSize: 17.sp),
   border: UnderlineInputBorder(borderRadius: BorderRadius.circular(15)),
 );
 final InputDecoration textInputDecorationForSafe = InputDecoration(
@@ -54,7 +56,7 @@ final InputDecoration textInputDecorationForSafe = InputDecoration(
   enabledBorder: InputBorder.none,
   errorBorder: InputBorder.none,
   contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-  labelStyle:TextStyle(color: Colors.black, fontSize: 17.ssp),
+  labelStyle:TextStyle(color: Colors.black, fontSize: 17.sp),
 );
 
 showExitDialog(BuildContext context) {
@@ -110,7 +112,7 @@ showExitDialog(BuildContext context) {
       )
     ],
   );
-  showDialog(context: context, child: exit, barrierDismissible: true);
+  showDialog(builder: (context) => exit, context: context, barrierDismissible: true);
 }
 
 showConfirmFileDeleteDialog(BuildContext context,DeleteOption option) {
@@ -141,7 +143,7 @@ showConfirmFileDeleteDialog(BuildContext context,DeleteOption option) {
       )
     ]),
   );
-  return showDialog(context: context, child: exit, barrierDismissible: false);
+  return showDialog(builder: (context) => exit, context: context, barrierDismissible: false);
 }
 showUploadDialog(BuildContext context, int filesLength) {
     AlertDialog downloadProgress = new AlertDialog(
@@ -194,13 +196,13 @@ showUploadDialog(BuildContext context, int filesLength) {
             ]),
           );
         }));
-    showDialog(context: context, child: downloadProgress, barrierDismissible: false);
+    showDialog(builder: (context) => downloadProgress, context: context, barrierDismissible: false);
   }
 
-bool isDeviceConnected;
-StreamSubscription subscription;
+bool? isDeviceConnected;
+StreamSubscription? subscription;
 class InternetConnection with ChangeNotifier{
-  bool get checkInternet => isDeviceConnected;
+  bool get checkInternet => isDeviceConnected!;
   set checkInternet(bool update){
     isDeviceConnected = update;
     notifyListeners();

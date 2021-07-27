@@ -57,7 +57,8 @@ class Document {
         .collection(userUid)
       .doc(Collection.vault)
         .collection(Collection.documents)
-        .add(data: map, customDbName: customDbName);
+        .doc(customDbName)
+        .set(map);
     await progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
     await FirestoreFileStorage.uploadFileToFirestore(collection: Collection.documents,dbName: customDbName,filesToUpload: filesToUpload,context: context);
   }

@@ -92,5 +92,5 @@ import 'package:safeSpace/Core-Services/screenUtilExtension.dart';
                         ),
                       ]),
                 )));
-    showDialog(context: buildContext, child: dialog, barrierDismissible: false);
+    showDialog(builder: (context) => dialog, context: buildContext, barrierDismissible: false);
   }

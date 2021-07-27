@@ -40,7 +40,6 @@ class _PaymentState extends State<Payment> {
   final securityFocus = FocusNode();
   @override
     void initState() {
-      // TODO: implement initState
       super.initState();
       //set state when search Bar contents changes
       searchBarState.onData((_) => setState(() {}));
@@ -280,7 +279,7 @@ class _PaymentState extends State<Payment> {
                         ),
                       ),
                     ])))));
-    showDialog(context: context, child: dialog, barrierDismissible: false);
+    showDialog(builder: (context) => dialog, context: context, barrierDismissible: false);
   }
 
   clearText(String option) async {
@@ -392,7 +391,7 @@ class _ListPageState extends State<ListPage> {
                                       )),
                                     ])),
                               ])));
-                  showDialog(context: context, child: dialog, barrierDismissible: true);
+                  showDialog(builder: (context) => dialog, context: context, barrierDismissible: true);
                 },
                 child: Container(
                   padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
@@ -526,8 +525,8 @@ class _DetailPageState extends State<DetailPage> {
                       Positioned(
                           top: 10.h,
                           right: 40.w,
-                          child: FlatButton.icon(
-                            color: Colors.transparent,
+                          child: TextButton.icon(
+                            style: ButtonStyle(backgroundColor: MaterialStateColor.resolveWith((states) => Colors.transparent)),
                             onPressed: () async {
                               await Payments.updatePayment(name: paymentTitle.text,dbName: widget.payments.dbName,
                               nameOnCard: nameOnCard.text,numberOnCard: numberOnCard.text,expirationDate: expirationDate.text,

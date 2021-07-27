@@ -1,5 +1,4 @@
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -10,7 +9,6 @@ import 'package:safeSpace/Core-Services/attachment.dart';
 import 'package:safeSpace/Introduction/introPagesHolder.dart';
 import 'package:safeSpace/Styles/theme.dart';
 import 'package:safeSpace/Subscription/ui/purchaseSubscription.dart';
-import 'package:safeSpace/Vault-Recryption/reEncryptionPercent.dart';
 import 'Application-ui/homePage.dart';
 import 'Application-ui/navigationDrawer.dart';
 import 'Application-ui/splashscreen.dart';
@@ -21,9 +19,10 @@ import 'Core-Services/global.dart';
 import 'Settings/changeMasterPassword.dart';
 import 'Settings/manageAccount.dart';
 import 'Subscription/ui/subscriptionStatus.dart';
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 
 void main() {
-  InAppPurchaseConnection.enablePendingPurchases();
+  InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
   runApp(Safe());
 }
 
@@ -72,14 +71,13 @@ class _SafeState extends State<Safe> {
       builder: (_, constraints) {
         ScreenUtil.init(constraints);
         return ScreenUtilInit(
-              child: MultiProvider(
+              builder: () => MultiProvider(
                 providers: [
                   ChangeNotifierProvider<Dashboard>.value(value: Dashboard()),
                   ChangeNotifierProvider<DrawerState>.value(value: DrawerState()),
                   ChangeNotifierProvider<AttachmentDownload>.value(value: AttachmentDownload()),
                   ChangeNotifierProvider<SearchBar>.value(value: SearchBar()),
-                  ChangeNotifierProvider<InternetConnection>.value(value: InternetConnection()),
-                  ChangeNotifierProvider<ReEncryptionPercent>.value(value: ReEncryptionPercent())
+                  ChangeNotifierProvider<InternetConnection>.value(value: InternetConnection())
                 ],
                 child: MaterialApp(
                   title: 'Safe Space',
@@ -90,7 +88,7 @@ class _SafeState extends State<Safe> {
                     primarySwatch: Colors.teal,
                     accentColor: Colors.pinkAccent[100],
                     primaryColor: Colors.teal,
-                    cursorColor: Colors.pinkAccent[100],
+                    textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.pinkAccent[100]),
                   ),
                   routes: {
                     '/': (context)=> Splashscreen(),

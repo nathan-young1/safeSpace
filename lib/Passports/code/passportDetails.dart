@@ -90,9 +90,10 @@ Future<Passports> decryptPassportStream(Map<String, dynamic> passportsJson,datab
     String customDbName = uniqueId;
     await FirebaseFirestore.instance
         .collection(userUid)
-      .doc(Collection.vault)
+        .doc(Collection.vault)
         .collection(Collection.passports)
-        .add(data: map,customDbName: customDbName);
+        .doc(customDbName)
+        .set(map);
     await progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
     await FirestoreFileStorage.uploadFileToFirestore(collection: Collection.passports,context: context,filesToUpload: filesToUpload,dbName: customDbName);
   }

@@ -246,7 +246,7 @@ class _CertificateState extends State<Certificate> {
                         ]),
                   ),
                 )));
-    showDialog(context: context, child: dialog, barrierDismissible: false);
+    showDialog(builder: (context) => dialog, context: context, barrierDismissible: false);
   }
 
   clearText(String option) async {
@@ -359,7 +359,7 @@ class _ListPageState extends State<ListPage> {
                                     ])),
                               ])));
                   showDialog(
-                      context: context, child: dialog, barrierDismissible: true);
+                      builder: (context) => dialog, context: context, barrierDismissible: true);
                 },
                 child: Container(
                   height: 90.h,
@@ -487,8 +487,8 @@ class _DetailPageState extends State<DetailPage> {
                           Positioned(
                                top: 10.h,
                               right: 40.w,
-                              child: FlatButton.icon(
-                                  color: Colors.transparent,
+                              child: TextButton.icon(
+                                  style: ButtonStyle(backgroundColor: MaterialStateColor.resolveWith((states) => Colors.transparent)),
                                   onPressed: () async {
                                     FocusScope.of(context).unfocus();
                                     await Certificates.updateCertificate(

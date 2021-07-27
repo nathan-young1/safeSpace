@@ -1,22 +1,20 @@
 import 'dart:io';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:aes_crypt/aes_crypt.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:safeSpace/Authentication/code/authentication.dart';
 import 'package:safeSpace/Core-Services/attachment.dart';
+import 'package:safeSpace/Core-Services/userEncryptionTools.dart';
 import 'package:safeSpace/Vault-Recryption/mainReEncryptionFunction.dart';
 import 'enum.dart';
-import 'global.dart';
 import 'package:uuid/uuid.dart';
+
 
 encrypt([String plainText = '',Cyptography mode = Cyptography.Normal]) async {
   if (plainText != ''){
-  var aesKey;
-  if(mode == Cyptography.ReEncryption){
-  aesKey = Key.fromUtf8(VaultReEncryption.masterKey);
-  }else{
-  aesKey = Key.fromUtf8(masterkey);
-  }
+  var aesKey = Key.fromUtf8(UserEncryptionTools.encryptionKey);
+
   final aesIv = IV.fromUtf8(userUid.substring(0, 16));
   final aesEncrypter = Encrypter(AES(aesKey, mode: AESMode.cbc));
 
@@ -30,12 +28,8 @@ encrypt([String plainText = '',Cyptography mode = Cyptography.Normal]) async {
 
 decrypt([String textToDecrypt = '',Cyptography mode = Cyptography.Normal]) async {
   if (textToDecrypt != ''){
-  var aesKey;
-  if(mode == Cyptography.ReEncryption){
-  aesKey = Key.fromUtf8(VaultReEncryption?.masterKey);
-  }else{
-    aesKey = Key.fromUtf8(masterkey);
-  }
+  var aesKey = Key.fromUtf8(UserEncryptionTools.encryptionKey);
+
   final aesEncrypter = Encrypter(AES(aesKey, mode: AESMode.cbc));
   final aesIv = IV.fromUtf8(userUid.substring(0, 16));
 
@@ -48,10 +42,9 @@ decrypt([String textToDecrypt = '',Cyptography mode = Cyptography.Normal]) async
 
 
 // ignore: missing_return
-Future<Map<FileEncrypt, dynamic>> fileEncrypt(File file,{Cyptography mode = Cyptography.Normal}) async {
-if (mode == Cyptography.Normal){
+Future<Map<FileEncrypt, dynamic>?> fileEncrypt(File file,{Cyptography mode = Cyptography.Normal}) async {
   final String uuid = Uuid().v1();
-  var crypt = AesCrypt(masterkey);
+  var crypt = AesCrypt(UserEncryptionTools.encryptionKey);
   crypt.setOverwriteMode(AesCryptOwMode.on);
   final Directory systemTempDir = Directory.systemTemp;
   File tempFile = File('${systemTempDir.path}/encrypt$uuid.txt.aes');
@@ -61,25 +54,12 @@ if (mode == Cyptography.Normal){
   await tempFile.create();
   crypt.encryptFileSync(file.path, tempFile.path);
   return {FileEncrypt.file: tempFile,FileEncrypt.filePath: tempFile.path};
-}else if(mode == Cyptography.ReEncryption){
-  final String uuid = Uuid().v1();
-  var crypt = AesCrypt(VaultReEncryption?.newVaultKey);
-  crypt.setOverwriteMode(AesCryptOwMode.on);
-  final Directory systemTempDir = Directory.systemTemp;
-  File tempFile = File('${systemTempDir.path}/encrypt$uuid.txt.aes');
-  if (tempFile.existsSync()) {
-    await tempFile.delete();
-  }
-  await tempFile.create();
-  crypt.encryptFileSync(file.path, tempFile.path);
-  return {FileEncrypt.file: tempFile,FileEncrypt.filePath: tempFile.path};
-}
 }
 
 
 fileDecrypt(File file, String filePath, String collection, String docName,{Cyptography mode = Cyptography.Normal}) async {
   if(mode == Cyptography.Normal){
-  var crypt = AesCrypt(masterkey);
+  var crypt = AesCrypt(UserEncryptionTools.encryptionKey);
   crypt.setOverwriteMode(AesCryptOwMode.on);
   if (await Permission.storage.request().isGranted) {
     String fullPath = '${GetDirectories.pathToVaultFolder}/$collection/$docName';

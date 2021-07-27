@@ -256,7 +256,7 @@ class _SignupState extends State<Signup> {
 
   registerSafe() async {
     progressDialog(buildContext: context,message: 'Setting Things Up',command: ProgressDialogVisiblity.show);
-    Authentication result = await signInWithEmailAndPassword(password.text,context);
+    Authentication result = await registerWithEmailAndPassword(password.text,context);
     progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
     switch (result) {
       case Authentication.Successful:

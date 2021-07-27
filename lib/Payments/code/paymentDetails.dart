@@ -78,7 +78,8 @@ class Payments {
         .collection(userUid)
       .doc(Collection.vault)
         .collection(Collection.payments)
-        .add(data: map, customDbName: customDbName);
+        .doc(customDbName)
+        .set(map);
     await progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
     await FirestoreFileStorage.uploadFileToFirestore(collection: Collection.payments,context: context,filesToUpload: filesToUpload,dbName: customDbName);
   }

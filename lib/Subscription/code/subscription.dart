@@ -8,7 +8,7 @@ StreamController updateState = StreamController();
 // ignore: must_be_immutable
 class SafeSpaceSubscription{
   //Enable plugin
-  static final InAppPurchaseConnection _iap = InAppPurchaseConnection.instance;
+  static final InAppPurchase _iap = InAppPurchase.instance;
   //products for sale
   static List<ProductDetails> _products = [];
   //past purchases
@@ -20,12 +20,11 @@ class SafeSpaceSubscription{
     bool pluginAvailable = await _iap.isAvailable();
 
       if (pluginAvailable){
-        await Future.wait([_getProducts(),_getPastPurchases()]);
-        print(_purchases);
-        _subscription = _iap.purchaseUpdatedStream.listen((data) async {
+        await Future.wait([_getProducts(),_iap.restorePurchases()]);
+        _subscription = _iap.purchaseStream.listen((data) async {
           
           data.forEach((e)=> print('$e just entered'));
-          await Future.wait([_verifyPurchase(),_getPastPurchases()]);
+          await Future.wait([_completePurchase(),_getPastPurchases(data)]);
           updateState.add(null);
         },
         onDone: ()=> _subscription.cancel(),
@@ -55,7 +54,7 @@ class SafeSpaceSubscription{
   }
 
 
-  static Future _verifyPurchase() async {
+  static Future _completePurchase() async {
   PurchaseDetails purchase = _hasPurchased();
 
   if (purchase != null && purchase.status == PurchaseStatus.purchased){
@@ -69,20 +68,19 @@ class SafeSpaceSubscription{
   static bool get isPremiumUser => (_hasPurchased() != null) ? true : false;
   
 
-  static Future<void> _getPastPurchases() async { 
-  QueryPurchaseDetailsResponse response = await _iap.queryPastPurchases(applicationUserName: email);
-  for (PurchaseDetails purchase in response.pastPurchases) {
-      final pending = Platform.isIOS
-        ? purchase.pendingCompletePurchase
-        : !purchase.billingClientPurchase.isAcknowledged;
+  static Future<void> _getPastPurchases(List<PurchaseDetails> purchaseDetailsList) async {
+  for (PurchaseDetails purchase in purchaseDetailsList) {
+      final pending = purchase.pendingCompletePurchase;
       if(pending){
          await _iap.completePurchase(purchase);
       }
+
+    if(purchase.error != null){
+      print('the errors are ${purchase.error}');
     }
-    if(response.error != null){
-      print('the errors are ${response.error}');
+    _purchases.add(purchase);
     }
-    _purchases = response.pastPurchases;
+
   }
   
   static timeLeftToExpire(){
@@ -91,7 +89,6 @@ class SafeSpaceSubscription{
     var expirationTime = DateTime.fromMillisecondsSinceEpoch(int.parse(purchase.transactionDate)).add(Duration(days: 366));
     var timeDifference = expirationTime.difference(DateTime.now());
     if(timeDifference.inDays.isNegative){
-    _getPastPurchases().then((_){});
       var time = 366 - (timeDifference.inDays.abs() % 366);
       return time;
     }else{

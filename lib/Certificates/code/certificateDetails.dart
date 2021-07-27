@@ -54,7 +54,8 @@ Future<Certificates> decryptCertificateStream(Map<String, dynamic> certificatesJ
         .collection(userUid)
         .doc(Collection.vault)
         .collection(Collection.certificates)
-        .add(data: map, customDbName: customDbName);
+        .doc(customDbName)
+        .set(map);
     await progressDialog(buildContext: buildContext ,command: ProgressDialogVisiblity.hide);
     await FirestoreFileStorage.uploadFileToFirestore(
     collection: Collection.certificates,

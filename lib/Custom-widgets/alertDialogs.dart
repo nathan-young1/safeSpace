@@ -38,9 +38,7 @@ authenticateVaultKeyBeforeReEncryption({@required BuildContext context}){
       ),
     );
   showDialog(
-    context: context,
-    barrierDismissible: false,
-    child: AlertDialog(
+    builder: (context) => AlertDialog(
       title: Text('Please enter your vault key to continue:',
          style: TextStyle(fontSize: RFontSize.large,fontWeight: FontWeight.bold)),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
@@ -62,7 +60,7 @@ authenticateVaultKeyBeforeReEncryption({@required BuildContext context}){
                  validator: (text){
                    if(text.isEmpty){
                      return 'Vault Key is required';
-                   }else if(createEncryptionKey(text) == masterkey){
+                   }else if(increasePasswordLengthTo32(text) == masterkey){
                      return null;
                    }else{
                    return 'Invaild Vault Key';
@@ -105,7 +103,8 @@ authenticateVaultKeyBeforeReEncryption({@required BuildContext context}){
         ],),
       )
      ],
- ),
+ ), context: context,
+    barrierDismissible: false,
   );
 }
 
@@ -148,9 +147,7 @@ authenticateVaultKeyBeforeUserDelete({@required BuildContext context}){
       ),
     );
   showDialog(
-    context: context,
-    barrierDismissible: false,
-    child: AlertDialog(
+    builder: (context) => AlertDialog(
       title: Text('Please enter your vault key to continue:',
          style: TextStyle(fontSize: RFontSize.large,fontWeight: FontWeight.bold)),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
@@ -172,7 +169,7 @@ authenticateVaultKeyBeforeUserDelete({@required BuildContext context}){
                  validator: (text){
                    if(text.isEmpty){
                      return 'Vault Key is required';
-                   }else if(createEncryptionKey(text) == masterkey){
+                   }else if(increasePasswordLengthTo32(text) == masterkey){
                      return null;
                    }else{
                    return 'Invaild Vault Key';
@@ -226,15 +223,14 @@ authenticateVaultKeyBeforeUserDelete({@required BuildContext context}){
         ],),
       )
      ],
- ),
+ ), context: context,
+    barrierDismissible: false,
   );
 }
 
 continueUnfinishedReEncryption({@required BuildContext context}){
   showDialog(
-    context: context,
-    barrierDismissible: false,
-    child: AlertDialog(
+    builder: (context) => AlertDialog(
       title: Text("Oops! Your vault's reencryption has not completed",
       style: TextStyle(fontSize: RFontSize.medium,fontWeight: FontWeight.bold)),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
@@ -261,6 +257,7 @@ continueUnfinishedReEncryption({@required BuildContext context}){
           ),
         )
       ],
-    )
+    ), context: context,
+    barrierDismissible: false
   );
 }

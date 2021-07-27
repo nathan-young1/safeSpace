@@ -69,7 +69,8 @@ class Passwords {
         .collection(userUid)
         .doc(Collection.vault)
         .collection(Collection.passwords)
-        .add(data: map, customDbName: customDbName);
+        .doc(customDbName)
+        .set(map);
     await progressDialog(buildContext: context,command: ProgressDialogVisiblity.hide);
   }
 

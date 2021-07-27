@@ -1,11 +1,6 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:password_strength/password_strength.dart';
 import 'package:provider/provider.dart';
-import 'package:safeSpace/Authentication/code/authentication.dart';
-import 'package:safeSpace/Core-Services/attachment.dart';
-import 'package:safeSpace/Core-Services/enum.dart';
 import 'package:safeSpace/Core-Services/global.dart';
 import 'package:safeSpace/Custom-widgets/noInternet.dart';
 import 'package:safeSpace/Custom-widgets/passwordStrengthIndicator.dart';
@@ -49,12 +44,11 @@ class _ChangeMasterPasswordState extends State<ChangeMasterPassword> {
           onPressed: ()=> Navigator.of(context).pop()),
         ),
           title: Text('Vault ReEncryption',
-          style: Theme.of(context).appBarTheme.textTheme.headline1)),
+          style: Theme.of(context).appBarTheme.textTheme!.headline1)),
         body: (internetConnection)
         ?Padding(
           padding: const EdgeInsets.only(top: 30),
-          child: (!Directory('${GetDirectories.pathToVaultFolder}/CheckList/$email').existsSync())
-          ?Form(
+          child: Form(
             key: reEncryptionFormKey,
             child: Column(children: [
               Container(
@@ -63,7 +57,7 @@ class _ChangeMasterPasswordState extends State<ChangeMasterPassword> {
                   controller: currentPassword,
                   style: authTextField,
                   validator: (vaultKey){
-                    if(vaultKey.isEmpty){
+                    if(vaultKey!.isEmpty){
                       return 'Vault key is required';
                     }
                     else if(passwordStrength != 100){
@@ -104,7 +98,7 @@ class _ChangeMasterPasswordState extends State<ChangeMasterPassword> {
                   controller: newPassword,
                   style: authTextField,
                   validator: (retypedVaultKey){
-                    if(retypedVaultKey.isEmpty || retypedVaultKey != currentPassword.text){
+                    if(retypedVaultKey!.isEmpty || retypedVaultKey != currentPassword.text){
                       return 'Vault key do not match';
                     }
                     return null;
@@ -122,7 +116,7 @@ class _ChangeMasterPasswordState extends State<ChangeMasterPassword> {
                   child: RaisedButton.icon(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
                     color: mainColor,
-                    onPressed: ()=> (reEncryptionFormKey.currentState.validate())?vaultReEncryption(masterKey: ModalRoute.of(context).settings.arguments,newPassword: newPassword.text,context: context):null,
+                    onPressed: ()=> (reEncryptionFormKey.currentState!.validate())?vaultReEncryption(newPassword: newPassword.text,context: context):null,
                     label: Text('ReEncrypt Vault',style: TextStyle(fontSize: RFontSize.normal,color: Colors.white)),
                     icon: Icon(Icons.lock_clock),),
                 ),
@@ -139,95 +133,8 @@ class _ChangeMasterPasswordState extends State<ChangeMasterPassword> {
                       ),
                   ),
             ]),
-          ):ContinueReEncryption(formerPassword: formerPassword, newPassword: newPassword),
+          )
         ):NoInternetConnection(),
     );
   }
   }
-
-final continueFormKey = GlobalKey<FormState>();
-class ContinueReEncryption extends StatelessWidget {
-  ContinueReEncryption({
-    Key key,
-    @required this.formerPassword,
-    @required this.newPassword,
-  }) : super(key: key);
-
-  final TextEditingController formerPassword;
-  final TextEditingController newPassword;
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-    key: continueFormKey,
-    child: Column(children: [
-      Container(
-        width: 270.w,
-        child: TextField(
-          style: authTextField,
-          controller: formerPassword,
-          decoration: InputDecoration(
-              filled: true,
-              isDense: true,
-              errorStyle: TextStyle(fontSize: RFontSize.normal),
-              labelStyle: TextStyle(fontSize: RFontSize.normal,color: Colors.black),
-              labelText: 'Former Vault Key',
-              suffixIcon: Tooltip(
-                message: 'The Vault Key used to start encryption',
-                child: Icon(MdiIcons.information,size: 26.r),
-              ))),
-      ),
-      SizedBox(height: 10.h),
-      Container(
-        width: 270.w,
-        child: TextFormField(
-          controller: newPassword,
-          style: authTextField,
-          validator: (currentKey){
-            if(createEncryptionKey(currentKey) != masterkey){
-              return 'Invalid vault key';
-            }
-            return null;
-          },
-          decoration: InputDecoration(
-              filled: true,
-              isDense: true,
-              errorStyle: TextStyle(fontSize: RFontSize.normal),
-              labelStyle: TextStyle(fontSize: RFontSize.normal,color: Colors.black),
-              labelText: 'Current Vault Key',
-              suffixIcon: Tooltip(
-                message: 'The Current Vault Key',
-                child: Icon(MdiIcons.information,size: 26.r),
-              ))),
-      ),
-        SizedBox(height: 25.h),
-        Container(
-          height: 40.h,
-          child: RaisedButton.icon(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-            color: secondaryColor,
-            onPressed: () {
-            if(continueFormKey.currentState.validate()){
-            //make the masterkey the former password so it can decrypt the data to continue reEncryption
-            vaultReEncryption(masterKey: formerPassword.text,newPassword: newPassword.text,context: context,mode: VaultReEncryptionMode.Resume);
-            }
-            },
-            label: Text('Continue ReEncryption',
-            style: TextStyle(fontSize: RFontSize.normal,color: Colors.white)),
-            icon: Icon(Icons.pause,size: 25.r),),
-        ),
-          SizedBox(height: 15.h),
-            Padding(
-              padding: EdgeInsets.all(10.r),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.info,size: 28.r,color: secondaryColor),
-                    SizedBox(width: 8.w),
-                    Flexible(child: Text('This is a sensitive operation only proceed on a stable internet connection and do not interupt.',style: TextStyle(fontSize: RFontSize.normal),))
-                  ],
-                ),
-            ),
-    ]));
-  }
-} 
