@@ -18,40 +18,45 @@ class SafeSpaceSubscription{
 
   static initalizePlugin() async {
     bool pluginAvailable = await _iap.isAvailable();
-
       if (pluginAvailable){
-        await Future.wait([_getProducts(),_iap.restorePurchases()]);
-        _subscription = _iap.purchaseStream.listen((data) async {
+
+        _subscription = _iap.purchaseStream.listen((purchase) async {
           
-          data.forEach((e)=> debugPrint('$e just entered'));
-          await _getPastPurchases(data);
-          await await _completePurchase();
+          debugPrint('$purchase here now');
+          purchase.forEach((element) {print(element.verificationData.localVerificationData);});
+          await _getPastPurchases(purchase);
+          await _completePurchase();
           updateState.add(null);
         },
         onDone: ()=> _subscription!.cancel(),
-        onError: (e)=> debugPrint(e)
+        onError: (e)=> print(e)
         );
+
+        await _getProducts();
+        await _iap.restorePurchases();
+
       }
   }
 
 
   static PurchaseDetails? _hasPurchased(){
-  return _purchases.firstWhere((purchase) => purchase.productID == playStoreId);
+    if(_purchases.isNotEmpty)
+    return _purchases.firstWhere((purchase) => purchase.productID == playStoreId);
+    else
+    return null;
   }
 
-  static void buyProduct(){
-  ProductDetails product =_products.firstWhere((product) => product.id == playStoreId);
-  if(product != null){
-  final PurchaseParam purchaseParam = PurchaseParam(productDetails: product,applicationUserName: email);
-  _iap.buyNonConsumable(purchaseParam: purchaseParam);
-  }
+  static Future<void> buyProduct() async {
+     ProductDetails? product = _products.firstWhere((product) => product.id == playStoreId);
+
+    final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
+    await _iap.buyNonConsumable(purchaseParam: purchaseParam);
   }
 
 
   static Future<void> _getProducts() async {
-  Set<String> id = {playStoreId};
-  ProductDetailsResponse response = await _iap.queryProductDetails(id);
-  _products.addAll(response.productDetails);
+    ProductDetailsResponse response = await _iap.queryProductDetails({playStoreId});
+    _products.addAll(response.productDetails);
   }
 
 
@@ -59,34 +64,37 @@ class SafeSpaceSubscription{
   PurchaseDetails purchase = _hasPurchased()!;
 
   if (purchase != null && purchase.status == PurchaseStatus.purchased){
-    debugPrint('purchase ${purchase.verificationData.localVerificationData}');
-    await _iap.completePurchase(purchase);
-  }else if(purchase != null && purchase.status == PurchaseStatus.pending){
-    await _iap.completePurchase(purchase);
+      await _iap.completePurchase(purchase);
+      print('purchase ${purchase.verificationData.localVerificationData}');
+    }else if(purchase != null && purchase.status == PurchaseStatus.pending){
+      await _iap.completePurchase(purchase);
+    }else if (purchase != null && purchase.status == PurchaseStatus.restored){
+      await _iap.completePurchase(purchase);
   }
+
   }
 
   static bool get isPremiumUser => (_hasPurchased() != null) ? true : false;
   
 
   static Future<void> _getPastPurchases(List<PurchaseDetails> purchaseDetailsList) async {
-  for (PurchaseDetails purchase in purchaseDetailsList) {
+ 
+    for (PurchaseDetails purchase in purchaseDetailsList) {
       final pending = purchase.pendingCompletePurchase;
       if(pending){
          await _iap.completePurchase(purchase);
       }
 
-    if(purchase.error != null){
-      debugPrint('the errors are ${purchase.error}');
-    }
-    _purchases.add(purchase);
+      if(purchase.error != null){
+        print('the errors are ${purchase.error}');
+      }else _purchases.add(purchase);
+
     }
 
   }
   
   static timeLeftToExpire(){
     PurchaseDetails purchase = _hasPurchased()!;
-    if(purchase != null){
     var expirationTime = DateTime.fromMillisecondsSinceEpoch(int.parse(purchase.transactionDate!)).add(Duration(days: 366));
     var timeDifference = expirationTime.difference(DateTime.now());
     if(timeDifference.inDays.isNegative){
@@ -94,7 +102,6 @@ class SafeSpaceSubscription{
       return time;
     }else{
       return timeDifference.inDays;
-    }
     }
   }
   }

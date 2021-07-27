@@ -31,9 +31,8 @@ class Attachment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: StreamProvider<List<String>?>.value(
+      child: StreamProvider<List<String>>.value(
         value: FirestoreFileStorage.streamAttachmentList(collection: collection,dbName: dbName),
-        catchError: (_, __) => null,
         builder: (context,_)=>  AttachmentBody(collection: collection,dbName: dbName,docName: docName),
          initialData: [],
       )

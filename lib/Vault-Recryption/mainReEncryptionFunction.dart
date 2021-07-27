@@ -15,7 +15,7 @@ vaultReEncryption({required String newPassword,required BuildContext context}) a
     //stop the getting of storage token during reEncryption
     getStorageLeft!.cancel();
 
-    await auth.signInWithEmailAndPassword(email: email!,password: await hashVaultKey(password: UserEncryptionTools.passwordToEncryptEncryptionKey,emailAddress: email!)).then((_) async {
+    await auth.signInWithEmailAndPassword(email: email!,password: await hashVaultKey(password: UserEncryptionTools.barePassword,emailAddress: email!)).then((_) async {
     await auth.currentUser!.updatePassword(await hashVaultKey(password: newPassword,emailAddress: email!));
     });
     await auth.signInWithEmailAndPassword(email: email!,password: await hashVaultKey(password: newPassword,emailAddress: email!)).then((_) async {
@@ -27,6 +27,7 @@ vaultReEncryption({required String newPassword,required BuildContext context}) a
     });
 
     }catch(e){
+      debugPrint(e.toString());
       Navigator.pop(context);
       showFlushBar(context,'An Error Occured',Icons.dangerous);
     }

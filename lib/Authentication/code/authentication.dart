@@ -31,7 +31,7 @@ Future<Authentication?> registerWithEmailAndPassword(String password,BuildContex
   email = googleSignInAccount.email;
   name = googleSignInAccount.email.substring(0,googleSignInAccount.email.indexOf('@'));
   userUid = user!.uid;
-  UserEncryptionTools.setEncryptionKeyForNewUser(userPassword: password);
+  await UserEncryptionTools.setEncryptionKeyForNewUser(userPassword: password);
   return Authentication.Successful;
   } on FirebaseAuthException catch (e) {
   showFlushBar(context,e.code,Icons.error);
@@ -58,7 +58,7 @@ Future<Authentication?> signInWithEmailAndPasswordInLogin(String emailAddress,St
     email = emailAddress;
     name = emailAddress.substring(0,emailAddress.indexOf('@'));
    userUid = user!.uid;
-   UserEncryptionTools.initialize(userPassword: password);
+   await UserEncryptionTools.initialize(userPassword: password);
   return Authentication.Successful;
   } on FirebaseAuthException catch (e) {
     print(e);
@@ -70,7 +70,8 @@ Future<Authentication?> signInWithEmailAndPasswordInLogin(String emailAddress,St
       return Authentication.WrongPassword;
     }
 }catch(e){
-  showFlushBar(context,e,Icons.error);
+  print(e.toString());
+  showFlushBar(context,"An error occurred",Icons.error);
   return Authentication.Error;
 }
 }

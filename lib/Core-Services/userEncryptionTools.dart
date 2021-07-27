@@ -8,9 +8,11 @@ class UserEncryptionTools{
   /// The Increase User Password that is used to encrypt the Encryption Key before storing it in firestore.
   static late String passwordToEncryptEncryptionKey;
   static late String encryptionKey;
+  static late String barePassword;
 
   /// Get the tools needed for encryption in this appilcation.
   static Future<void> initialize({required String userPassword}) async {
+    barePassword = userPassword;
     passwordToEncryptEncryptionKey = _increasePasswordLengthTo32(userPassword);
     encryptionKey = await _getUserEncryptionKeyFromDb(increasedPassword: passwordToEncryptEncryptionKey);
   }

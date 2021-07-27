@@ -24,19 +24,20 @@ class SafeDrawer extends StatefulWidget {
   @override
   _SafeDrawerState createState() => _SafeDrawerState();
 }
+
 Timer? getStorageLeft;
 class _SafeDrawerState extends State<SafeDrawer> {
 
   @override
-    void initState() {
+  void initState() {
 
-      getStorageLeft = Timer.periodic(Duration(seconds: 10),(_){
-        user!.getIdTokenResult(true).then((token){
-        VaultIdToken.setStorageLeft(token.claims!['storageLeft']);
+    getStorageLeft = Timer.periodic(Duration(seconds: 10),(_){
+      user!.getIdTokenResult(true).then((token){
+      VaultIdToken.setStorageLeft(token.claims!['storageLeft']);
       });
-      });
-      super.initState();
-    }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
