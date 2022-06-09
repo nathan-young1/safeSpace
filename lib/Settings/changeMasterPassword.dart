@@ -116,7 +116,7 @@ class _ChangeMasterPasswordState extends State<ChangeMasterPassword> {
                   child: RaisedButton.icon(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
                     color: mainColor,
-                    onPressed: ()=> (reEncryptionFormKey.currentState!.validate())?vaultReEncryption(newPassword: newPassword.text,context: context):null,
+                    onPressed: ()=> (reEncryptionFormKey.currentState!.validate())?vaultReEncryption(newPassword: newPassword.text.trim(),context: context):null,
                     label: Text('ReEncrypt Vault',style: TextStyle(fontSize: RFontSize.normal,color: Colors.white)),
                     icon: Icon(Icons.lock_clock),),
                 ),
