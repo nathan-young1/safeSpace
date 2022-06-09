@@ -68,40 +68,6 @@ fontSize: RFontSize.normal,
 )
 ),
 TextSpan(
-  text: '\n\nBilling Data:  ',
-  style: TextStyle(
-fontSize: RFontSize.normal,
-fontWeight: FontWeight.bold
-)
-),
-TextSpan(text: '\nWe use third party service providers (currently google play store) to process payment made through the app. We do not receive any or store any billing data when you pay for a subscription.',
-style: TextStyle(
-fontSize: RFontSize.normal,
-)
-),
-TextSpan(
-  text: '\n\nVault Key: ',
-  style: TextStyle(
-fontSize: RFontSize.normal,
-fontWeight: FontWeight.bold
-)
-),
-TextSpan(text: '\nTo create an account you must create a “Vault Key” this is used for encrypting the information you store in the app (Encrypted data as will be further discussed below). So the more secure your Vault Key is, the more secure your data will be. This is because, in the event of a hacker obtaining the data in our server, they would have to hack each account separately (Because your data is encrypted based on your Vault Key). Safe Space employs a zero knowledge system to ensure that we do not know your Vault Key, in other words we cannot access secured data. Your Vault key is not stored anywhere on our servers. So you are advised to store it securely and do not share it with anyone else.',
-style: TextStyle(
-fontSize: RFontSize.normal,
-)),
-TextSpan(
-  text: '\n\nEncrypted Data: ',
-  style: TextStyle(
-fontSize: RFontSize.normal,
-fontWeight: FontWeight.bold
-)
-),
-TextSpan(text: '\nSafe space helps you manage sensitive information like passwords, Payment details , documents e.t.c. This and everything else you store in the app is encrypted with your Vault key before it is stored on the servers. All data is encrypted at all times with the Vault key making it accessible to you and only you.',
-style: TextStyle(
-fontSize: RFontSize.normal,
-)),
-TextSpan(
   text: '\n\nYour Contact Information: ',
   style: TextStyle(
 fontSize: RFontSize.normal,
@@ -126,11 +92,11 @@ fontSize: RFontSize.normal,
 fontWeight: FontWeight.bold
 )
 ),
-TextSpan(text: '''\n\nYour vault key is not stored on our database, you and only you know it, this key is used to encrypt any data you store in the vault ,therefore store it securely. In the event you forget this key you can still retrieve account under the following circumstances:
+TextSpan(text: '''\n\nSafe Space employs a zero knowledge system so your vault key is not stored on our database. This key is used to encrypt any data you store in the vault ,therefore store it securely. In the event you forget this key you can still retrieve account under the following circumstances:
 
 • You are logged into the account from another device.
 
-Otherwise you have lost total access to all those data, because they can only be decrypted with your vault key.
+Otherwise you have lost total access to your data, because it can only be decrypted with your vault key.
 ''',
 style: TextStyle(
 fontSize: RFontSize.normal,

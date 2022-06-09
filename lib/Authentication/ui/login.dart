@@ -219,7 +219,7 @@ class _LoginState extends State<Login> {
   }
 
   loginIntoSafe() async {
-    Authentication? result = await signInWithEmailAndPasswordInLogin(safeSpaceUsername.text, safeSpacePassword!.text,context);
+    Authentication? result = await signInWithEmailAndPasswordInLogin(safeSpaceUsername.text.trim(), safeSpacePassword!.text.trim(),context);
     switch (result) {
       case Authentication.Successful:
         SharedPreferences prefs = await SharedPreferences.getInstance();
