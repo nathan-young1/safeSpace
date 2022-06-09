@@ -63,9 +63,8 @@ class _SafeState extends State<Safe> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (_, constraints) {
-        ScreenUtil.init(constraints);
-        return ScreenUtilInit(
-              builder: () => MultiProvider(
+        ScreenUtil.init(context);
+        return MultiProvider(
                 providers: [
                   ChangeNotifierProvider<Dashboard>.value(value: Dashboard()),
                   ChangeNotifierProvider<DrawerState>.value(value: DrawerState()),
@@ -98,8 +97,7 @@ class _SafeState extends State<Safe> {
                     'PrivacyPolicy': (context) => PrivacyPolicy()
                   },
                 ),
-              ),
-        );
+              );
       }
     );
   }

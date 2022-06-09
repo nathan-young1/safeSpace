@@ -21,7 +21,7 @@ class _SubscriptionState extends State<Subscription> {
   @override
     void initState() {
       super.initState();
-       WidgetsBinding.instance!.addPostFrameCallback((_) { 
+       WidgetsBinding.instance.addPostFrameCallback((_) { 
           timer = Timer.periodic(Duration(milliseconds: 30),(_) => setState((){}));
        });
     }

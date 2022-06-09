@@ -39,7 +39,7 @@ class _LoginState extends State<Login> {
     super.initState();
     //clears the password by creating new text editing controller on each init state
     safeSpacePassword = TextEditingController(text: '');
-    WidgetsBinding.instance!.addPostFrameCallback((_) { 
+    WidgetsBinding.instance.addPostFrameCallback((_) { 
     subscription = DataConnectionChecker().onStatusChange.listen((status) async {
      switch (status) {
       case DataConnectionStatus.connected:
